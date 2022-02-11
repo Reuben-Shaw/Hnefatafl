@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using Hnefatafl.GameBoard;
 
 namespace Hnefatafl
 {
@@ -11,11 +12,13 @@ namespace Hnefatafl
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        Board _gameBoard = new Board();
+        OptionObj _optionObj;
         public Hnefatafl()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = false;
+            IsMouseVisible = true;
         }
 
         protected override void Initialize()
@@ -24,14 +27,25 @@ namespace Hnefatafl
             _graphics.PreferredBackBufferHeight = 540;
             _graphics.ApplyChanges();
 
+            _optionObj = new OptionObj(new Color[]{Color.White, Color.Black, Color.Red, Color.Gold});
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _gameBoard.LoadContent(_graphics);
+            _gameBoard.TileGeneration(_optionObj.boardColour);
 
-            // TODO: use this.Content to load your game content here
+            Console.WriteLine("Successful LoadContent");
+        }
+
+        protected override void UnloadContent()
+        {
+            _gameBoard.UnloadContent();
+
+            Console.WriteLine("Successful UnloadContent");
         }
 
         protected override void Update(GameTime gameTime)
@@ -47,9 +61,11 @@ namespace Hnefatafl
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+            _spriteBatch.Begin();
 
-            // TODO: Add your drawing code here
+            _gameBoard.Draw(gameTime, _spriteBatch);
 
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
     }

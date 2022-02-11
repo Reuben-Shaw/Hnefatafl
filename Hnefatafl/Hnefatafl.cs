@@ -27,7 +27,7 @@ namespace Hnefatafl
             _graphics.PreferredBackBufferHeight = 540;
             _graphics.ApplyChanges();
 
-            _optionObj = new OptionObj(new Color[]{Color.White, Color.Black, Color.Red, Color.Gold});
+            _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
 
             base.Initialize();
         }
@@ -60,7 +60,7 @@ namespace Hnefatafl
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Black);
+            GraphicsDevice.Clear(Color.LightGray);
             _spriteBatch.Begin();
 
             _gameBoard.Draw(gameTime, _spriteBatch);

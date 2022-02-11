@@ -8,7 +8,7 @@ namespace Hnefatafl.GameBoard
 {
     public sealed class Board
     {
-        private Texture2D[] _boardColours = new Texture2D[4];//new Color[4]; //0: 0,1, 1: 0,2, 2: Throne, 3: Corner
+        private Texture2D[] _boardColours = new Texture2D[5];//new Color[4]; //0: 0,1, 1: 0,2, 2: Throne, 3: Corner, 4: Border
 
         private int _boardSize = 11;
         private int _tileSize = 32;
@@ -58,6 +58,14 @@ namespace Hnefatafl.GameBoard
                         spriteBatch.Draw(_boardColours[1], rect, Color.White);
                 }
             }
+
+            spriteBatch.Draw(_boardColours[4], new Rectangle((GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 4) - ((_tileSize * _boardSize) / 2) - _tileSize, (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 4) - ((_tileSize * _boardSize) / 2), (_tileSize * _boardSize) + (_tileSize * 2), _tileSize), Color.White);
+            spriteBatch.Draw(_boardColours[4], new Rectangle((GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 4) - ((_tileSize * _boardSize) / 2) - _tileSize, (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 4) - ((_tileSize * _boardSize) / 2) + (_tileSize * _boardSize) + _tileSize, (_tileSize * _boardSize) + (_tileSize * 2), _tileSize), Color.White);
+
+            spriteBatch.Draw(_boardColours[4], new Rectangle((GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 4) - ((_tileSize * _boardSize) / 2) - _tileSize, (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 4) - ((_tileSize * _boardSize) / 2), _tileSize, (_tileSize * _boardSize) + (_tileSize * 2)), Color.White);
+            spriteBatch.Draw(_boardColours[4], new Rectangle((GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 4) - ((_tileSize * _boardSize) / 2) + (_tileSize * _boardSize), (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 4) - ((_tileSize * _boardSize) / 2), _tileSize, (_tileSize * _boardSize) + (_tileSize * 2)), Color.White);
+        
+        
         }
     }
 }

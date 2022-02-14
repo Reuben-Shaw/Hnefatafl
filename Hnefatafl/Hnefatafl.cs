@@ -80,7 +80,7 @@ namespace Hnefatafl
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Mouse.GetState() != previousMouse)
+            if (Mouse.GetState().LeftButton != previousMouse.LeftButton)
             {
                 previousMouse = Mouse.GetState();
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)

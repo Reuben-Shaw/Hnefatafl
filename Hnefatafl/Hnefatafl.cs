@@ -25,16 +25,22 @@ namespace Hnefatafl
             IsMouseVisible = true;
         }
 
+        const bool _doFull = false;
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferWidth = 960;
-            _graphics.PreferredBackBufferHeight = 540;
-            _graphics.ApplyChanges();
-
-            // _graphics.PreferredBackBufferWidth = 1920;
-            // _graphics.PreferredBackBufferHeight = 1080;
-            // _graphics.IsFullScreen = true;
-            // _graphics.ApplyChanges();
+            if (!_doFull)
+            {
+                _graphics.PreferredBackBufferWidth = 960;
+                _graphics.PreferredBackBufferHeight = 540;
+                _graphics.ApplyChanges();
+            }
+            else
+            {
+                _graphics.PreferredBackBufferWidth = 1920;
+                _graphics.PreferredBackBufferHeight = 1080;
+                _graphics.IsFullScreen = true;
+                _graphics.ApplyChanges();
+            }
 
             _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
             
@@ -47,6 +53,7 @@ namespace Hnefatafl
                 }
             }
             _playingField[5, 5] = new Pawn(1);
+            _playingField[3, 2] = new Pawn(1);
 
             base.Initialize();
         }

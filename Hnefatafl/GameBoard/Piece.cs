@@ -11,7 +11,7 @@ namespace Hnefatafl
         private Texture2D _pawnTemp;
         private Pawn[,] _playingField;
         private int _boardSize = 11;
-        private int _tileSizeX = 32, _tileSizeY = 32;
+        private int _tileSizeX, _tileSizeY;
         Point _selectedPiece = new Point(-1, -1);
 
         public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort)
@@ -20,6 +20,8 @@ namespace Hnefatafl
             _pawnTemp.SetData(new[] { Color.Green });
 
             _playingField = Hnefatafl.PawnRecieve();
+            _tileSizeX = viewPort.Width / 30;
+            _tileSizeY = _tileSizeX;
         }
 
         public void UnloadContent()
@@ -58,8 +60,12 @@ namespace Hnefatafl
                         if (rect.Contains(mouse.Position))
                         {
                             clickFound = true;
-                            _playingField[x, y] = _playingField[_selectedPiece.X, _selectedPiece.Y];
-                            _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0);
+
+                            if ((x == _selectedPiece.X ^ y == _selectedPiece.Y) && ClearanceCheck(x, y))
+                            {
+                                _playingField[x, y] = _playingField[_selectedPiece.X, _selectedPiece.Y];
+                                _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0);
+                            }
                         }
                     }
 
@@ -82,6 +88,35 @@ namespace Hnefatafl
             }
         }
 
+        private bool ClearanceCheck(int x, int y)
+        {
+            int start, end;
+
+            if (x > _selectedPiece.X)
+            { start = _selectedPiece.X + 1; end = x + 1; }
+            else
+            { start = x; end = _selectedPiece.X; }
+
+            for (int i = start; i < end; i++)
+            {
+                if (_playingField[i, y].textInd != 0)
+                    return false;
+            }
+            
+            if (y > _selectedPiece.Y)
+            { start = _selectedPiece.Y + 1; end = y + 1; }
+            else
+            { start = y; end = _selectedPiece.Y; }
+
+            for (int i = start; i < end; i++)
+            {
+                if (_playingField[x, i].textInd != 0)
+                    return false;
+            }
+
+            return true;
+        }
+
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
         {
             Rectangle rect = new Rectangle(
@@ -96,7 +131,6 @@ namespace Hnefatafl
                     if (_playingField[x, y].textInd == 1)
                     {
                         spriteBatch.Draw(_pawnTemp, rect, Color.White);
-                        rect.Y += _tileSizeY;
                     }
                     rect.Y += _tileSizeY;
                 }

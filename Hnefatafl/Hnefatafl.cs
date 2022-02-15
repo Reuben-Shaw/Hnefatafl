@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using Hnefatafl.GameBoard;
+using Hnefatafl.GamePiece;
+using static Hnefatafl.PieceType;
 
 namespace Hnefatafl
 {
@@ -49,12 +51,12 @@ namespace Hnefatafl
             {
                 for (int j = 0; j < 11; j++)
                 {
-                    _playingField[i, j] = new Pawn(0);
+                    _playingField[i, j] = new Pawn(0, Empty);
                 }
             }
-            _playingField[5, 5] = new Pawn(1);
-            _playingField[3, 2] = new Pawn(2);
-            _playingField[8, 8] = new Pawn(3);
+            _playingField[5, 5] = new Pawn(1, Attacker);
+            _playingField[3, 2] = new Pawn(2, Defender);
+            _playingField[8, 8] = new Pawn(2, Defender);
 
             base.Initialize();
         }

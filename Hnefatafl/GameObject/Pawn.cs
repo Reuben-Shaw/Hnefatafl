@@ -21,8 +21,8 @@ namespace Hnefatafl
             }
         }
 
-        private bool _defender;
-        public bool defender
+        private PieceType _defender;
+        public PieceType defender
         {
             get
             {
@@ -34,9 +34,10 @@ namespace Hnefatafl
             }
         }
 
-        public Pawn(int _textInd)
+        public Pawn(int _textInd, PieceType _defender)
         {
             textInd = _textInd;
+            defender = _defender;
         }
     }
 }

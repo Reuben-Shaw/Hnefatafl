@@ -4,8 +4,10 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using Hnefatafl;
+using static Hnefatafl.PieceType;
 
-namespace Hnefatafl
+namespace Hnefatafl.GamePiece
 {
     public class Piece
     {
@@ -14,6 +16,7 @@ namespace Hnefatafl
         private int _boardSize = 11;
         private int _tileSizeX, _tileSizeY;
         private Point _selectedPiece = new Point(-1, -1);
+        private int[] _alivePieces = new int[] { 24, 12 };
 
         public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort, ContentManager Content)
         {
@@ -87,7 +90,8 @@ namespace Hnefatafl
                             if ((x == _selectedPiece.X ^ y == _selectedPiece.Y) && ClearanceCheck(x, y))
                             {
                                 _playingField[x, y] = _playingField[_selectedPiece.X, _selectedPiece.Y];
-                                _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0);
+                                _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0, Empty);
+                                CaptureLoc(x, y, _playingField[x, y].defender);
                             }
                         }
                     }
@@ -138,6 +142,43 @@ namespace Hnefatafl
             }
 
             return true;
+        }
+
+        private void CaptureLoc(int x, int y, PieceType defender)
+        {
+            if (y > 1 && _playingField[x, y - 1].defender != _playingField[x, y].defender && _playingField[x, y - 2].defender == _playingField[x, y].defender)
+            {
+                _playingField[x, y - 1] = new Pawn(0, Empty);
+            }
+            if (y < _boardSize - 2 && _playingField[x, y + 1].defender != _playingField[x, y].defender && _playingField[x, y + 2].defender == _playingField[x, y].defender)
+            {
+                _playingField[x, y + 1] = new Pawn(0, Empty);
+            }
+            if (y == 1 && _playingField[x, y - 1].defender != _playingField[x, y].defender)
+            {
+                _playingField[x, y - 1] = new Pawn(0, Empty);
+            }
+            if (y == _boardSize - 2 && _playingField[x, y + 1].defender != _playingField[x, y].defender)
+            {
+                _playingField[x, y + 1] = new Pawn(0, Empty);
+            }
+
+            if (x > 1 && _playingField[x - 1, y].defender != _playingField[x, y].defender && _playingField[x - 2, y].defender == _playingField[x, y].defender)
+            {
+                _playingField[x - 1, y] = new Pawn(0, Empty);
+            }
+            if (x < _boardSize - 2 && _playingField[x + 1, y].defender != _playingField[x, y].defender && _playingField[x + 2, y].defender == _playingField[x, y].defender)
+            {
+                _playingField[x + 1, y] = new Pawn(0, Empty);
+            }
+            if (x == 1 && _playingField[x - 1, y].defender != _playingField[x, y].defender)
+            {
+                _playingField[x - 1, y] = new Pawn(0, Empty);
+            }
+            if (x == _boardSize - 2 && _playingField[x + 1, y].defender != _playingField[x, y].defender)
+            {
+                _playingField[x + 1, y] = new Pawn(0, Empty);
+            }
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)

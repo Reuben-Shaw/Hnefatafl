@@ -53,7 +53,8 @@ namespace Hnefatafl
                 }
             }
             _playingField[5, 5] = new Pawn(1);
-            _playingField[3, 2] = new Pawn(1);
+            _playingField[3, 2] = new Pawn(2);
+            _playingField[8, 8] = new Pawn(3);
 
             base.Initialize();
         }
@@ -68,7 +69,7 @@ namespace Hnefatafl
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _gameBoard.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds);
             _gameBoard.TileGeneration(_optionObj.boardColour);
-            _pieceBoard.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds);
+            _pieceBoard.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds, Content);
 
             Console.WriteLine("Successful LoadContent");
         }

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
 
@@ -8,16 +9,37 @@ namespace Hnefatafl
 {
     public class Piece
     {
-        private Texture2D _pawnTemp;
+        private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         private Pawn[,] _playingField;
         private int _boardSize = 11;
         private int _tileSizeX, _tileSizeY;
-        Point _selectedPiece = new Point(-1, -1);
+        private Point _selectedPiece = new Point(-1, -1);
 
-        public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort)
+        public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort, ContentManager Content)
         {
-            _pawnTemp = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _pawnTemp.SetData(new[] { Color.Green });
+            _pawnTexture[0] = Content.Load<Texture2D>("pawnE");
+            _pawnTexture[1] = Content.Load<Texture2D>("pawnD");
+            _pawnTexture[2] = Content.Load<Texture2D>("king");
+
+            Color[] userColour = new Color[]{ new Color(255, 0, 0), new Color(0, 0, 255),  new Color(0, 0, 255) };
+            Color[] data;
+
+
+            for (int i = 0; i < _pawnTexture.Length; i++)
+            {
+                data = new Color[_pawnTexture[i].Width * _pawnTexture[i].Height];
+                _pawnTexture[i].GetData<Color>(data);
+
+                for (int j = 0; j < data.Length; j++)
+                {
+                    if (data[j] != Color.Transparent && data[j] != Color.Black)
+                    {
+                        data[j] = new Color((byte)(data[j].R * (userColour[i].R / 255)), (byte)(data[j].G * (userColour[i].G / 255)), (byte)(data[j].B  * (userColour[i].B / 255)));
+                    }
+                }
+
+                _pawnTexture[i].SetData<Color>(data);
+            }
 
             _playingField = Hnefatafl.PawnRecieve();
             _tileSizeX = viewPort.Width / 30;
@@ -26,7 +48,8 @@ namespace Hnefatafl
 
         public void UnloadContent()
         {
-            _pawnTemp.Dispose();
+            _pawnTexture[0].Dispose();
+            _pawnTexture[1].Dispose();
         }
 
         public void Update(GameTime gameTime, MouseState mouse, Rectangle viewPort)
@@ -128,9 +151,9 @@ namespace Hnefatafl
             {
                 for (int y = 0; y < _playingField.GetLength(1); y++)
                 {
-                    if (_playingField[x, y].textInd == 1)
+                    if (_playingField[x, y].textInd != 0)
                     {
-                        spriteBatch.Draw(_pawnTemp, rect, Color.White);
+                        spriteBatch.Draw(_pawnTexture[_playingField[x, y].textInd - 1], rect, Color.White);
                     }
                     rect.Y += _tileSizeY;
                 }

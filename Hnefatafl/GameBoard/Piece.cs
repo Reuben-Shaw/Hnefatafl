@@ -146,36 +146,20 @@ namespace Hnefatafl.GamePiece
 
         private void CaptureLoc(int x, int y, PieceType defender)
         {
-            if (y > 1 && _playingField[x, y - 1].defender != _playingField[x, y].defender && _playingField[x, y - 2].defender == _playingField[x, y].defender)
+            if (y > 1 && (int)_playingField[x, y - 1].defender != (int)_playingField[x, y].defender && (int)_playingField[x, y - 2].defender == (int)_playingField[x, y].defender)
             {
                 _playingField[x, y - 1] = new Pawn(0, Empty);
             }
-            if (y < _boardSize - 2 && _playingField[x, y + 1].defender != _playingField[x, y].defender && _playingField[x, y + 2].defender == _playingField[x, y].defender)
-            {
-                _playingField[x, y + 1] = new Pawn(0, Empty);
-            }
-            if (y == 1 && _playingField[x, y - 1].defender != _playingField[x, y].defender)
-            {
-                _playingField[x, y - 1] = new Pawn(0, Empty);
-            }
-            if (y == _boardSize - 2 && _playingField[x, y + 1].defender != _playingField[x, y].defender)
+            if (y < _boardSize - 2 && (int)_playingField[x, y + 1].defender != (int)_playingField[x, y].defender && (int)_playingField[x, y + 2].defender == (int)_playingField[x, y].defender)
             {
                 _playingField[x, y + 1] = new Pawn(0, Empty);
             }
 
-            if (x > 1 && _playingField[x - 1, y].defender != _playingField[x, y].defender && _playingField[x - 2, y].defender == _playingField[x, y].defender)
+            if (x > 1 && (int)_playingField[x - 1, y].defender != (int)_playingField[x, y].defender && (int)_playingField[x - 2, y].defender == (int)_playingField[x, y].defender)
             {
                 _playingField[x - 1, y] = new Pawn(0, Empty);
             }
-            if (x < _boardSize - 2 && _playingField[x + 1, y].defender != _playingField[x, y].defender && _playingField[x + 2, y].defender == _playingField[x, y].defender)
-            {
-                _playingField[x + 1, y] = new Pawn(0, Empty);
-            }
-            if (x == 1 && _playingField[x - 1, y].defender != _playingField[x, y].defender)
-            {
-                _playingField[x - 1, y] = new Pawn(0, Empty);
-            }
-            if (x == _boardSize - 2 && _playingField[x + 1, y].defender != _playingField[x, y].defender)
+            if (x < _boardSize - 2 && (int)_playingField[x + 1, y].defender != (int)_playingField[x, y].defender && ((int)_playingField[x + 2, y].defender == (int)_playingField[x, y].defender))
             {
                 _playingField[x + 1, y] = new Pawn(0, Empty);
             }

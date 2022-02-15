@@ -18,7 +18,20 @@ namespace Hnefatafl
         Piece _pieceBoard = new Piece();
         OptionObj _optionObj;
 
-        static Pawn[,] _playingField;
+        static Pawn[,] _playingField = new Pawn[11, 11] 
+        {
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(3, King), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) }
+        };
 
         public Hnefatafl()
         {
@@ -45,18 +58,6 @@ namespace Hnefatafl
             }
 
             _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
-            
-            _playingField = new Pawn[11, 11];
-            for (int i = 0; i < 11; i++)
-            {
-                for (int j = 0; j < 11; j++)
-                {
-                    _playingField[i, j] = new Pawn(0, Empty);
-                }
-            }
-            _playingField[5, 5] = new Pawn(1, Attacker);
-            _playingField[3, 2] = new Pawn(2, Defender);
-            _playingField[8, 8] = new Pawn(2, Defender);
 
             base.Initialize();
         }

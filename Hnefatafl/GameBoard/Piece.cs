@@ -1,32 +1,60 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections.Generic;
+using Hnefatafl;
+using static Hnefatafl.PieceType;
 
-namespace Hnefatafl
+namespace Hnefatafl.GamePiece
 {
     public class Piece
     {
-        private Texture2D _pawnTemp;
+        private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         private Pawn[,] _playingField;
         private int _boardSize = 11;
         private int _tileSizeX, _tileSizeY;
-        Point _selectedPiece = new Point(-1, -1);
+        private Point _selectedPiece = new Point(-1, -1);
+        private int[] _alivePieces = new int[] { 24, 12 };
+        private bool attackerTurn;
 
-        public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort)
+        public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort, ContentManager Content)
         {
-            _pawnTemp = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _pawnTemp.SetData(new[] { Color.Green });
+            _pawnTexture[0] = Content.Load<Texture2D>("pawnE");
+            _pawnTexture[1] = Content.Load<Texture2D>("pawnD");
+            _pawnTexture[2] = Content.Load<Texture2D>("king");
+
+            Color[] userColour = new Color[]{ new Color(255, 0, 0), new Color(0, 0, 255),  new Color(0, 0, 255) };
+            Color[] data;
+
+
+            for (int i = 0; i < _pawnTexture.Length; i++)
+            {
+                data = new Color[_pawnTexture[i].Width * _pawnTexture[i].Height];
+                _pawnTexture[i].GetData<Color>(data);
+
+                for (int j = 0; j < data.Length; j++)
+                {
+                    if (data[j] != Color.Transparent && data[j] != Color.Black)
+                    {
+                        data[j] = new Color((byte)(data[j].R * (userColour[i].R / 255)), (byte)(data[j].G * (userColour[i].G / 255)), (byte)(data[j].B  * (userColour[i].B / 255)));
+                    }
+                }
+
+                _pawnTexture[i].SetData<Color>(data);
+            }
 
             _playingField = Hnefatafl.PawnRecieve();
             _tileSizeX = viewPort.Width / 30;
             _tileSizeY = _tileSizeX;
+            attackerTurn = true;
         }
 
         public void UnloadContent()
         {
-            _pawnTemp.Dispose();
+            _pawnTexture[0].Dispose();
+            _pawnTexture[1].Dispose();
         }
 
         public void Update(GameTime gameTime, MouseState mouse, Rectangle viewPort)
@@ -46,7 +74,7 @@ namespace Hnefatafl
                 {
                     if (_selectedPiece.X == -1)
                     {
-                        if (_playingField[x, y].textInd != 0)
+                        if (_playingField[x, y].defender != Empty && ((_playingField[x, y].defender == Attacker && attackerTurn) || ((int)_playingField[x, y].defender == 1 && !attackerTurn)))
                         {
                             if (rect.Contains(mouse.Position))
                             {
@@ -64,7 +92,9 @@ namespace Hnefatafl
                             if ((x == _selectedPiece.X ^ y == _selectedPiece.Y) && ClearanceCheck(x, y))
                             {
                                 _playingField[x, y] = _playingField[_selectedPiece.X, _selectedPiece.Y];
-                                _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0);
+                                _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0, Empty);
+                                CaptureLoc(x, y, _playingField[x, y].defender);
+                                attackerTurn = !attackerTurn;
                             }
                         }
                     }
@@ -117,6 +147,27 @@ namespace Hnefatafl
             return true;
         }
 
+        private void CaptureLoc(int x, int y, PieceType defender)
+        {
+            if (y > 1 && (int)_playingField[x, y - 1].defender != (int)_playingField[x, y].defender && (int)_playingField[x, y - 2].defender == (int)_playingField[x, y].defender)
+            {
+                _playingField[x, y - 1] = new Pawn(0, Empty);
+            }
+            if (y < _boardSize - 2 && (int)_playingField[x, y + 1].defender != (int)_playingField[x, y].defender && (int)_playingField[x, y + 2].defender == (int)_playingField[x, y].defender)
+            {
+                _playingField[x, y + 1] = new Pawn(0, Empty);
+            }
+
+            if (x > 1 && (int)_playingField[x - 1, y].defender != (int)_playingField[x, y].defender && (int)_playingField[x - 2, y].defender == (int)_playingField[x, y].defender)
+            {
+                _playingField[x - 1, y] = new Pawn(0, Empty);
+            }
+            if (x < _boardSize - 2 && (int)_playingField[x + 1, y].defender != (int)_playingField[x, y].defender && ((int)_playingField[x + 2, y].defender == (int)_playingField[x, y].defender))
+            {
+                _playingField[x + 1, y] = new Pawn(0, Empty);
+            }
+        }
+
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
         {
             Rectangle rect = new Rectangle(
@@ -128,9 +179,9 @@ namespace Hnefatafl
             {
                 for (int y = 0; y < _playingField.GetLength(1); y++)
                 {
-                    if (_playingField[x, y].textInd == 1)
+                    if (_playingField[x, y].textInd != 0)
                     {
-                        spriteBatch.Draw(_pawnTemp, rect, Color.White);
+                        spriteBatch.Draw(_pawnTexture[_playingField[x, y].textInd - 1], rect, Color.White);
                     }
                     rect.Y += _tileSizeY;
                 }

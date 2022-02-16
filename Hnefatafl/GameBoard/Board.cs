@@ -43,16 +43,15 @@ namespace Hnefatafl.GameBoard
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
         {
-            Rectangle rect;
+            Rectangle rect= new Rectangle(
+                        (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2), 
+                        (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2), 
+                        _tileSizeX, _tileSizeY);
+
             for (int y = 0; y < _boardSize; y++)
             {
                 for (int x = 0; x < _boardSize; x++)
                 {
-                    rect = new Rectangle(
-                        (_tileSizeX * x) + (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2), 
-                        (_tileSizeY * y) + (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2), 
-                        _tileSizeX, _tileSizeY);
-
                     if ((y == 0 || y == _boardSize - 1) && (x == 0 || x == _boardSize - 1))
                         spriteBatch.Draw(_boardColours[5], rect, Color.White);
                     else if (y == (_boardSize - 1) / 2 && x == (_boardSize - 1) / 2)
@@ -63,7 +62,11 @@ namespace Hnefatafl.GameBoard
                         spriteBatch.Draw(_boardColours[0], rect, Color.White);
                     else
                         spriteBatch.Draw(_boardColours[1], rect, Color.White);
+
+                    rect.X += _tileSizeX;
                 }
+                rect.Y +=_tileSizeY;
+                rect.X = (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2);
             }
 
             // spriteBatch.Draw(_boardColours[4], new Rectangle((GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 4) - ((_tileSize * _boardSize) / 2) - _tileSize, (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 4) - ((_tileSize * _boardSize) / 2), (_tileSize * _boardSize) + (_tileSize * 2), _tileSize), Color.White);

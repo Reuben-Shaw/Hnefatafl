@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 namespace Hnefatafl
 {
-    public class Pawn
+    public sealed class Pawn
     {
         private int _textInd;
         public int textInd
         {
-             get
+            get
             {
                 return _textInd;
             }
@@ -21,9 +21,23 @@ namespace Hnefatafl
             }
         }
 
-        public Pawn(int _textInd)
+        private PieceType _defender;
+        public PieceType defender
+        {
+            get
+            {
+                return _defender;
+            }
+            set
+            {
+                _defender = value;
+            }
+        }
+
+        public Pawn(int _textInd, PieceType _defender)
         {
             textInd = _textInd;
+            defender = _defender;
         }
     }
 }

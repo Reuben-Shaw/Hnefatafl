@@ -17,6 +17,7 @@ namespace Hnefatafl.GamePiece
         private int _tileSizeX, _tileSizeY;
         private Point _selectedPiece = new Point(-1, -1);
         private int[] _alivePieces = new int[] { 24, 12 };
+        private bool attackerTurn;
 
         public void LoadContent(GraphicsDeviceManager graphics, Rectangle viewPort, ContentManager Content)
         {
@@ -47,6 +48,7 @@ namespace Hnefatafl.GamePiece
             _playingField = Hnefatafl.PawnRecieve();
             _tileSizeX = viewPort.Width / 30;
             _tileSizeY = _tileSizeX;
+            attackerTurn = true;
         }
 
         public void UnloadContent()
@@ -72,7 +74,7 @@ namespace Hnefatafl.GamePiece
                 {
                     if (_selectedPiece.X == -1)
                     {
-                        if (_playingField[x, y].textInd != 0)
+                        if (_playingField[x, y].defender != Empty && ((_playingField[x, y].defender == Attacker && attackerTurn) || ((int)_playingField[x, y].defender == 1 && !attackerTurn)))
                         {
                             if (rect.Contains(mouse.Position))
                             {
@@ -92,6 +94,7 @@ namespace Hnefatafl.GamePiece
                                 _playingField[x, y] = _playingField[_selectedPiece.X, _selectedPiece.Y];
                                 _playingField[_selectedPiece.X, _selectedPiece.Y] = new Pawn(0, Empty);
                                 CaptureLoc(x, y, _playingField[x, y].defender);
+                                attackerTurn = !attackerTurn;
                             }
                         }
                     }

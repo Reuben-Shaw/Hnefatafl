@@ -1,7 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿#define DEBUG
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using Hnefatafl.GameBoard;
 using Hnefatafl.GamePiece;
@@ -18,20 +20,7 @@ namespace Hnefatafl
         Piece _pieceBoard = new Piece();
         OptionObj _optionObj;
 
-        static Pawn[,] _playingField = new Pawn[11, 11] 
-        {
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(3, King), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) }
-        };
+        static Pawn[,] _playingField;
 
         public Hnefatafl()
         {
@@ -57,9 +46,30 @@ namespace Hnefatafl
                 _graphics.ApplyChanges();
             }
 
-            _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
+            CreatePlayingField();
 
+            _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
+            
             base.Initialize();
+        }
+
+        [Conditional("DEBUG")]
+        private void CreatePlayingField()
+        {
+            _playingField = new Pawn[11, 11] 
+            {
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(3, King), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
+            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) }
+            };
         }
 
         public static Pawn[,] PawnRecieve()

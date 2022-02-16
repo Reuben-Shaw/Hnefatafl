@@ -13,10 +13,7 @@ namespace Hnefatafl
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
-        Board2 _gameBoard = new Board2();
-        Main _mainTemp = new Main();
-        OptionObj _optionObj;
+        private Player _player;
 
         public Hnefatafl()
         {
@@ -42,7 +39,7 @@ namespace Hnefatafl
                 _graphics.ApplyChanges();
             }
 
-            _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
+            _player = new Player(_graphics, Content, 11);
             
             base.Initialize();
         }
@@ -50,17 +47,13 @@ namespace Hnefatafl
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _gameBoard.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds);
-            _gameBoard.TileGeneration(_optionObj.boardColour);
-            _mainTemp.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds, Content);
 
             Console.WriteLine("Successful LoadContent");
         }
 
         protected override void UnloadContent()
         {
-            _gameBoard.UnloadContent();
-            _mainTemp.UnloadContent();
+            _player._board.UnloadContent();
 
             Console.WriteLine("Successful UnloadContent");
         }
@@ -76,7 +69,7 @@ namespace Hnefatafl
                 previousMouse = Mouse.GetState();
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
-                    _mainTemp.Update(gameTime, Mouse.GetState(), GraphicsDevice.Viewport.Bounds);
+                    //_mainTemp.Update(gameTime, Mouse.GetState(), GraphicsDevice.Viewport.Bounds);
                 }
             }
             
@@ -90,8 +83,7 @@ namespace Hnefatafl
             GraphicsDevice.Clear(Color.LightGray);
             _spriteBatch.Begin();
 
-            _gameBoard.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
-            _mainTemp.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
+            _player._board.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
 
             _spriteBatch.End();
             base.Draw(gameTime);

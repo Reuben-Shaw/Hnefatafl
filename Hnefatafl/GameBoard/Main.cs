@@ -9,6 +9,7 @@ using static Hnefatafl.PieceType;
 
 namespace Hnefatafl
 {
+    
     public class Main
     {
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];

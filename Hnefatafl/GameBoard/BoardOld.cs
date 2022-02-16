@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
-namespace Hnefatafl.GameBoard
+namespace Hnefatafl
 {
-    public sealed class Board
+    public sealed class Board2
     {
         private Texture2D[] _boardColours = new Texture2D[8];//new Color[4]; 
-        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner, 6: Border
+        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
 
         private int _boardSize = 11;
         private int _tileSizeX, _tileSizeY;

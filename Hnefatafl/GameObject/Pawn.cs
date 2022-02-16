@@ -4,40 +4,17 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 
+
 namespace Hnefatafl
 {
+    public enum PieceType { Empty = -1, Attacker = 0, Defender = 1, King = 2 };
     public sealed class Pawn
     {
-        private int _textInd;
-        public int textInd
-        {
-            get
-            {
-                return _textInd;
-            }
-            set
-            {
-                _textInd = value;
-            }
-        }
+        public PieceType _type { get; set; }
 
-        private PieceType _defender;
-        public PieceType defender
+        public Pawn(PieceType type)
         {
-            get
-            {
-                return _defender;
-            }
-            set
-            {
-                _defender = value;
-            }
-        }
-
-        public Pawn(int _textInd, PieceType _defender)
-        {
-            textInd = _textInd;
-            defender = _defender;
+            _type = type;
         }
     }
 }

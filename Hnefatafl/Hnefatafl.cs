@@ -5,8 +5,6 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Hnefatafl.GameBoard;
-using Hnefatafl.GamePiece;
 using static Hnefatafl.PieceType;
 
 namespace Hnefatafl
@@ -16,11 +14,9 @@ namespace Hnefatafl
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        Board _gameBoard = new Board();
-        Piece _pieceBoard = new Piece();
+        Board2 _gameBoard = new Board2();
+        Main _mainTemp = new Main();
         OptionObj _optionObj;
-
-        static Pawn[,] _playingField;
 
         public Hnefatafl()
         {
@@ -46,35 +42,9 @@ namespace Hnefatafl
                 _graphics.ApplyChanges();
             }
 
-            CreatePlayingField();
-
             _optionObj = new OptionObj(new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24), new Color(28, 17, 7)});
             
             base.Initialize();
-        }
-
-        [Conditional("DEBUG")]
-        private void CreatePlayingField()
-        {
-            _playingField = new Pawn[11, 11] 
-            {
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(3, King), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(2, Defender), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) },
-            { new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(1, Attacker), new Pawn(0, Empty), new Pawn(0, Empty), new Pawn(0, Empty) }
-            };
-        }
-
-        public static Pawn[,] PawnRecieve()
-        {
-            return _playingField;
         }
 
         protected override void LoadContent()
@@ -82,7 +52,7 @@ namespace Hnefatafl
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _gameBoard.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds);
             _gameBoard.TileGeneration(_optionObj.boardColour);
-            _pieceBoard.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds, Content);
+            _mainTemp.LoadContent(_graphics, GraphicsDevice.Viewport.Bounds, Content);
 
             Console.WriteLine("Successful LoadContent");
         }
@@ -90,7 +60,7 @@ namespace Hnefatafl
         protected override void UnloadContent()
         {
             _gameBoard.UnloadContent();
-            _pieceBoard.UnloadContent();
+            _mainTemp.UnloadContent();
 
             Console.WriteLine("Successful UnloadContent");
         }
@@ -106,7 +76,7 @@ namespace Hnefatafl
                 previousMouse = Mouse.GetState();
                 if (Mouse.GetState().LeftButton == ButtonState.Pressed)
                 {
-                    _pieceBoard.Update(gameTime, Mouse.GetState(), GraphicsDevice.Viewport.Bounds);
+                    _mainTemp.Update(gameTime, Mouse.GetState(), GraphicsDevice.Viewport.Bounds);
                 }
             }
             
@@ -121,7 +91,7 @@ namespace Hnefatafl
             _spriteBatch.Begin();
 
             _gameBoard.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
-            _pieceBoard.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
+            _mainTemp.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
 
             _spriteBatch.End();
             base.Draw(gameTime);

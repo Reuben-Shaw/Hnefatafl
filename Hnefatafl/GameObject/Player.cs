@@ -108,7 +108,7 @@ namespace Hnefatafl
 
         public void EstablishConnection()
         {
-            _client.Connect("192.168.1.84", 14242);
+            _client.Connect("localhost", 14242);
             _connected = true;
         }
     }

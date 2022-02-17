@@ -26,3 +26,4 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp6.0\Hnefataf
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp6.0\ref\Hnefatafl.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp6.0\Hnefatafl.pdb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp6.0\Hnefatafl.genruntimeconfig.cache
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp6.0\Lidgren.Network.dll

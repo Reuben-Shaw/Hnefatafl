@@ -12,6 +12,7 @@ namespace Hnefatafl
 {
     public sealed class Player
     {
+        public enum InstructType { SELECT, MOVE, MOVEFAIL }
         public Board _board;
         private bool _connected;
         private NetClient _client;
@@ -53,9 +54,26 @@ namespace Hnefatafl
 
                 if ((message = _client.ReadMessage()) != null)
                 {
-                    if (message.ReadString() == "hey")
+                    string msg = message.ReadString();
+                    Console.WriteLine(msg);
+                    if (msg == "hey")
                     {
                         Hnefatafl.testBool = true;
+                    }
+                    else if (msg.Length > 6)
+                    {
+                        if (msg.Substring(0, 6) == "SELECT")
+                        {
+                            _board.SelectPiece(new HPoint(msg.Substring(6, msg.Length - 6)));
+                        }
+                        else if (msg.Substring(0, 4) == "MOVE")
+                        {
+                            _board.MakeMove(new HPoint(msg.Substring(4, msg.Length - 4)));
+                        }
+                        else if (msg == "MOVEFAIL")
+                        {
+                            _board.SelectPiece(new HPoint(-1, -1));
+                        }
                     }
                 }
             }

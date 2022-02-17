@@ -45,7 +45,6 @@ namespace Hnefatafl
                         {
                             var data = message.ReadString();
                             _server.SendMessage(_server.CreateMessage(data), _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
-                            Console.WriteLine(_server.Connections.Count);
                             break;
                         }
                     case NetIncomingMessageType.DebugMessage:

@@ -98,7 +98,15 @@ namespace Hnefatafl
             }
         }
 
-        public void MakeMove(HPoint move)
+        public bool IsPieceSelected()
+        {
+            if (_selectedPiece.X != -1)
+                return true;
+            else
+                return false;
+        }
+
+        public bool MakeMove(HPoint move)
         {
             string key = move.ToString();
 
@@ -111,22 +119,53 @@ namespace Hnefatafl
                     _pieces.RemoveFrom(_selectedPiece.ToString());
 
                     CaptureLogic(move);
+                    
+                    _selectedPiece = new HPoint(-1, -1);
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("here1");
+                    _selectedPiece = new HPoint(-1, -1);
+                    return false;
                 }
             }
-            _selectedPiece = new HPoint(-1, -1);
-        }
-
-        public bool IsPieceSelected()
-        {
-            if (_selectedPiece.X != -1)
-                return true;
             else
+            {
+                Console.WriteLine("here2");
+                _selectedPiece = new HPoint(-1, -1);
                 return false;
+            }
         }
 
         public void CaptureLogic(HPoint loc)
         {
-            //if ()
+            HPoint[] locChk = new HPoint[2] { loc, loc };
+            PieceType pieceChk = _pieces.GetPiece(loc.ToString())._pawn._type;
+
+            locChk[0] = new HPoint(loc.X + 1, loc.Y); locChk[1] = new HPoint(loc.X + 2, loc.Y);
+            if (pieceChk != _pieces.GetPiece(locChk[0].ToString())._pawn._type && pieceChk == _pieces.GetPiece(locChk[1].ToString())._pawn._type)
+            {
+                _pieces.RemoveFrom(locChk[0].ToString());
+            }
+
+            locChk[0] = new HPoint(loc.X - 1, loc.Y); locChk[1] = new HPoint(loc.X - 2, loc.Y);
+            if (pieceChk != _pieces.GetPiece(locChk[0].ToString())._pawn._type && pieceChk == _pieces.GetPiece(locChk[1].ToString())._pawn._type)
+            {
+                _pieces.RemoveFrom(locChk[0].ToString());
+            }
+
+            locChk[0] = new HPoint(loc.X, loc.Y + 1); locChk[1] = new HPoint(loc.X, loc.Y + 2);
+            if (pieceChk != _pieces.GetPiece(locChk[0].ToString())._pawn._type && pieceChk == _pieces.GetPiece(locChk[1].ToString())._pawn._type)
+            {
+                _pieces.RemoveFrom(locChk[0].ToString());
+            }
+
+            locChk[0] = new HPoint(loc.X, loc.Y - 1); locChk[1] = new HPoint(loc.X, loc.Y - 2);
+            if (pieceChk != _pieces.GetPiece(locChk[0].ToString())._pawn._type && pieceChk == _pieces.GetPiece(locChk[1].ToString())._pawn._type)
+            {
+                _pieces.RemoveFrom(locChk[0].ToString());
+            }
         }
 
         public int TileSizeX(Rectangle viewPort)
@@ -162,7 +201,7 @@ namespace Hnefatafl
                     else
                         spriteBatch.Draw(_boardColours[1], rect, Color.White);
 
-                    iPiece = _pieces.GetPiece(x.ToString() + y.ToString());
+                    iPiece = _pieces.GetPiece(x.ToString() + "," + y.ToString());
                     if (iPiece._pawn._type != Empty)
                     {
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);

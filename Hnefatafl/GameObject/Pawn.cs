@@ -18,6 +18,21 @@ namespace Hnefatafl
         {
             _type = type;
         }
+
+        public override string ToString()
+        {
+            switch (_type)
+            {
+                case Attacker:
+                    return "Attacker";
+                case Defender:
+                    return "Defender";
+                case King:
+                    return "King";
+                default:
+                    return "Empty";
+            }
+        }
     }
     
     public sealed class Piece
@@ -49,7 +64,6 @@ namespace Hnefatafl
 
         public void AddTo(Piece newPiece)
         {
-            Console.WriteLine(newPiece._loc.ToString());
             _pieceBoard.Add(newPiece._loc.ToString(), newPiece);
         }
 

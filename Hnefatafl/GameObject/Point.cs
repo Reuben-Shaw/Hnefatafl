@@ -1,4 +1,6 @@
 using Microsoft.Xna.Framework;
+using static System.Convert;
+
 namespace Hnefatafl
 {
     public class HPoint
@@ -18,9 +20,16 @@ namespace Hnefatafl
             Y = point.Y;
         }
 
+        public HPoint(string point)
+        {
+            string[] pointSplit = point.Split(",");
+            X = ToInt32(pointSplit[0]);
+            Y = ToInt32(pointSplit[1]);
+        }
+
         public override string ToString()
         {
-            return "" + X + Y;
+            return "" + X + "," + Y;
         }
     }
 }

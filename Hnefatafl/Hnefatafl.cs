@@ -7,6 +7,7 @@ using Lidgren.Network;
 using System.Diagnostics;
 using System.Collections.Generic;
 using static Hnefatafl.PieceType;
+using static Hnefatafl.Player.InstructType;
 
 namespace Hnefatafl
 {
@@ -123,11 +124,19 @@ namespace Hnefatafl
                         );
                     if (_player._board.IsPieceSelected())
                     {
-                        _player._board.MakeMove(point);
+                        if (_player._board.MakeMove(point))
+                        {
+                            _player.SendMessage(MOVE.ToString() + point.ToString());
+                        }
+                        else
+                        {
+                            _player.SendMessage(MOVEFAIL.ToString());
+                        }
                     }
                     else
                     {
                         _player._board.SelectPiece(point);
+                        _player.SendMessage(SELECT.ToString() + point.ToString());
                     }
                 }
             }

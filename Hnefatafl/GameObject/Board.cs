@@ -19,6 +19,7 @@ namespace Hnefatafl
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         private Pieces _pieces = new Pieces();
         public int _boardSize;
+        private HPoint _selectedPiece = new HPoint(-1, -1);
 
         public Board(GraphicsDeviceManager graphics, ContentManager Content, Color[] colours, int boardSize, BoardTypes boardType)
         {
@@ -85,12 +86,55 @@ namespace Hnefatafl
             }
         }
 
-        private int TileSizeX(Rectangle viewPort)
+        public void SelectPiece(HPoint select)
+        {
+            if (_pieces.GetPiece(select.ToString())._pawn._type != Empty)
+            {
+                _selectedPiece = select;
+            }
+            else
+            {
+                _selectedPiece = new HPoint(-1, -1);
+            }
+        }
+
+        public void MakeMove(HPoint move)
+        {
+            string key = move.ToString();
+
+            if ((move.X >= 0 && move.X < _boardSize) && (move.Y >= 0 && move.Y < _boardSize))
+            {
+                if (_pieces.GetPiece(key)._pawn._type == Empty && (move.X == _selectedPiece.X || move.Y == _selectedPiece.Y))
+                {
+                    _pieces.AddTo(new Piece(_pieces.GetPiece(_selectedPiece.ToString())._pawn, move));
+                    _pieces.GetPiece(key)._loc = move;
+                    _pieces.RemoveFrom(_selectedPiece.ToString());
+
+                    CaptureLogic(move);
+                }
+            }
+            _selectedPiece = new HPoint(-1, -1);
+        }
+
+        public bool IsPieceSelected()
+        {
+            if (_selectedPiece.X != -1)
+                return true;
+            else
+                return false;
+        }
+
+        public void CaptureLogic(HPoint loc)
+        {
+            //if ()
+        }
+
+        public int TileSizeX(Rectangle viewPort)
         {
             return viewPort.Width / 30;
         }
         
-        private int TileSizeY(Rectangle viewPort)
+        public int TileSizeY(Rectangle viewPort)
         {
             return viewPort.Width / 30;
         }

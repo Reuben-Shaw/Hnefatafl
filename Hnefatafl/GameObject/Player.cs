@@ -5,9 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Hnefatafl;
 using Lidgren.Network;
-using static Hnefatafl.PieceType;
 
 
 namespace Hnefatafl
@@ -26,7 +24,7 @@ namespace Hnefatafl
 
         private NetPeerConfiguration CreateConfig()
         {
-            return new NetPeerConfiguration("Hnefatafl"); 
+            return new NetPeerConfiguration("Hnefatafl");
         }
 
         private void CreateClient()

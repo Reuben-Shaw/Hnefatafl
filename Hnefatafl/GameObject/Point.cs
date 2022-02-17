@@ -20,6 +20,12 @@ namespace Hnefatafl
             Y = point.Y;
         }
 
+        public HPoint(string x, string y)
+        {
+            X = ToInt32(x);
+            Y = ToInt32(y);
+        }
+
         public HPoint(string point)
         {
             string[] pointSplit = point.Split(",");

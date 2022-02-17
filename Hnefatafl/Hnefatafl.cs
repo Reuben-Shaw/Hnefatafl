@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Threading;
 using Lidgren.Network;
 using System.Diagnostics;
 using System.Collections.Generic;
@@ -75,15 +76,6 @@ namespace Hnefatafl
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            if (Keyboard.GetState().IsKeyDown(Keys.R) != previousKeyboard.IsKeyDown(Keys.R))
-            {
-                previousKeyboard = Keyboard.GetState();
-                if (Keyboard.GetState().IsKeyDown(Keys.R))
-                {
-                    _player.SendMessage("hey");
-                }
-            }
-
             if (Keyboard.GetState().IsKeyDown(Keys.E) != previousKeyboard.IsKeyDown(Keys.E))
             {
                 previousKeyboard = Keyboard.GetState();
@@ -115,7 +107,7 @@ namespace Hnefatafl
             if (Mouse.GetState().LeftButton != previousMouse.LeftButton)
             {
                 previousMouse = Mouse.GetState();
-                if (previousMouse.LeftButton == ButtonState.Pressed)
+                if (previousMouse.LeftButton == ButtonState.Pressed && _player._currentTurn == true)
                 {
                     Point mouseLoc = new Point(previousMouse.Position.X, previousMouse.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2);
                     HPoint point = new HPoint(
@@ -124,9 +116,9 @@ namespace Hnefatafl
                         );
                     if (_player._board.IsPieceSelected())
                     {
-                        if (_player._board.MakeMove(point))
+                        if (_player._board.MakeMove(point, _player._side, false))
                         {
-                            _player.SendMessage(MOVE.ToString() + point.ToString());
+                            _player.SendMessage(MOVE.ToString() + "," + point.ToString());
                         }
                         else
                         {
@@ -136,27 +128,19 @@ namespace Hnefatafl
                     else
                     {
                         _player._board.SelectPiece(point);
-                        _player.SendMessage(SELECT.ToString() + point.ToString());
+                        _player.SendMessage(SELECT.ToString() + "," + point.ToString());
                     }
                 }
             }
-            
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
 
-        public static bool testBool = false;
         protected override void Draw(GameTime gameTime)
         {
-            if (!testBool)
-            {
-                GraphicsDevice.Clear(Color.LightGray);
-            }
-            else
-            {
-                GraphicsDevice.Clear(Color.Red);
-            }
+           
+            GraphicsDevice.Clear(Color.LightGray);
+            
             _spriteBatch.Begin();
 
             _player._board.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);

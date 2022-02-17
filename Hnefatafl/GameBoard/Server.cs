@@ -4,7 +4,7 @@ using Lidgren.Network;
 
 namespace Hnefatafl
 {
-    class Server
+    sealed class Server
     {
         private NetServer _server;
         private List<NetPeer> _clients; 
@@ -33,6 +33,11 @@ namespace Hnefatafl
             Console.WriteLine("Server closed");
         }
 
+        public int ConnectionAmount()
+        {
+            return _clients.Count;
+        }
+
         public void ReadMessages()
         {
             NetIncomingMessage message;
@@ -55,6 +60,10 @@ namespace Hnefatafl
                         if (message.SenderConnection.Status == NetConnectionStatus.Connected && _clients.Count < 2)
                         {
                             _clients.Add(message.SenderConnection.Peer);
+                            if (_clients.Count == 2)
+                            {
+                                _server.SendMessage(_server.CreateMessage("false"), _server.Connections[1], NetDeliveryMethod.ReliableOrdered, 0);
+                            }
                             Console.WriteLine("{0} has connected.", message.SenderConnection.Peer.Configuration.LocalAddress);
                         }
                         else if (_clients.Count >= 2)

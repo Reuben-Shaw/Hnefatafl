@@ -10,12 +10,15 @@ using Lidgren.Network;
 
 namespace Hnefatafl
 {
-    public sealed class Player
+    sealed class Player
     {
         public enum InstructType { SELECT, MOVE, MOVEFAIL }
+        public enum SideType { Attackers, Defenders }
         public Board _board;
         private bool _connected;
         private NetClient _client;
+        public bool _currentTurn = true;
+        public SideType _side = SideType.Attackers;
 
         public Player(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
         {
@@ -56,27 +59,39 @@ namespace Hnefatafl
                 {
                     string msg = message.ReadString();
                     Console.WriteLine(msg);
-                    if (msg == "hey")
+                    string[] msgDiv = msg.Split(",");
+                    
+                    if (msgDiv[0] == "SELECT")
                     {
-                        Hnefatafl.testBool = true;
+                        _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
                     }
-                    else if (msg.Length > 6)
+                    else if (msgDiv[0] == "MOVE")
                     {
-                        if (msg.Substring(0, 6) == "SELECT")
-                        {
-                            _board.SelectPiece(new HPoint(msg.Substring(6, msg.Length - 6)));
-                        }
-                        else if (msg.Substring(0, 4) == "MOVE")
-                        {
-                            _board.MakeMove(new HPoint(msg.Substring(4, msg.Length - 4)));
-                        }
-                        else if (msg == "MOVEFAIL")
-                        {
-                            _board.SelectPiece(new HPoint(-1, -1));
-                        }
+                        _currentTurn = !_currentTurn;
+                        _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                    }
+                    else if (msgDiv[0] == "MOVEFAIL")
+                    {
+                        _board.SelectPiece(new HPoint(-1, -1));
+                    }
+                    else if (IsBool(msgDiv[0]))
+                    {
+                        Console.WriteLine("here");
+                        _currentTurn = Convert.ToBoolean(msgDiv[0]);
+                        if (_currentTurn == false)
+                            _side = SideType.Defenders;
                     }
                 }
             }
+        }
+
+        public bool IsBool(string boolChk)
+        {
+            if (boolChk.ToLower() == "true")
+                return true;
+            else if (boolChk.ToLower() == "false")
+                return true;
+            return false;
         }
 
         public void EstablishConnection(string ip, int port)

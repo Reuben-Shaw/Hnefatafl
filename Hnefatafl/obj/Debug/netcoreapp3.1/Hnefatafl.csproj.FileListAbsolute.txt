@@ -25,3 +25,4 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp3.1\Hnefataf
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\king.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\pawnD.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\pawnE.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Lidgren.Network.dll

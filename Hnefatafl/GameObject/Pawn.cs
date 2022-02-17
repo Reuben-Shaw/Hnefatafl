@@ -84,7 +84,7 @@ namespace Hnefatafl
                                 _pieceBoard.Add(x.ToString() + y.ToString(), new Piece(new Pawn(King), new Point(x, y))); }
                             else if (y == 0 || y == boardSize - 1) {
                                 _pieceBoard.Add(x.ToString() + y.ToString(), new Piece(new Pawn(Attacker), new Point(x, y))); }
-                            else if ((y > 3 && y < boardSize - 4) && (x > 3 && x < 7)){
+                            else if ((y > 3 && y < boardSize - 4) && (x > 3 && x < 7)) {
                                 _pieceBoard.Add(x.ToString() + y.ToString(), new Piece(new Pawn(Defender), new Point(x, y))); }
                             else if ((y == 1 || y == boardSize - 2) && x == boardSize / 2) {
                                 _pieceBoard.Add(x.ToString() + y.ToString(), new Piece(new Pawn(Attacker), new Point(x, y))); }

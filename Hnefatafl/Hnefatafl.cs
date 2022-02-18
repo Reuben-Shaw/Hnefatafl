@@ -160,6 +160,19 @@ namespace Hnefatafl
                     startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
                     break;
                 }
+                case GameState.ServerMenu:
+                {
+                    break;
+                }
+                case GameState.InGame:
+                {
+                    _player._board.CreatBoard();
+                    break;
+                }
+                case GameState.EscMenu:
+                {
+                    break;
+                }
             }
 
             for (int i = 0; i < buttonText.Count; i++)
@@ -307,14 +320,14 @@ namespace Hnefatafl
             
             _spriteBatch.Begin();
 
-            foreach (Button button in _button)
-            {
-                button.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
-            }
-
             if (_gameState == GameState.InGame || _gameState == GameState.EscMenu)
             {
                 _player._board.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
+            }
+
+            foreach (Button button in _button)
+            {
+                button.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
             }
 
             _spriteBatch.End();

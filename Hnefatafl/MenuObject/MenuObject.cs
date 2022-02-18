@@ -79,7 +79,7 @@ namespace Hnefatafl
             _font = Content.Load<SpriteFont>("MainFont");
             Vector2 fontSize = _font.MeasureString(_text);
             _textPos = new Vector2((_size.X - fontSize.X) / 2 + _pos.X, (_size.Y - fontSize.Y) / 2 + _pos.Y);
-            CeateTextures(graphics, Color.Black, Color.Red);
+            CeateTextures(graphics, Color.DarkGray, Color.Gray);
         }
 
         private void CeateTextures(GraphicsDeviceManager graphics, Color selectColour, Color regularColour)

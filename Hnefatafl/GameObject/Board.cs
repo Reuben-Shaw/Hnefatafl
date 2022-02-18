@@ -33,8 +33,12 @@ namespace Hnefatafl
         {
             CreateColours(graphics, new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24)});
             CreatePawns(graphics, Content);
-            _pieces.CreateBoard(boardSize, BoardTypes.Regular);
             _boardSize = boardSize;
+        }
+
+        public void CreatBoard()
+        {
+            _pieces.CreateBoard(_boardSize, BoardTypes.Regular);
         }
 
         private void CreateColours(GraphicsDeviceManager graphics, Color[] colours)

@@ -107,7 +107,7 @@ namespace Hnefatafl
             if (Mouse.GetState().LeftButton != previousMouse.LeftButton)
             {
                 previousMouse = Mouse.GetState();
-                if (previousMouse.LeftButton == ButtonState.Pressed && _player._currentTurn == true)
+                if (previousMouse.LeftButton == ButtonState.Pressed && (_player._currentTurn == true || _server.ConnectionAmount() == 1))
                 {
                     Point mouseLoc = new Point(previousMouse.Position.X, previousMouse.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2);
                     HPoint point = new HPoint(
@@ -116,7 +116,17 @@ namespace Hnefatafl
                         );
                     if (_player._board.IsPieceSelected())
                     {
-                        if (_player._board.MakeMove(point, _player._side, false))
+                        bool makeMove;
+                        if (_server is not null)
+                        {
+                            makeMove  = _player._board.MakeMove(point, _player._side, _server.ConnectionAmount() == 1);
+                        }
+                        else
+                        {
+                            makeMove  = _player._board.MakeMove(point, _player._side, true);
+                        }
+
+                        if (makeMove == true)
                         {
                             _player.SendMessage(MOVE.ToString() + "," + point.ToString());
                         }

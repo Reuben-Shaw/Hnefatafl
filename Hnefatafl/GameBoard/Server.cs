@@ -29,8 +29,7 @@ namespace Hnefatafl
         public void StopServer()
         {
             _clients.Clear();
-            _server.Shutdown("bye");
-            Console.WriteLine("Server closed");
+            _server.Shutdown("Server closed");
         }
 
         public int ConnectionAmount()
@@ -47,15 +46,24 @@ namespace Hnefatafl
                 switch (message.MessageType)
                 {
                     case NetIncomingMessageType.Data:
+                        //Recieved messages
                         {
-                            var data = message.ReadString();
-                            _server.SendMessage(_server.CreateMessage(data), _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
+                            string data = message.ReadString();
+                            if (_server.Connections[0] == message.SenderConnection && _clients.Count == 2)
+                            {
+                                _server.SendMessage(_server.CreateMessage(data), _server.Connections[1], NetDeliveryMethod.ReliableOrdered, 0);
+                            }
+                            else if (_clients.Count == 2)
+                            {
+                                _server.SendMessage(_server.CreateMessage(data), _server.Connections[0], NetDeliveryMethod.ReliableOrdered, 0);
+                            }
                             break;
                         }
                     case NetIncomingMessageType.DebugMessage:
                         Console.WriteLine(message.ReadString());
                         break;
                     case NetIncomingMessageType.StatusChanged:
+                        //Connections
                         Console.WriteLine(message.SenderConnection.Status);
                         if (message.SenderConnection.Status == NetConnectionStatus.Connected && _clients.Count < 2)
                         {

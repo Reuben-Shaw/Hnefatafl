@@ -196,10 +196,7 @@ namespace Hnefatafl
             {
                 return true;
             }
-            else
-            {
-                return false;
-            }
+            return false;
         }
 
         private bool ClearanceCheck(int x, int y)
@@ -254,8 +251,7 @@ namespace Hnefatafl
         {
             if (pieceChk != King)
             {
-                if ((pieceMoved != pieceChk && !((pieceMoved == Defender && pieceChk == King) || (pieceMoved == King && pieceChk == Defender))) && 
-                    (pieceMoved == pieceAhead || (pieceMoved == Defender && pieceAhead == King) || (pieceMoved == King && pieceAhead == Defender)))
+                if (!SameSide(pieceMoved, pieceChk) && SameSide(pieceMoved, pieceAhead))
                 {
                     _pieces.RemoveFrom(locChk.ToString());
                 }
@@ -278,7 +274,7 @@ namespace Hnefatafl
                 int surrounding = 0;
                 for (int i = 0; i < pieceAdditional.Length; i++)
                 {
-                    if (pieceAdditional[i] == Attacker)
+                    if (pieceAdditional[i] != Empty && !SameSide(pieceChk, pieceAdditional[i]))
                     {
                         surrounding++;
                     }
@@ -288,6 +284,17 @@ namespace Hnefatafl
                     _pieces.RemoveFrom(locChk.ToString());
                 }
             }
+        }
+
+        private bool SameSide(PieceType pieceChk1, PieceType pieceChk2)
+        {
+            if (pieceChk1 == pieceChk2)
+                return true;
+            else if ((pieceChk1 == King || pieceChk2 == King) && (pieceChk1 == Defender || pieceChk2 == Defender))
+                return true;
+            else if (pieceChk1 == Corner || pieceChk1 == Throne || pieceChk2 == Corner || pieceChk2 == Throne)
+                return true;
+            return false;
         }
 
         public int TileSizeX(Rectangle viewPort)

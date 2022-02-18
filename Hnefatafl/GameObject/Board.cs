@@ -131,8 +131,7 @@ namespace Hnefatafl
         public bool MakeMove(HPoint move, Player.SideType side, bool doOverride)
         {
             string key = move.ToString();
-
-            if ((move.X >= 0 && move.X < _boardSize) && (move.Y >= 0 && move.Y < _boardSize))
+            if (move.ToString() != _selectedPiece.ToString() && ((move.X >= 0 && move.X < _boardSize) && (move.Y >= 0 && move.Y < _boardSize)))
             {
                 if (doOverride || PlayerSidePiece(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type, side))
                 {

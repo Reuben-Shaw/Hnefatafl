@@ -17,7 +17,7 @@ namespace Hnefatafl
         public enum InstructType { SELECT, MOVE, MOVEFAIL }
         public enum SideType { Attackers, Defenders }
         public Board _board;
-        private bool _connected;
+        public bool _connected;
         private NetClient _client;
         public bool _currentTurn = true;
         public SideType _side = SideType.Attackers;

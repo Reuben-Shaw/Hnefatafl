@@ -77,6 +77,8 @@ namespace Hnefatafl
         public void Update(GraphicsDeviceManager graphics, ContentManager Content)
         {
             _font = Content.Load<SpriteFont>("MainFont");
+            Vector2 fontSize = _font.MeasureString(_text);
+            _textPos = new Vector2((_size.X - fontSize.X) / 2 + _pos.X, (_size.Y - fontSize.Y) / 2 + _pos.Y);
             CeateTextures(graphics, Color.Black, Color.Red);
         }
 
@@ -93,12 +95,6 @@ namespace Hnefatafl
         {
             Rectangle rect= new Rectangle(_pos, _size);
             
-            if (_textPos == new Vector2(-1, -1))
-            {
-                Vector2 fontSize = _font.MeasureString(_text);
-                _textPos = new Vector2((_size.X - fontSize.X) / 2, (rect.Height / 4));
-            }
-
             if (_status == Unselected)
             {
                 spriteBatch.Draw(_backColour, rect, Color.White);

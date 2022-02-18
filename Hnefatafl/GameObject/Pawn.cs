@@ -103,6 +103,7 @@ namespace Hnefatafl
 
         public void CreateBoard(int boardSize, BoardTypes type)
         {
+            _pieceBoard.Clear();
             if (type == BoardTypes.Regular)
             {
                 HPoint point;

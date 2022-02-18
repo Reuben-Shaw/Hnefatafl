@@ -18,6 +18,7 @@ namespace Hnefatafl
         private SpriteBatch _spriteBatch;
         private Player _player;
         private Server _server; 
+        private List<Button> _button = new List<Button>();
 
         public Hnefatafl()
         {
@@ -44,6 +45,8 @@ namespace Hnefatafl
             }
 
             _player = new Player(_graphics, Content, 11);
+            _button.Add(new Button(new Point(0, 0), new Point(100, 50), "Longer"));
+            _button[0].Update(_graphics, Content);
             
             base.Initialize();
         }
@@ -104,17 +107,41 @@ namespace Hnefatafl
                 }
             } 
 
-            if (Mouse.GetState().LeftButton != previousMouse.LeftButton)
+            
+            MouseState currentState = Mouse.GetState();
+            if (currentState.LeftButton != previousMouse.LeftButton)
             {
-                previousMouse = Mouse.GetState();
-                if (previousMouse.LeftButton == ButtonState.Pressed && (_player._currentTurn == true || _player._connected == false))
+                Point mouseLoc = new Point(currentState.Position.X, currentState.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2);
+            
+                bool buttonReached = false;
+                foreach (Button button in _button)
                 {
-                    Console.WriteLine(_player._currentTurn);
-                    Point mouseLoc = new Point(previousMouse.Position.X, previousMouse.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2);
+                    if (new Rectangle(button._pos, button._size).Contains(mouseLoc))
+                    {
+                        if (previousMouse.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
+                        {
+                            button._status = MenuObject.Status.Selected;
+                            buttonReached = false;
+                        }
+                        else if (previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
+                        {
+                            button._status = MenuObject.Status.Unselected;
+                            buttonReached = false;
+                        }
+                    }
+                    else if (button._status == MenuObject.Status.Selected)
+                    {
+                        button._status = MenuObject.Status.Unselected;
+                    }
+                }
+                
+                if (!buttonReached && currentState.LeftButton == ButtonState.Pressed && (_player._currentTurn == true || _player._connected == false))
+                {
                     HPoint point = new HPoint(
                         (mouseLoc.X - (GraphicsDevice.Viewport.Bounds.Width / 2) - ((_player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) * 11) / 2)) / _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) + 10,
                         (mouseLoc.Y - (GraphicsDevice.Viewport.Bounds.Width / 2) - ((_player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 11) / 2)) / _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) + 17
                         );
+                    
                     if (_player._board.IsPieceSelected())
                     {
                         if (_player._board.MakeMove(point, _player._side, !_player._connected))
@@ -132,7 +159,9 @@ namespace Hnefatafl
                         _player._board.SelectPiece(point);
                         _player.SendMessage(SELECT.ToString() + "," + point.ToString());
                     }
-                }
+                }   
+
+                previousMouse = Mouse.GetState();
             }
 
             base.Update(gameTime);
@@ -144,6 +173,11 @@ namespace Hnefatafl
             GraphicsDevice.Clear(Color.LightGray);
             
             _spriteBatch.Begin();
+
+            foreach (Button button in _button)
+            {
+                button.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
+            }
 
             _player._board.Draw(gameTime, _spriteBatch, GraphicsDevice.Viewport.Bounds);
 

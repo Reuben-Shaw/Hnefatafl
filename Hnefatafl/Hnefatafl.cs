@@ -92,7 +92,7 @@ namespace Hnefatafl
             _player.CheckMessage();
 
             MouseState currentState = Mouse.GetState();
-            Point mouseLoc = new Point(currentState.Position.X, currentState.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2);
+            Point mouseLoc = new Point(currentState.Position.X + 10, currentState.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2 + 17);
 
             switch (_gameState)
             {
@@ -140,6 +140,8 @@ namespace Hnefatafl
             List<string> buttonText = new List<string>();
             Point startLoc = new Point(0, 0);
 
+            bool menu = false;
+
             switch (_gameState)
             {
                 case GameState.MainMenu:
@@ -149,15 +151,17 @@ namespace Hnefatafl
                     buttonText.Add("Options");
                     buttonText.Add("Exit");
                     startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
+                    menu = true;
                     break;
                 }
                 case GameState.MultiplayerMenu:
                 {
                     buttonText.Add("Server");
-                    buttonText.Add("Client");
+                    buttonText.Add("Connect");
                     buttonText.Add("Shutdown");
                     buttonText.Add("Back");
                     startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
+                    menu = true;
                     break;
                 }
                 case GameState.ServerMenu:
@@ -166,19 +170,33 @@ namespace Hnefatafl
                 }
                 case GameState.InGame:
                 {
+                    buttonText.Add("Back");
+                    startLoc = new Point(viewPorts.Width / 30, viewPorts.Height - buttonSize.Y - viewPorts.Width / 30);
                     _player._board.CreatBoard();
                     break;
                 }
                 case GameState.EscMenu:
                 {
+                    menu = true;
                     break;
                 }
             }
 
-            for (int i = 0; i < buttonText.Count; i++)
+            if (menu)
             {
-                _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * i) / 2)), buttonSize, buttonText[i]));
-                _button[i].Update(_graphics, Content);
+                for (int i = 0; i < buttonText.Count; i++)
+                {
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * i) / 2)), buttonSize, buttonText[i]));
+                    _button[i].Update(_graphics, Content);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < buttonText.Count; i++)
+                {
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * i) / 2)), buttonSize, buttonText[i]));
+                    _button[i].Update(_graphics, Content);
+                }
             }
         }
 
@@ -225,7 +243,7 @@ namespace Hnefatafl
                     }
                     break;
                 }
-                case "client":
+                case "connect":
                 {
                     _player.EstablishConnection();
                     _gameState = GameState.InGame;
@@ -237,6 +255,7 @@ namespace Hnefatafl
                     {
                         _server.StopServer();
                     }
+                    
                     break;
                 }
                 case "back":
@@ -256,7 +275,18 @@ namespace Hnefatafl
         {
             if (currentState.LeftButton != previousMouse.LeftButton)
             {
-                if (currentState.LeftButton == ButtonState.Pressed && (_player._currentTurn == true || _player._connected == false))
+                string selected = ButtonCheck(currentState, mouseLoc).ToLower();
+
+                if (selected == "back")
+                {
+                    _gameState = GameState.MainMenu;
+                    if (_player._connected)
+                    {
+                        _player.Disconnect();
+                    }
+                }
+
+                if (selected == "" && currentState.LeftButton == ButtonState.Pressed && (_player._currentTurn == true || _player._connected == false))
                 {
                     HPoint point = new HPoint(
                         (mouseLoc.X - (GraphicsDevice.Viewport.Bounds.Width / 2) - ((_player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) + 10,
@@ -298,7 +328,7 @@ namespace Hnefatafl
                         {
                             button._status = Selected;
                         }
-                        else if (previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
+                        else if (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
                         {
                             button._status = Unselected;
                             text = button._text;

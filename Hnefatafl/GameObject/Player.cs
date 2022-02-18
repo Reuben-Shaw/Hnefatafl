@@ -115,5 +115,11 @@ namespace Hnefatafl
             _client.Connect("localhost", 14242);
             _connected = true;
         }
+
+        public void Disconnect()
+        {
+            _client.Disconnect("Manual Disconnect");
+            _connected = false;
+        }
     }
 }

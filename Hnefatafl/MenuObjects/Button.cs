@@ -1,40 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using static Hnefatafl.MenuObject.Status;
 
 namespace Hnefatafl
 {
-    abstract class MenuObject
-    {
-        public enum Status { Selected, Unselected, Hovering }
-        
-        protected Status m_status;
-        public virtual Status _status
-        {
-            get
-            {
-                return m_status;
-            }
-            set
-            {
-                m_status = value;
-            }
-        }
-
-        public Point _pos { get; set; }
-        public Point _size { get; set; }
-        public string _text { get; set; }
-        protected Vector2 _textPos { get; set; }
-        protected SpriteFont _font;
-        protected Texture2D _backColour { get; set; }
-        protected Color _fontColour { get; set; }
-    }
-
     sealed class Button : MenuObject
     {
         private Texture2D _selectBackColour { get; set; }
@@ -105,27 +75,6 @@ namespace Hnefatafl
                 spriteBatch.Draw(_selectBackColour, rect, Color.White);
                 spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour);
             }
-        }
-    }
-
-    class TextBox : MenuObject
-    {
-        private char _addChar;
-
-        public TextBox(Point position, Point size)
-        {
-            _pos = position;
-            _size = size;
-            _status = Unselected;
-            _text = "";
-        }
-        
-        public TextBox(Point position, Point size, string text)
-        {
-            _pos = position;
-            _size = size;
-            _status = Unselected;
-            _text = text;
         }
     }
 }

@@ -1,16 +1,11 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
-using System;
 using System.Collections;
-using System.Collections.Generic;
+using System;
 using static Hnefatafl.PieceType;
-
 
 namespace Hnefatafl
 {
-    public enum PieceType { Empty = -1, Attacker = 0, Defender = 1, King = 2 };
-    public sealed class Pawn
+    public enum PieceType { Empty = -1, Attacker = 0, Defender = 1, King = 2, Throne = -2, Corner = -3 };
+    sealed class Pawn
     {
         public PieceType _type { get; set; }
 
@@ -35,7 +30,7 @@ namespace Hnefatafl
         }
     }
     
-    public sealed class Piece
+    sealed class Piece
     {
         public Pawn _pawn { get; set; }
         public HPoint _loc  { get; set; }
@@ -51,9 +46,14 @@ namespace Hnefatafl
             _pawn = pawn;
             _loc = new HPoint(-1, -1);
         }
+
+        public override string ToString()
+        {
+            return _pawn + " " + _loc.ToString();
+        }
     }
 
-    public sealed class Pieces
+    sealed class Pieces
     {
         private Hashtable _pieceBoard;
 
@@ -65,6 +65,11 @@ namespace Hnefatafl
         public void AddTo(Piece newPiece)
         {
             _pieceBoard.Add(newPiece._loc.ToString(), newPiece);
+        }
+
+        public void Replace(Piece replacePiece)
+        {
+            _pieceBoard[replacePiece._loc.ToString()] = replacePiece;
         }
 
         public void RemoveFrom(string key)
@@ -107,7 +112,11 @@ namespace Hnefatafl
                     {
                         point = new HPoint(x, y);
 
-                        if (x > 2 && x < 8)
+                        if ((x == 0 || x == boardSize - 1) && (y == 0 || y == boardSize - 1))
+                        {
+                            _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Corner), point)); 
+                        }
+                        else if (x > 2 && x < 8)
                         {
                             if (x == boardSize / 2 && y == boardSize / 2) {
                                 _pieceBoard.Add(point.ToString(), new Piece(new Pawn(King), point)); }
@@ -134,5 +143,4 @@ namespace Hnefatafl
             }
         }
     }
-
 }

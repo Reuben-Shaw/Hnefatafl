@@ -7,15 +7,20 @@ using System.Collections;
 using System.Collections.Generic;
 using Lidgren.Network;
 
+using static Hnefatafl.Player.InstructType;
+
 
 namespace Hnefatafl
 {
-    public sealed class Player
+    sealed class Player
     {
         public enum InstructType { SELECT, MOVE, MOVEFAIL }
+        public enum SideType { Attackers, Defenders }
         public Board _board;
         private bool _connected;
         private NetClient _client;
+        public bool _currentTurn = true;
+        public SideType _side = SideType.Attackers;
 
         public Player(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
         {
@@ -54,29 +59,43 @@ namespace Hnefatafl
 
                 if ((message = _client.ReadMessage()) != null)
                 {
-                    string msg = message.ReadString();
-                    Console.WriteLine(msg);
-                    if (msg == "hey")
+                    if (message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
                     {
-                        Hnefatafl.testBool = true;
-                    }
-                    else if (msg.Length > 6)
-                    {
-                        if (msg.Substring(0, 6) == "SELECT")
+                        string msg = message.ReadString();
+                        Console.WriteLine(msg);
+                        string[] msgDiv = msg.Split(",");
+                        
+                        if (msgDiv[0] == SELECT.ToString())
                         {
-                            _board.SelectPiece(new HPoint(msg.Substring(6, msg.Length - 6)));
+                            _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
                         }
-                        else if (msg.Substring(0, 4) == "MOVE")
+                        else if (msgDiv[0] == MOVE.ToString())
                         {
-                            _board.MakeMove(new HPoint(msg.Substring(4, msg.Length - 4)));
+                            _currentTurn = !_currentTurn;
+                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
                         }
-                        else if (msg == "MOVEFAIL")
+                        else if (msgDiv[0] == MOVEFAIL.ToString())
                         {
                             _board.SelectPiece(new HPoint(-1, -1));
+                        }
+                        else if (IsBool(msgDiv[0]))
+                        {
+                            _currentTurn = Convert.ToBoolean(msgDiv[0]);
+                            if (_currentTurn == false)
+                                _side = SideType.Defenders;
                         }
                     }
                 }
             }
+        }
+
+        public bool IsBool(string boolChk)
+        {
+            if (boolChk.ToLower() == "true")
+                return true;
+            else if (boolChk.ToLower() == "false")
+                return true;
+            return false;
         }
 
         public void EstablishConnection(string ip, int port)

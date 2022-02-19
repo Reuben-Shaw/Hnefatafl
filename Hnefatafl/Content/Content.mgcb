@@ -25,6 +25,13 @@
 /processorParam:TextureFormat=Color
 /build:king.png
 
+#begin MainFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:MainFont.spritefont
+
 #begin pawnD.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -48,4 +55,19 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:pawnE.png
+
+#begin PixelFont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=False
+/processorParam:TextureFormat=NoChange
+/build:PixelFont.spritefont
+
+#begin testfont.png
+/importer:TextureImporter
+/processor:FontTextureProcessor
+/processorParam:FirstCharacter= 
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Color
+/build:testfont.png
 

@@ -310,7 +310,11 @@ namespace Hnefatafl
             {
                 case "connect":
                 {
-                    Console.WriteLine(_textbox[0]._text);
+                    if (_textbox[0]._text != "" && _textbox[1]._text != "")
+                    {
+                        _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
+                        _gameState = GameState.InGame;
+                    }
                     break;
                 }
                 case "back":

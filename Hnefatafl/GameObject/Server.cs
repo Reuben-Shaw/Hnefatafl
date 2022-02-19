@@ -11,7 +11,8 @@ namespace Hnefatafl
 
         public void StartServer()
         {
-            var config = new NetPeerConfiguration("Hnefatafl") { Port = 14242 };
+            NetPeerConfiguration config = new NetPeerConfiguration("Hnefatafl") { Port = 14242 };
+            config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             _server = new NetServer(config);
             _server.Start();
 

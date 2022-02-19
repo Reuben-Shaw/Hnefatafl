@@ -46,9 +46,10 @@ namespace Hnefatafl
 
         public void Update(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _font = Content.Load<SpriteFont>("MainFont");
+            _font = Content.Load<SpriteFont>("PixelFont");
             Vector2 fontSize = _font.MeasureString(_text);
-            _textPos = new Vector2((_size.X - fontSize.X) / 2 + _pos.X, (_size.Y - fontSize.Y) / 2 + _pos.Y);
+            //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
+            _textPos = new Vector2((int)((_size.X - fontSize.X) / 2) + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);
             CeateTextures(graphics, Color.DarkGray, Color.Gray);
         }
 
@@ -68,12 +69,14 @@ namespace Hnefatafl
             if (_status == Unselected)
             {
                 spriteBatch.Draw(_backColour, rect, Color.White);
-                spriteBatch.DrawString(_font, _text, _textPos, _fontColour);
+                //spriteBatch.DrawString(_font, _text, _textPos, _fontColour);
+                spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
             }
             else if (_status == Selected)
             {
                 spriteBatch.Draw(_selectBackColour, rect, Color.White);
-                spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour);
+                //spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour);
+                spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
             }
         }
     }

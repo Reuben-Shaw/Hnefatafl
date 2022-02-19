@@ -1,4 +1,7 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
-"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/king.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/king.xnb","TextureProcessor","Texture2DContent",488,16469,0.1146251
-"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/pawnD.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/pawnD.xnb","TextureProcessor","Texture2DContent",434,16469,0.0019271
-"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/pawnE.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/pawnE.xnb","TextureProcessor","Texture2DContent",439,16469,0.0018124
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/king.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/king.xnb","TextureProcessor","Texture2DContent",488,16469,0.1083602
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/MainFont.spritefont","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/MainFont.xnb","FontDescriptionProcessor","SpriteFontContent",2008,267298,0.1646852
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/pawnD.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/pawnD.xnb","TextureProcessor","Texture2DContent",434,16469,0.0018125
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/pawnE.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/pawnE.xnb","TextureProcessor","Texture2DContent",439,16469,0.0020923
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/PixelFont.spritefont","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/PixelFont.xnb","FontDescriptionProcessor","SpriteFontContent",2015,115746,0.1619749
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/testfont.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/testfont.xnb","FontTextureProcessor","SpriteFontContent",58374,562210,0.1509523

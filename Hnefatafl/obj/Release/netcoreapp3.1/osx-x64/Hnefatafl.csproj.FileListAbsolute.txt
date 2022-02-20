@@ -206,3 +206,6 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\osx-x6
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\osx-x64\Hnefatafl.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\osx-x64\Hnefatafl.pdb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\osx-x64\Hnefatafl.genruntimeconfig.cache
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\Content\MainFont.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\Content\PixelFont.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\Content\testfont.xnb

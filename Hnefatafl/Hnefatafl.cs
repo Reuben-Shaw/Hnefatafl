@@ -92,6 +92,11 @@ namespace Hnefatafl
             
             _player.CheckMessage();
 
+            if (_gameState != GameState.InGame && _gameState != GameState.EscMenu && _player.IsConnected())
+            {
+                _gameState = GameState.InGame;
+            }
+
             MouseState currentMouseState = Mouse.GetState();
             KeyboardState currentKeyboardState = Keyboard.GetState();
             Point mouseLoc = new Point(currentMouseState.Position.X + 10, currentMouseState.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2 + 17);
@@ -175,7 +180,7 @@ namespace Hnefatafl
                 case GameState.MainMenu:
                 {
                     buttonText.Add("MULTIPLAYER");
-                    buttonText.Add("SINGLEPLAYER");
+                    buttonText.Add("LOCAL CO-OP");
                     buttonText.Add("OPTIONS");
                     buttonText.Add("EXIT");
                     startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
@@ -248,7 +253,7 @@ namespace Hnefatafl
                     _gameState = GameState.MultiplayerMenu;
                     break;
                 }
-                case "singleplayer":
+                case "local co-op":
                 {
                     _gameState = GameState.InGame;
                     break;
@@ -276,7 +281,8 @@ namespace Hnefatafl
                     if (_server is null)
                     {
                         _server = new Server();
-                        _server.StartServer();
+                        _server.StartServer(14242);
+                        _player.EstablishConnection();
                     }
                     break;
                 }
@@ -313,8 +319,6 @@ namespace Hnefatafl
                     if (_textbox[0]._text != "" && _textbox[1]._text != "")
                     {
                         _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
-                        
-                        _gameState = GameState.InGame;
                     }
                     break;
                 }
@@ -335,13 +339,18 @@ namespace Hnefatafl
                 if (selected == "back")
                 {
                     _gameState = GameState.MainMenu;
-                    if (_player._connected)
+                    if (_player.IsConnected())
                     {
                         _player.Disconnect();
                     }
+
+                    if (_server is not null)
+                    {
+                        _server.StopServer();
+                    }
                 }
 
-                if (selected == "" && currentState.LeftButton == ButtonState.Pressed && (_player._currentTurn == true || _player._connected == false))
+                if (selected == "" && currentState.LeftButton == ButtonState.Pressed && (_player._currentTurn || !_player.IsConnected()))
                 {
                     HPoint point = new HPoint(
                         (mouseLoc.X - (GraphicsDevice.Viewport.Bounds.Width / 2) - ((_player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) + 10,
@@ -350,7 +359,7 @@ namespace Hnefatafl
                     
                     if (_player._board.IsPieceSelected())
                     {
-                        if (_player._board.MakeMove(point, _player._side, !_player._connected))
+                        if (_player._board.MakeMove(point, _player._side, !_player.IsConnected()))
                         {
                             _player.SendMessage(MOVE.ToString() + "," + point.ToString());
                             _player._currentTurn = false;
@@ -408,6 +417,10 @@ namespace Hnefatafl
                             textbox._status = Selected;
                         }
                     }
+                    else if (previousMouse.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
+                    {
+                        textbox._status = Unselected;
+                    }
                 }
             }
 
@@ -418,10 +431,7 @@ namespace Hnefatafl
         {
             GraphicsDevice.Clear(Color.LightGray);
             
-            _spriteBatch.Begin(SpriteSortMode.Deferred,
-            BlendState.AlphaBlend,
-            SamplerState.PointClamp,
-            null, null, null, null);
+            _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
 
             Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
 

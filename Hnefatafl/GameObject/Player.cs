@@ -17,7 +17,6 @@ namespace Hnefatafl
         public enum InstructType { SELECT, MOVE, MOVEFAIL }
         public enum SideType { Attackers, Defenders }
         public Board _board;
-        public bool _connected;
         private NetClient _client;
         public bool _currentTurn = true;
         public SideType _side = SideType.Attackers;
@@ -40,9 +39,17 @@ namespace Hnefatafl
             _client.Start();
         }
 
+        public bool IsConnected()
+        {
+            if (_client.ConnectionStatus == NetConnectionStatus.Connected)
+                return true;
+            else
+                return false;
+        }
+
         public bool SendMessage(string message)
         {
-            if (_connected)
+            if (IsConnected())
             {
                 _client.SendMessage(_client.CreateMessage(message), NetDeliveryMethod.ReliableOrdered);
                 _client.FlushSendQueue();
@@ -53,37 +60,34 @@ namespace Hnefatafl
 
         public void CheckMessage()
         {
-            if (_connected)
-            {
-                NetIncomingMessage message;
+            NetIncomingMessage message = _client.ReadMessage();
 
-                if ((message = _client.ReadMessage()) != null)
+            if (message != null)
+            {
+                if (message.SenderConnection != null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
                 {
-                    if (message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
+                    string msg = message.ReadString();
+                    Console.WriteLine(msg);
+                    string[] msgDiv = msg.Split(",");
+                    
+                    if (msgDiv[0] == SELECT.ToString())
                     {
-                        string msg = message.ReadString();
-                        Console.WriteLine(msg);
-                        string[] msgDiv = msg.Split(",");
-                        
-                        if (msgDiv[0] == SELECT.ToString())
-                        {
-                            _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
-                        }
-                        else if (msgDiv[0] == MOVE.ToString())
-                        {
-                            _currentTurn = !_currentTurn;
-                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
-                        }
-                        else if (msgDiv[0] == MOVEFAIL.ToString())
-                        {
-                            _board.SelectPiece(new HPoint(-1, -1));
-                        }
-                        else if (IsBool(msgDiv[0]))
-                        {
-                            _currentTurn = Convert.ToBoolean(msgDiv[0]);
-                            if (_currentTurn == false)
-                                _side = SideType.Defenders;
-                        }
+                        _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
+                    }
+                    else if (msgDiv[0] == MOVE.ToString())
+                    {
+                        _currentTurn = !_currentTurn;
+                        _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                    }
+                    else if (msgDiv[0] == MOVEFAIL.ToString())
+                    {
+                        _board.SelectPiece(new HPoint(-1, -1));
+                    }
+                    else if (IsBool(msgDiv[0]))
+                    {
+                        _currentTurn = Convert.ToBoolean(msgDiv[0]);
+                        if (_currentTurn == false)
+                            _side = SideType.Defenders;
                     }
                 }
             }
@@ -101,25 +105,21 @@ namespace Hnefatafl
         public void EstablishConnection(string ip, int port)
         {
             _client.Connect(ip, port);
-            _connected = true;
         }
 
         public void EstablishConnection(string ip)
         {
             _client.Connect(ip, 14242);
-            _connected = true;
         }
 
         public void EstablishConnection()
         {
             _client.Connect("localhost", 14242);
-            _connected = true;
         }
 
         public void Disconnect()
         {
             _client.Disconnect("Manual Disconnect");
-            _connected = false;
         }
     }
 }

@@ -72,19 +72,25 @@ namespace Hnefatafl
         {
             string keyString = key.ToString().ToLower();
             
-            if (keyString.Length == 2)
+            if (keyString.Length == 1)
+            {
+                _text += keyString;
+            }
+            else if (keyString.Length == 2)
             {
                 keyString = keyString.TrimStart('d');
+                _text += keyString;
             }
             else if (keyString.Length > 5 && keyString.Substring(0, 6) == "numpad")
             {
                 keyString = keyString.Substring(6, 1);
+                _text += keyString;
             }
-            else if (keyString == "oemperiod")
+            else if (keyString == "oemperiod" || keyString == "decimal")
             {
                 keyString = ".";
+                _text += keyString;
             }
-            _text += keyString;
         }
 
         public void Add(string addChar)

@@ -1,7 +1,10 @@
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Hnefatafl
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Content/king.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Content/MainFont.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Content/pawnD.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Content/pawnE.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Content/PixelFont.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Content/testfont.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Hnefatafl.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Hnefatafl.deps.json
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\osx-x64\publish\Hnefatafl.runtimeconfig.json

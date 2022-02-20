@@ -9,9 +9,9 @@ namespace Hnefatafl
         private NetServer _server;
         private List<NetPeer> _clients; 
 
-        public void StartServer()
+        public void StartServer(int port)
         {
-            NetPeerConfiguration config = new NetPeerConfiguration("Hnefatafl") { Port = 14242 };
+            NetPeerConfiguration config = new NetPeerConfiguration("Hnefatafl") { Port = port };
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             _server = new NetServer(config);
             _server.Start();
@@ -50,6 +50,7 @@ namespace Hnefatafl
                         //Recieved messages
                         {
                             string data = message.ReadString();
+
                             if (_server.Connections[0] == message.SenderConnection && _clients.Count == 2)
                             {
                                 _server.SendMessage(_server.CreateMessage(data), _server.Connections[1], NetDeliveryMethod.ReliableOrdered, 0);
@@ -73,6 +74,10 @@ namespace Hnefatafl
                             {
                                 _server.SendMessage(_server.CreateMessage("false"), _server.Connections[1], NetDeliveryMethod.ReliableOrdered, 0);
                             }
+                            else
+                            {
+                                _server.SendMessage(_server.CreateMessage("true"), _server.Connections[0], NetDeliveryMethod.ReliableOrdered, 0);
+                            } 
                             Console.WriteLine("{0} has connected.", message.SenderConnection.Peer.Configuration.LocalAddress);
                         }
                         else if (_clients.Count >= 2)

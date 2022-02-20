@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿#undef DEBUG
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -47,24 +47,24 @@ namespace Hnefatafl
         const bool _doFull = false;
         protected override void Initialize()
         {
-            if (!_doFull)
-            {
-                _graphics.PreferredBackBufferWidth = 960;
-                _graphics.PreferredBackBufferHeight = 540;
-                _graphics.ApplyChanges();
-            }
-            else
-            {
-                _graphics.PreferredBackBufferWidth = 1920;
-                _graphics.PreferredBackBufferHeight = 1080;
-                _graphics.IsFullScreen = true;
-                _graphics.ApplyChanges();
-            }
+            _graphics.PreferredBackBufferWidth = 960;
+            _graphics.PreferredBackBufferHeight = 540;
+            FullScreen();
+            _graphics.ApplyChanges();
+            
 
             _player = new Player(_graphics, Content, 11);
             _gameState = GameState.MainMenu;
             
             base.Initialize();
+        }
+
+        [Conditional("DEBUG")]
+        private void FullScreen()
+        {
+                _graphics.PreferredBackBufferWidth = 1920;
+                _graphics.PreferredBackBufferHeight = 1080;
+                _graphics.IsFullScreen = true;
         }
 
         protected override void LoadContent()
@@ -99,7 +99,8 @@ namespace Hnefatafl
 
             MouseState currentMouseState = Mouse.GetState();
             KeyboardState currentKeyboardState = Keyboard.GetState();
-            Point mouseLoc = new Point(currentMouseState.Position.X + 10, currentMouseState.Position.Y - _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) / 2 + 17);
+            Point mouseLoc = new Point(currentMouseState.Position.X, currentMouseState.Position.Y);
+            
 
             switch (_gameState)
             {
@@ -335,6 +336,7 @@ namespace Hnefatafl
             if (currentState.LeftButton != previousMouse.LeftButton)
             {
                 string selected = ButtonCheck(currentState, mouseLoc).ToLower();
+                Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
 
                 if (selected == "back")
                 {
@@ -353,8 +355,8 @@ namespace Hnefatafl
                 if (selected == "" && currentState.LeftButton == ButtonState.Pressed && (_player._currentTurn || !_player.IsConnected()))
                 {
                     HPoint point = new HPoint(
-                        (mouseLoc.X - (GraphicsDevice.Viewport.Bounds.Width / 2) - ((_player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) + 10,
-                        (mouseLoc.Y - (GraphicsDevice.Viewport.Bounds.Width / 2) - ((_player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * _player._board._boardSize) / 2)) / _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) + 17
+                        (mouseLoc.X - (viewPort.Width / 2) + ((_player._board.TileSizeX(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(viewPort),
+                        (mouseLoc.Y - (viewPort.Height / 2) + ((_player._board.TileSizeY(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeY(viewPort)
                         );
                     
                     if (_player._board.IsPieceSelected())

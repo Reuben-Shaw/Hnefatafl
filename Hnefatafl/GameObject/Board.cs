@@ -56,24 +56,41 @@ namespace Hnefatafl
             _pawnTexture[1] = Content.Load<Texture2D>("pawnD");
             _pawnTexture[2] = Content.Load<Texture2D>("king");
 
-            Color[] userColour = new Color[]{ new Color(255, 0, 0), new Color(0, 0, 255),  new Color(0, 0, 255) };
+            Color[] userColour = new Color[]{ new Color(255, 76, 74), new Color(54, 56, 255),  new Color(54, 56, 255) };
             Color[] data;
 
-
+            Texture2D alphaBlend;
             for (int i = 0; i < _pawnTexture.Length; i++)
             {
                 data = new Color[_pawnTexture[i].Width * _pawnTexture[i].Height];
                 _pawnTexture[i].GetData<Color>(data);
-
-                for (int j = 0; j < data.Length; j++)
+                try
                 {
-                    if (data[j] != Color.Transparent && data[j] != Color.Black)
+                    alphaBlend = Content.Load<Texture2D>(_pawnTexture[i].Name + "_a");
+                    Color[] alphaBlendArray = new Color[alphaBlend.Width * alphaBlend.Height];
+                    alphaBlend.GetData<Color>(alphaBlendArray);
+
+                    for (int j = 0; j < data.Length; j++)
                     {
-                        data[j] = new Color((byte)(data[j].R * (userColour[i].R / 255)), (byte)(data[j].G * (userColour[i].G / 255)), (byte)(data[j].B  * (userColour[i].B / 255)));
+                        if (alphaBlendArray[j] == Color.Black && data[j] != Color.Transparent && data[j] != Color.Black)
+                        {
+                            data[j] = new Color((byte)((float)(data[j].R / 255f) * userColour[i].R), (byte)((float)(data[j].G / 255f) * userColour[i].G), (byte)((float)(data[j].B / 255f) * userColour[i].B));
+                        }
+                    }
+                }
+                catch (System.Exception)
+                {
+                    for (int j = 0; j < data.Length; j++)
+                    {
+                        if (data[j] != Color.Transparent && data[j] != Color.Black)
+                        {
+                            data[j] = new Color((byte)((float)(data[j].R / 255f) * userColour[i].R), (byte)((float)(data[j].G / 255f) * userColour[i].G), (byte)((float)(data[j].B / 255f) * userColour[i].B));
+                        }
                     }
                 }
 
                 _pawnTexture[i].SetData<Color>(data);
+                alphaBlend = null;
             }
         }
 

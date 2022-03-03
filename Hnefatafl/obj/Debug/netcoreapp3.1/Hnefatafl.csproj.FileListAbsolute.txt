@@ -31,3 +31,4 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\OpenHandCursor.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\pawnD.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\king_a.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\noThrone.xnb

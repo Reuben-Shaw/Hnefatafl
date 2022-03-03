@@ -7,6 +7,7 @@
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/king.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/king_a.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/MainFont.spritefont</File>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/noThrone.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/OpenHandCursor.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/pawnD.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/pawnE.png</File>
@@ -14,6 +15,7 @@
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/testfont.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

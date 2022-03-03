@@ -3,12 +3,14 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Threading;
-using Lidgren.Network;
 using System.Diagnostics;
 using System.Collections.Generic;
+using Lidgren.Network;
 using static Hnefatafl.MenuObject.Status;
 using static Hnefatafl.Player.InstructType;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Hnefatafl
 {
@@ -21,7 +23,7 @@ namespace Hnefatafl
         private List<Button> _button = new List<Button>();
         private List<TextBox> _textbox = new List<TextBox>();
 
-        private enum GameState { MainMenu, MultiplayerMenu, ServerMenu, InGame, EscMenu };
+        private enum GameState { MainMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
         private GameState m_gameState;
         private GameState _gameState
         {
@@ -62,9 +64,9 @@ namespace Hnefatafl
         [Conditional("DEBUG")]
         private void FullScreen()
         {
-                _graphics.PreferredBackBufferWidth = 1920;
-                _graphics.PreferredBackBufferHeight = 1080;
-                _graphics.IsFullScreen = true;
+            _graphics.PreferredBackBufferWidth = 1920;
+            _graphics.PreferredBackBufferHeight = 1080;
+            _graphics.IsFullScreen = true;
         }
 
         protected override void LoadContent()
@@ -117,6 +119,11 @@ namespace Hnefatafl
                 case GameState.ServerMenu:
                 {
                     ServerMenu(gameTime, currentMouseState, mouseLoc);
+                    break;
+                }
+                case GameState.GameSetup:
+                {
+                    GameSetup(gameTime, currentMouseState, mouseLoc);
                     break;
                 }
                 case GameState.InGame:
@@ -205,6 +212,13 @@ namespace Hnefatafl
                     startLoc = new Point(viewPorts.Width / 2 - textboxSize.X / 2, textboxSize.Y * 2);
                     break;
                 }
+                case GameState.GameSetup:
+                {
+                    buttonText.Add("noThrone");
+                    buttonSize = new Point(viewPorts.Width / 30 * 2, viewPorts.Width / 30 * 2);
+                    startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
+                    break;
+                }
                 case GameState.InGame:
                 {
                     buttonText.Add("BACK");
@@ -238,6 +252,14 @@ namespace Hnefatafl
                 for (int i = textboxText.Count; i < buttonText.Count + textboxText.Count; i++)
                 {
                     _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * (i - textboxText.Count)) / 2)), buttonSize, buttonText[(i - textboxText.Count)]));
+                    _button[(i - textboxText.Count)].Update(_graphics, Content);
+                }
+            }
+            else if (_gameState == GameState.GameSetup)
+            {
+                for (int i = textboxText.Count; i < buttonText.Count + textboxText.Count; i++)
+                {
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * (i - textboxText.Count)) / 2)), buttonSize, Content.Load<Texture2D>(_button[i]._text), buttonText[(i - textboxText.Count)]));
                     _button[(i - textboxText.Count)].Update(_graphics, Content);
                 }
             }
@@ -285,6 +307,7 @@ namespace Hnefatafl
                         _server.StartServer(14242);
                         _player.EstablishConnection();
                     }
+                    //_gameState = GameState.GameSetup;
                     break;
                 }
                 case "connect":
@@ -329,6 +352,11 @@ namespace Hnefatafl
                     break;
                 }
             }
+        }
+
+        private void GameSetup(GameTime gameTime, MouseState currentState, Point mouseLoc)
+        {
+
         }
 
         private void InGame(GameTime gameTime, MouseState currentState, Point mouseLoc)

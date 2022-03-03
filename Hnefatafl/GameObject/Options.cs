@@ -29,7 +29,7 @@ namespace Hnefatafl
 
         public ServerOptions()
         {
-            _playerTurn = PlayerTurn.HostDefender;
+            _playerTurn = PlayerTurn.HostAttacker;
             _throneOp = ThroneOp.King;
             _kingOp = KingOp.Armed;
             _sandwichMovementOp = SandwichMovementOp.Enabled;

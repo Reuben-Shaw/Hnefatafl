@@ -8,9 +8,6 @@ using System.Collections.Generic;
 using Lidgren.Network;
 using static Hnefatafl.MenuObject.Status;
 using static Hnefatafl.Player.InstructType;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Hnefatafl
 {
@@ -97,6 +94,33 @@ namespace Hnefatafl
             if (_gameState != GameState.InGame && _gameState != GameState.EscMenu && _player.IsConnected())
             {
                 _gameState = GameState.InGame;
+                
+                if (_server is not null)
+                {
+                    if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.HostAttacker)
+                    {
+                        _player._currentTurn = true;
+                        _player._side = Player.SideType.Attackers;
+                    }
+                    else
+                    {
+                        _player._currentTurn = false;
+                        _player._side = Player.SideType.Defenders;
+                    }
+                }
+                else
+                {
+                    if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.HostAttacker)
+                    {
+                        _player._currentTurn = false;
+                        _player._side = Player.SideType.Defenders;
+                    }
+                    else
+                    {
+                        _player._currentTurn = true;
+                        _player._side = Player.SideType.Attackers;
+                    }
+                }
             }
 
             MouseState currentMouseState = Mouse.GetState();

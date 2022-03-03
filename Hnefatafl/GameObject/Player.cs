@@ -6,8 +6,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml;
 using System.Xml.Serialization;
 using Lidgren.Network;
@@ -67,16 +65,17 @@ namespace Hnefatafl
 
         public void SendOptions()
         {
-            byte[] opByte;
-            IFormatter bFormatter = new BinaryFormatter();
-            using (MemoryStream stream = new MemoryStream())
-            {
-                bFormatter.Serialize(stream, _board._serverOp);
-                opByte = stream.ToArray();
-            }
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(ServerOptions));
             NetOutgoingMessage outMsg = _client.CreateMessage();
-            outMsg.Write(opByte.Length);
-            outMsg.Write(opByte);
+
+            using(StringWriter writerS = new StringWriter())
+            {
+                using(XmlWriter writerX = XmlWriter.Create(writerS))
+                {
+                    xsSubmit.Serialize(writerX, _board._serverOp);
+                    outMsg.Write(writerS.ToString());
+                }
+            }
             _client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
@@ -85,11 +84,12 @@ namespace Hnefatafl
         {
             NetIncomingMessage message = _client.ReadMessage();
             
-                if (message != null)
+                if (message is not null)
                 {
                     if (message.SenderConnection != null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
                     {
                         string msg = message.ReadString();
+                        Console.WriteLine(msg);
                         string[] msgDiv = msg.Split(",");
                         TEST++;
                         
@@ -115,26 +115,12 @@ namespace Hnefatafl
                         else if (TEST == 3)
                         {
                             _board._serverOp = OptionsXmlDeserialise(msg);
-                            Console.WriteLine("Server rules:\n" + _board._serverOp.ToString());
+                            //Console.WriteLine("Server rules:\n" + _board._serverOp.ToString());
                         }
                     }
                 }
             
         }
-
-        // private ServerOptions ByteArrayToObject(byte[] array)
-        // {
-        //     MemoryStream s = new MemoryStream(array);
-        //     BinaryFormatter b = new BinaryFormatter();
-        //     s.Position = 0;
-        //     for (int i = 0; i < array.Length; i++)
-        //     {
-        //         Console.WriteLine("A: " + array[i]);
-        //     }
-        //     s.Write(array, 0, array.Length);
-        //     s.Seek(0, SeekOrigin.Begin);
-        //     return (ServerOptions) b.Deserialize(s);
-        // }
 
         private ServerOptions OptionsXmlDeserialise(string xml)
         {
@@ -147,15 +133,6 @@ namespace Hnefatafl
             {
                 return (ServerOptions) serializer.Deserialize(reader);
             }
-        }
-
-        public bool IsBool(string boolChk)
-        {
-            if (boolChk.ToLower() == "true")
-                return true;
-            else if (boolChk.ToLower() == "false")
-                return true;
-            return false;
         }
 
         public void EstablishConnection(string ip, int port)

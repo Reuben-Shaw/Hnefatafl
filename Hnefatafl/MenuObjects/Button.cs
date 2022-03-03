@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
 using static Hnefatafl.MenuObject.Status;
+using System;
 
 namespace Hnefatafl
 {
@@ -9,6 +10,7 @@ namespace Hnefatafl
     {
         private Texture2D _selectBackColour { get; set; }
         private Color _selectFontColour { get; set; }
+        private Texture2D _image { get; set; }
 
         public override Status _status
         {
@@ -44,6 +46,18 @@ namespace Hnefatafl
             _textPos = new Vector2(-1, -1);
         }
 
+        public Button(Point position, Point size, Texture2D image, string text)
+        {
+            _pos = position;
+            _size = size;
+            _status = Unselected;
+            _text = text;
+            _fontColour = Color.Black;
+            _selectFontColour = Color.Blue;
+            _textPos = new Vector2(-1, -1);
+            _image = image;
+        }
+
         public void Update(GraphicsDeviceManager graphics, ContentManager Content)
         {
             _font = Content.Load<SpriteFont>("PixelFont");
@@ -66,17 +80,25 @@ namespace Hnefatafl
         {
             Rectangle rect= new Rectangle(_pos, _size);
             
-            if (_status == Unselected)
+            if (_image is null)
             {
-                spriteBatch.Draw(_backColour, rect, Color.White);
-                //spriteBatch.DrawString(_font, _text, _textPos, _fontColour);
-                spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                if (_status == Unselected)
+                {
+                    spriteBatch.Draw(_backColour, rect, Color.White);
+                    spriteBatch.DrawString(_font, _text, _textPos, _fontColour);
+                    //spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                }
+                else if (_status == Selected)
+                {
+                    spriteBatch.Draw(_selectBackColour, rect, Color.White);
+                    spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour);
+                    //spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                }
             }
-            else if (_status == Selected)
+            else
             {
-                spriteBatch.Draw(_selectBackColour, rect, Color.White);
-                //spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour);
-                spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                spriteBatch.Draw(_selectBackColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
+                spriteBatch.Draw(_image, rect, Color.White);
             }
         }
     }

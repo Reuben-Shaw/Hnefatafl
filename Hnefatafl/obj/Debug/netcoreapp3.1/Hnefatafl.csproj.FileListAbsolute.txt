@@ -23,9 +23,12 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp3.1\Hnefataf
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp3.1\Hnefatafl.pdb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\netcoreapp3.1\Hnefatafl.genruntimeconfig.cache
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\king.xnb
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\pawnD.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\pawnE.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Lidgren.Network.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\MainFont.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\testfont.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\PixelFont.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\OpenHandCursor.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\pawnD.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\king_a.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\noThrone.xnb

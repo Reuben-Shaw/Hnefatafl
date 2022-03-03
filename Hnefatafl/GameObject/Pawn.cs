@@ -5,7 +5,7 @@ using static Hnefatafl.PieceType;
 namespace Hnefatafl
 {
     public enum PieceType { Empty = -1, Attacker = 0, Defender = 1, King = 2, Throne = -2, Corner = -3 };
-    sealed class Pawn
+    struct Pawn
     {
         public PieceType _type { get; set; }
 

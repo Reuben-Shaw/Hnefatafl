@@ -1,8 +1,10 @@
 using Microsoft.Xna.Framework;
 using static System.Convert;
+using System;
 
 namespace Hnefatafl
 {
+    [Serializable]
     public class HPoint
     {
         public int X { get; set; }

@@ -6,20 +6,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Hnefatafl;
+using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
 
 
 namespace Hnefatafl
 {
     public enum BoardTypes { Regular }
+
     sealed class Board
     {
         private readonly Texture2D[] _boardColours = new Texture2D[6];
         //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
+        //0: Attacker, 1: Defender, 2: King
         private Pieces _pieces = new Pieces();
+        //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
+        //9 or 11 depending on the users options
         private HPoint _selectedPiece = new HPoint(-1, -1);
+        //Stores the current user selected piece, -1, -1 as expected is used as a null storing value
+        public ServerOptions _serverOp;
 
         public Board(GraphicsDeviceManager graphics, ContentManager Content, Color[] colours, int boardSize, BoardTypes boardType)
         {
@@ -38,11 +45,13 @@ namespace Hnefatafl
 
         public void CreatBoard()
         {
-            _pieces.CreateBoard(_boardSize, BoardTypes.Regular);
+            _serverOp = new ServerOptions(); //Defines the options, currently empty as it will default to automatic options
+            _pieces.CreateBoard(_boardSize, BoardTypes.Regular); //Responsible entirely for the creation of the pieces on the board, Board.cs doesn't contain any logic relating to this at all
         }
 
         private void CreateColours(GraphicsDeviceManager graphics, Color[] colours)
         {
+            //Creates the Texture2Ds that are used to draw the board from the user selected colours
             for (int i = 0; i < _boardColours.Length; i++)
             {
                 _boardColours[i] = new Texture2D(graphics.GraphicsDevice, 1, 1);
@@ -52,32 +61,55 @@ namespace Hnefatafl
 
         private void CreatePawns(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _pawnTexture[0] = Content.Load<Texture2D>("pawnE");
+            _pawnTexture[0] = Content.Load<Texture2D>("pawnE"); //Loading is passed by reference seemingly, this means that all sprites have to be different files to prevent the latter one being the colour of all of them, luckily I planned to do this from the start
             _pawnTexture[1] = Content.Load<Texture2D>("pawnD");
             _pawnTexture[2] = Content.Load<Texture2D>("king");
 
-            Color[] userColour = new Color[]{ new Color(255, 0, 0), new Color(0, 0, 255),  new Color(0, 0, 255) };
-            Color[] data;
+            Color[] userColour = new Color[]{ new Color(255, 76, 74), new Color(54, 56, 255),  new Color(54, 56, 255) }; //Pawn colours, currently hard set
+            Color[] data; //Used to store a colour bitmap of the image, to be later applied once the new texture has been created in colour
 
-
+            Texture2D alphaBlend; //Used to store an alpha channel that allows colours on a texture, such as the king's crown, to be drawn as the colour in the image file and not colour shifted
             for (int i = 0; i < _pawnTexture.Length; i++)
             {
-                data = new Color[_pawnTexture[i].Width * _pawnTexture[i].Height];
-                _pawnTexture[i].GetData<Color>(data);
+                data = new Color[_pawnTexture[i].Width * _pawnTexture[i].Height]; //Sets data to the size of the sprite
+                _pawnTexture[i].GetData<Color>(data); //Makes data contain a colour bitmap of the sprite
+                try //Implementation of try catch due to the loading of the alphablend may fail causing the program to crash, in which case it loads as normal
+                {   //I also believe this is faster than doing it with a check as it prevents and additional 1000 or so if checks and actually makes the alphablend loader faster
+                    alphaBlend = Content.Load<Texture2D>(_pawnTexture[i].Name + "_a"); //_a is the appendage used to identify a texture it as an alpha layer 
+                    Color[] alphaBlendArray = new Color[alphaBlend.Width * alphaBlend.Height];
+                    alphaBlend.GetData<Color>(alphaBlendArray);
 
-                for (int j = 0; j < data.Length; j++)
-                {
-                    if (data[j] != Color.Transparent && data[j] != Color.Black)
+                    for (int j = 0; j < data.Length; j++)
                     {
-                        data[j] = new Color((byte)(data[j].R * (userColour[i].R / 255)), (byte)(data[j].G * (userColour[i].G / 255)), (byte)(data[j].B  * (userColour[i].B / 255)));
+                        if (alphaBlendArray[j] == Color.Black && data[j] != Color.Transparent && data[j] != Color.Black) 
+                        {
+                            data[j] = new Color((byte)((float)(data[j].R / 255f) * userColour[i].R), //Equation used to shift colour, 255f is important to facilitate float division otherwise it just does integer and then floats the value
+                                                (byte)((float)(data[j].G / 255f) * userColour[i].G), 
+                                                (byte)((float)(data[j].B / 255f) * userColour[i].B));
+                        }
+                    }
+
+                    alphaBlend.Dispose(); //Disposing of alphablend to save memory like a good boy
+                }
+                catch (System.Exception)
+                {
+                    //Repeated loop as prior, but without the alphablend check, despite repeated code I still believe this to be the fastest way, CPU wise
+                    for (int j = 0; j < data.Length; j++)
+                    {
+                        if (data[j] != Color.Transparent && data[j] != Color.Black)
+                        {
+                            data[j] = new Color((byte)((float)(data[j].R / 255f) * userColour[i].R), 
+                                                (byte)((float)(data[j].G / 255f) * userColour[i].G), 
+                                                (byte)((float)(data[j].B / 255f) * userColour[i].B));
+                        }
                     }
                 }
 
-                _pawnTexture[i].SetData<Color>(data);
+                _pawnTexture[i].SetData<Color>(data); //This line actually modifies the texture to assign it the new colouring
             }
         }
 
-        public void UnloadContent()
+        public void UnloadContent() //Standard texture unloading, called from the main UnloadContent
         {
             for (int i = 0; i < _boardColours.Length; i++)
             {
@@ -90,31 +122,32 @@ namespace Hnefatafl
             }
         }
 
-        private bool DefendersRemain()
+        private bool DefendersRemain() //Used for reference when deciding if a three attacker takedown on a king is doable
         {
-            foreach (DictionaryEntry s in _pieces.AllPieces())
+            foreach (DictionaryEntry entry in _pieces.AllPieces())
             {
-                Piece piece = s.Value as Piece;
+                Piece piece = entry.Value as Piece; //Converts the DictionaryEntry into a Piece, as it will always be a Piece
                 if (piece._pawn._type == Defender)
-                    return true;
+                    return true; //Foreach loop effectively converted into a while, I believe it's more efficient than using non-linear searches combined with sorting
             }
             return false;
         }
 
-        private bool AttackersRemain()
+        private bool AttackersRemain() //Currently unused, but it will be used for victory conditions eventually
         {
-            foreach (DictionaryEntry s in _pieces.AllPieces())
+            foreach (DictionaryEntry entry in _pieces.AllPieces())
             {
-                Piece piece = s.Value as Piece;
+                Piece piece = entry.Value as Piece;
                 if (piece._pawn._type == Attacker)
                     return true;
             }
             return false;
         }
 
-        public void SelectPiece(HPoint select)
+        public void SelectPiece(HPoint select) //Used for selecting a piece, doesn't use PlayerSidePiece as it's used for the server selecting enemies as well
         {
-            if (_pieces.GetPiece(select.ToString())._pawn._type != Empty)
+            PieceType pawnChk = _pieces.GetPiece(select.ToString())._pawn._type;
+            if (pawnChk != Empty && pawnChk != Throne && pawnChk != Corner)
             {
                 _selectedPiece = select;
             }
@@ -124,7 +157,7 @@ namespace Hnefatafl
             }
         }
 
-        public bool IsPieceSelected()
+        public bool IsPieceSelected() //Used in the main update loop to assertain if a click is to move or select
         {
             if (_selectedPiece.X != -1)
                 return true;
@@ -132,21 +165,22 @@ namespace Hnefatafl
                 return false;
         }
 
-        public bool MakeMove(HPoint move, Player.SideType side, bool doOverride)
+        public bool MakeMove(HPoint move, Player.SideType side, bool doOverride) //Logic used to perform a move, and check if it is possible
+        //Is a bool so it can return true if a move succeeds or false if it fails
+        //doOveride is used for multiplayer to tell the game that despite being the wrong side that the move has to go through anyway
         {
             string key = move.ToString();
-            if (move.ToString() != _selectedPiece.ToString() && ((move.X >= 0 && move.X < _boardSize) && (move.Y >= 0 && move.Y < _boardSize)))
+            if (key != _selectedPiece.ToString() && ((move.X >= 0 && move.X < _boardSize) && (move.Y >= 0 && move.Y < _boardSize)))
             {
                 if (doOverride || PlayerSidePiece(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type, side))
                 {
                     if ((move.X == _selectedPiece.X || move.Y == _selectedPiece.Y) && ClearanceCheck(move.X, move.Y))
                     {
-
                         _pieces.AddTo(new Piece(_pieces.GetPiece(_selectedPiece.ToString())._pawn, move));
                         _pieces.GetPiece(key)._loc = move;
 
                         int b = _boardSize / 2;
-                        if (_selectedPiece.ToString() != b + "," + b)
+                        if (_serverOp._throneOp == ThroneOp.Disabled || _selectedPiece.ToString() != b + "," + b)
                         {
                             _pieces.RemoveFrom(_selectedPiece.ToString());
                         }
@@ -170,26 +204,13 @@ namespace Hnefatafl
                         _selectedPiece = new HPoint(-1, -1);
                         return true;
                     }
-                    else
-                    {
-                        _selectedPiece = new HPoint(-1, -1);
-                        return false;
-                    }
-                }
-                else
-                {
-                    _selectedPiece = new HPoint(-1, -1);
-                    return false;
                 }
             }
-            else
-            {
-                _selectedPiece = new HPoint(-1, -1);
-                return false;
-            }
+            _selectedPiece = new HPoint(-1, -1);
+            return false;
         }
 
-        private bool PlayerSidePiece(PieceType pieceType, Player.SideType side)
+        private bool PlayerSidePiece(PieceType pieceType, Player.SideType side) //Returns if a checked piece is on the same side as the player
         {
             if (side == Player.SideType.Attackers && pieceType == Attacker)
             {
@@ -202,12 +223,12 @@ namespace Hnefatafl
             return false;
         }
 
-        private bool ClearanceCheck(int x, int y)
+        private bool ClearanceCheck(int x, int y) //Used to check if a movement collides with anything on its path
         {
             int start, end;
 
             if (x > _selectedPiece.X)
-            { start = _selectedPiece.X + 1; end = x + 1; }
+            { start = _selectedPiece.X + 1; end = x + 1; } //+1 to account for the piece itself, otherwise it will always fail
             else
             { start = x; end = _selectedPiece.X; }
 
@@ -231,22 +252,22 @@ namespace Hnefatafl
             return true;
         }
 
-        private void CaptureLogic(HPoint loc)
+        private void CaptureLogic(HPoint loc) //Coordination centre piece for CaptureAttempt
         {
             HPoint[] locChk = new HPoint[2] { loc, loc };
             PieceType pieceMoved = _pieces.GetPiece(loc.ToString())._pawn._type;
 
 
-            locChk[0] = new HPoint(loc.X + 1, loc.Y); locChk[1] = new HPoint(loc.X + 2, loc.Y);
+            locChk[0] = new HPoint(loc.X + 1, loc.Y); locChk[1] = new HPoint(loc.X + 2, loc.Y); //Checks right
             CaptureAttempt(locChk[0], loc, pieceMoved, _pieces.GetPiece(locChk[0].ToString())._pawn._type, _pieces.GetPiece(locChk[1].ToString())._pawn._type);
 
-            locChk[0] = new HPoint(loc.X - 1, loc.Y); locChk[1] = new HPoint(loc.X - 2, loc.Y);
+            locChk[0] = new HPoint(loc.X - 1, loc.Y); locChk[1] = new HPoint(loc.X - 2, loc.Y); //Checks left
             CaptureAttempt(locChk[0], loc, pieceMoved, _pieces.GetPiece(locChk[0].ToString())._pawn._type, _pieces.GetPiece(locChk[1].ToString())._pawn._type);
 
-            locChk[0] = new HPoint(loc.X, loc.Y + 1); locChk[1] = new HPoint(loc.X, loc.Y + 2);
+            locChk[0] = new HPoint(loc.X, loc.Y + 1); locChk[1] = new HPoint(loc.X, loc.Y + 2); //Checks above
             CaptureAttempt(locChk[0], loc, pieceMoved, _pieces.GetPiece(locChk[0].ToString())._pawn._type, _pieces.GetPiece(locChk[1].ToString())._pawn._type);
             
-            locChk[0] = new HPoint(loc.X, loc.Y - 1); locChk[1] = new HPoint(loc.X, loc.Y - 2);
+            locChk[0] = new HPoint(loc.X, loc.Y - 1); locChk[1] = new HPoint(loc.X, loc.Y - 2); //Checks below
             CaptureAttempt(locChk[0], loc, pieceMoved, _pieces.GetPiece(locChk[0].ToString())._pawn._type, _pieces.GetPiece(locChk[1].ToString())._pawn._type);
         }
 
@@ -261,20 +282,22 @@ namespace Hnefatafl
             }
             else
             {
-                PieceType[] pieceAdditional;
-                if (locChk.X == loc.X - 1 || locChk.X == loc.X + 1)
+                PieceType[] pieceAdditional; //Used to store the 4 tiles that will be checked for the king capturing
+                if (locChk.X == loc.X - 1 || locChk.X == loc.X + 1) //Checks to see if the already checked squares are left and right of the king
                 {
+                    //If they are get the up and down of the king
                     pieceAdditional = new PieceType[]{_pieces.GetPiece(new HPoint(locChk.X, locChk.Y + 1).ToString())._pawn._type,
-                     _pieces.GetPiece(new HPoint(locChk.X, locChk.Y - 1).ToString())._pawn._type, pieceMoved, pieceAhead};
+                    _pieces.GetPiece(new HPoint(locChk.X, locChk.Y - 1).ToString())._pawn._type, pieceMoved, pieceAhead};
                 }
                 else
                 {
+                    //If not get left and right of the king
                     pieceAdditional = new PieceType[]{_pieces.GetPiece(new HPoint(locChk.X + 1, locChk.Y).ToString())._pawn._type,
-                     _pieces.GetPiece(new HPoint(locChk.X - 1, locChk.Y).ToString())._pawn._type, pieceMoved, pieceAhead};
+                    _pieces.GetPiece(new HPoint(locChk.X - 1, locChk.Y).ToString())._pawn._type, pieceMoved, pieceAhead};
                 }
 
 
-                int surrounding = 0;
+                int surrounding = 0; //Tally for the number of kings
                 for (int i = 0; i < pieceAdditional.Length; i++)
                 {
                     if (pieceAdditional[i] != Empty && !SameSide(pieceChk, pieceAdditional[i]))
@@ -282,35 +305,39 @@ namespace Hnefatafl
                         surrounding++;
                     }
                 }
-                if (surrounding == 4 || (surrounding == 3 && !DefendersRemain() && (locChk.X == 0 || locChk.Y == 0  || locChk.X == _boardSize - 1 || locChk.Y == _boardSize - 1)))
+                if (surrounding == 4 || 
+                    (surrounding == 3 && (_serverOp._kingCaptureOp == KingCaptureOp.JustThree || !DefendersRemain()) && //Checks if either the gamerule on three capturing is true or if the king is only remaining piece
+                    (locChk.X == 0 || locChk.Y == 0  || locChk.X == _boardSize - 1 || locChk.Y == _boardSize - 1))) //Checks if the king is on a bord side to allow 3 person capture
                 {
                     _pieces.RemoveFrom(locChk.ToString());
                 }
             }
         }
 
-        private bool SameSide(PieceType pieceChk1, PieceType pieceChk2)
+        private bool SameSide(PieceType pieceChk1, PieceType pieceChk2) //Checks if two pieces are of the same side, for capture logic
         {
             if (pieceChk1 == pieceChk2)
                 return true;
-            else if ((pieceChk1 == King || pieceChk2 == King) && (pieceChk1 == Defender || pieceChk2 == Defender))
+            else if (((pieceChk1 == King || pieceChk2 == King) && _serverOp._kingOp == KingOp.Armed) && (pieceChk1 == Defender || pieceChk2 == Defender))
                 return true;
-            else if (pieceChk1 == Corner || pieceChk1 == Throne || pieceChk2 == Corner || pieceChk2 == Throne)
+            else if ((pieceChk1 == Corner || pieceChk2 == Corner) && _serverOp._captureOp != CaptureOp.Disabled) //Checks for not Disabled as there are two other variations where it is enabled
+                return true;
+            else if ((pieceChk1 == Throne || pieceChk2 == Throne) && _serverOp._captureOp == CaptureOp.CornerThrone) //Checks for is CornerThrone as it is the only variation where it is enabled
                 return true;
             return false;
         }
 
-        public int TileSizeX(Rectangle viewPort)
+        public int TileSizeX(Rectangle viewPort) //Used to get the tilesize across cs files
         {
             return viewPort.Width / 30;
         }
         
-        public int TileSizeY(Rectangle viewPort)
+        public int TileSizeY(Rectangle viewPort) //May ultimately be redundant, as currently tiles are always the same size on the x and y
         {
             return viewPort.Width / 30;
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort) //Used for drawing the board and the pieces
         {
             Rectangle rect= new Rectangle(
                         (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2), 
@@ -322,9 +349,9 @@ namespace Hnefatafl
             {
                 for (int x = 0; x < _boardSize; x++)
                 {
-                    if ((y == 0 || y == _boardSize - 1) && (x == 0 || x == _boardSize - 1))
+                    if (_serverOp._winOp != WinOp.Side && (y == 0 || y == _boardSize - 1) && (x == 0 || x == _boardSize - 1))
                         spriteBatch.Draw(_boardColours[5], rect, Color.White);
-                    else if (y == (_boardSize - 1) / 2 && x == (_boardSize - 1) / 2)
+                    else if (_serverOp._throneOp != ThroneOp.Disabled && y == (_boardSize - 1) / 2 && x == (_boardSize - 1) / 2)
                         spriteBatch.Draw(_boardColours[4], rect, Color.White);
                     else if (y % 2 == 0)
                         spriteBatch.Draw(_boardColours[x % 2], rect, Color.White);
@@ -332,6 +359,7 @@ namespace Hnefatafl
                         spriteBatch.Draw(_boardColours[0], rect, Color.White);
                     else
                         spriteBatch.Draw(_boardColours[1], rect, Color.White);
+
 
                     iPiece = _pieces.GetPiece(x.ToString() + "," + y.ToString());
                     if ((int)iPiece._pawn._type > -1)

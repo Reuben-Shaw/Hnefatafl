@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/OpenHandCursor.png</SourceFile>
-  <SourceTime>2022-02-20T13:41:20.3459567+00:00</SourceTime>
+  <SourceTime>2022-03-04T20:46:12.2537603+00:00</SourceTime>
   <DestFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Texture/Menu/OpenHandCursor.xnb</DestFile>
-  <DestTime>2022-03-04T16:06:24.0033727+00:00</DestTime>
+  <DestTime>2022-03-04T20:46:21.0403506+00:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

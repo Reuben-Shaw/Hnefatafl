@@ -134,9 +134,6 @@ namespace Hnefatafl
 
         private ServerOptions OptionsXmlDeserialise(string xml)
         {
-            if (xml is null)
-                return null;
-
             XmlSerializer serializer = new XmlSerializer(typeof(ServerOptions));
 
             using (TextReader reader = new StringReader(xml))
@@ -147,17 +144,14 @@ namespace Hnefatafl
 
         public void EstablishConnection(string ip, int port)
         {
-            _client.Connect(ip, port);
-        }
-
-        public void EstablishConnection(string ip)
-        {
-            _client.Connect(ip, 14242);
-        }
-
-        public void EstablishConnection()
-        {
-            _client.Connect("localhost", 14242);
+            try
+            {
+                _client.Connect(ip, port);
+            }
+            catch
+            {
+                Console.WriteLine("Failed to connect");
+            }
         }
 
         public void Disconnect()

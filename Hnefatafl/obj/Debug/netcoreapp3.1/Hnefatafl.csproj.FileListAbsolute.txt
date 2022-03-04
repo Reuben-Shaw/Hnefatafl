@@ -48,3 +48,5 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Pawn\pawnD.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Pawn\pawnE.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Pawn\pawnA.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Menu\CloseHandCursor.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Menu\PointerCursor.xnb

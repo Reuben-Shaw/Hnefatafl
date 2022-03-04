@@ -194,9 +194,10 @@ namespace Hnefatafl
                         _selectedPiece = new HPoint(-1, -1);
                         return true;
                     }
-                    else if ((_pieces.GetPiece(key)._pawn._type == Throne || _pieces.GetPiece(key)._pawn._type == Corner) && _pieces.GetPiece(_selectedPiece.ToString())._pawn._type == King)
+                    else if (((_pieces.GetPiece(key)._pawn._type == Throne || _pieces.GetPiece(key)._pawn._type == Corner) && _pieces.GetPiece(_selectedPiece.ToString())._pawn._type == King) ||
+                            (_serverOp._throneOp == ThroneOp.DefenderKing && _pieces.GetPiece(key)._pawn._type == Throne && _pieces.GetPiece(_selectedPiece.ToString())._pawn._type == Defender))
                     {
-                        _pieces.Replace(new Piece(new Pawn(King), new HPoint(key)));
+                        _pieces.Replace(new Piece(new Pawn(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type), new HPoint(key)));
                         _pieces.RemoveFrom(_selectedPiece.ToString());
 
                         CaptureLogic(move);
@@ -362,7 +363,7 @@ namespace Hnefatafl
 
 
                     iPiece = _pieces.GetPiece(x.ToString() + "," + y.ToString());
-                    if ((int)iPiece._pawn._type > -1)
+                    if ((int)iPiece._pawn._type > -1 && iPiece._loc.ToString() != _selectedPiece.ToString())
                     {
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
                     }
@@ -371,6 +372,11 @@ namespace Hnefatafl
                 }
                 rect.Y +=TileSizeY(viewPort);
                 rect.X = (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2);
+            }
+
+             if (_selectedPiece.X != -1) //Drawn here to allow it to be above the half of the board beneath itself
+            {
+                spriteBatch.Draw(_pawnTexture[(int)_pieces.GetPiece(_selectedPiece.ToString())._pawn._type], new Rectangle(Mouse.GetState().Position, rect.Size), Color.White);
             }
         }
     }

@@ -3,29 +3,29 @@ using System;
 namespace Hnefatafl
 {
     [Serializable] //Must be serilisable in order to transport it across a network
-    public class ServerOptions //Struct as no methods will be needed in here and it will never be invoked like a method, just read from
+    public struct ServerOptions //Struct as no methods will be needed in here and it will never be invoked like a method
     {
         //Made heavy use of enumeration to make code as readable as possible
         public enum PlayerTurn { Attacker = 0, Defender = 1 }
-        public PlayerTurn _playerTurn { get; set; }
+        public PlayerTurn _playerTurn { get; set; } //Works
 
         public enum ThroneOp { Disabled = 0, DefenderKing = 1, King = 2 }
-        public ThroneOp _throneOp { get; set; }
+        public ThroneOp _throneOp { get; set; } //Doesn't work
 
         public enum KingOp { Armed = 0, Unarmed = 1 }
-        public KingOp _kingOp { get; set; }
+        public KingOp _kingOp { get; set; } //Works
 
         public enum SandwichMovementOp { Enabled = 0, Disabled = 1 }
-        public SandwichMovementOp _sandwichMovementOp { get; set; }
+        public SandwichMovementOp _sandwichMovementOp { get; set; } //Doesn't work
 
         public enum CaptureOp { CornerThrone = 0, Corner = 1, Disabled = 2 } //Refers to if certain pieces on the bord can be used to capture pieces
-        public CaptureOp _captureOp { get; set; }
+        public CaptureOp _captureOp { get; set; } //Works
 
         public enum KingCaptureOp { AllDefendersThree = 0, JustThree = 1 } //Refers to if all defenders have to be captured to allow the king to be captured with just three units on the side of the board
-        public KingCaptureOp _kingCaptureOp { get; set; }
+        public KingCaptureOp _kingCaptureOp { get; set; } //Works
 
         public enum WinOp { Side = 0, Corner = 1 }
-        public WinOp _winOp { get; set; }
+        public WinOp _winOp { get; set; } //Doesn't work
 
         public ServerOptions()
         {
@@ -48,7 +48,7 @@ namespace Hnefatafl
             _winOp = WinOp.Corner;
         }
 
-        public override string ToString()
+        public override string ToString() //Pretty debug features, I'm such a dreamy developer
         {
             string msg = "";
 
@@ -77,5 +77,11 @@ namespace Hnefatafl
 
             return msg;
         }
+    }
+
+    [Serializable]
+    public struct UserOptions
+    {
+        
     }
 }

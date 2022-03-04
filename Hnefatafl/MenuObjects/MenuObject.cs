@@ -5,7 +5,7 @@ namespace Hnefatafl
 {
     abstract class MenuObject
     {
-        public enum Status { Selected, Unselected, Hovering }
+        public enum Status { Selected, Unselected, Hovering, Disabled }
         
         protected Status m_status;
         public virtual Status _status

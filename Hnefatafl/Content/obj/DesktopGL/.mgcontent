@@ -7,7 +7,9 @@
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/MainFont.spritefont</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/testfont.png</File>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/CloseHandCursor.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/OpenHandCursor.png</File>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/PointerCursor.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureCorner.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureCornerThrone.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureDisabled.png</File>
@@ -30,6 +32,8 @@
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnE.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

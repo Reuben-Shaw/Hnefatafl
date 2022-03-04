@@ -39,6 +39,18 @@
 /processorParam:TextureFormat=Color
 /build:Texture/Font/testfont.png
 
+#begin Texture/Menu/CloseHandCursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/Menu/CloseHandCursor.png
+
 #begin Texture/Menu/OpenHandCursor.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -50,6 +62,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/Menu/OpenHandCursor.png
+
+#begin Texture/Menu/OpenHandCursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/Menu/OpenHandCursor.png
+
+#begin Texture/Menu/PointerCursor.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/Menu/PointerCursor.png
 
 #begin Texture/OpButton/captureCorner.png
 /importer:TextureImporter

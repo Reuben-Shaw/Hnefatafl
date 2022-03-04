@@ -24,6 +24,8 @@ namespace Hnefatafl
             }
         }
 
+        private Texture2D _disabledColour { get; set; }
+
         public Button(Point position, Point size, string name)
         {
             _pos = position;
@@ -70,16 +72,19 @@ namespace Hnefatafl
             Vector2 fontSize = _font.MeasureString(_text);
             //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
             _textPos = new Vector2((int)((_size.X - fontSize.X) / 2) + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);
-            CeateTextures(graphics, Color.DarkGray, Color.Gray);
+            CreateTextures(graphics, Color.DarkGray, Color.Gray);
         }
 
-        private void CeateTextures(GraphicsDeviceManager graphics, Color selectColour, Color regularColour)
+        private void CreateTextures(GraphicsDeviceManager graphics, Color selectColour, Color regularColour)
         {
             _selectBackColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _selectBackColour.SetData(new[] { selectColour });
 
             _backColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _backColour.SetData(new[] { regularColour });
+
+            _disabledColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            _disabledColour.SetData(new[] { new Color(20, 20, 20, 128) });
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
@@ -88,7 +93,7 @@ namespace Hnefatafl
             
             if (_image is null)
             {
-                if (_status == Unselected)
+                if (_status == Unselected || _status == Disabled)
                 {
                     spriteBatch.Draw(_backColour, rect, Color.White);
                     spriteBatch.DrawString(_font, _text, _textPos, _fontColour);
@@ -105,6 +110,11 @@ namespace Hnefatafl
             {
                 spriteBatch.Draw(_selectBackColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
                 spriteBatch.Draw(_image, rect, Color.White);
+            }
+
+            if (_status == Disabled)
+            {
+                spriteBatch.Draw(_disabledColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
             }
         }
     }

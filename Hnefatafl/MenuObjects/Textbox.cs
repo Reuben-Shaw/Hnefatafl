@@ -26,11 +26,12 @@ namespace Hnefatafl
             }
         }
 
-        public TextBox(Point position, Point size)
+        public TextBox(Point position, Point size, string name)
         {
             _pos = position;
             _size = size;
             _status = Unselected;
+            _name = name;
             _text = "";
             _defaultText = "";
             _fontColour = Color.Black;
@@ -38,11 +39,12 @@ namespace Hnefatafl
             _textPos = new Vector2(-1, -1);
         }
         
-        public TextBox(Point position, Point size, string defaultText)
+        public TextBox(Point position, Point size, string defaultText, string name)
         {
             _pos = position;
             _size = size;
             _status = Unselected;
+            _name = name;
             _text = "";
             _defaultText = defaultText;
             _fontColour = Color.Black;
@@ -52,7 +54,7 @@ namespace Hnefatafl
 
         public void Update(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _font = Content.Load<SpriteFont>("PixelFont");
+            _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
             Vector2 fontSize = _font.MeasureString("l");
             //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
             _textPos = new Vector2(12 + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);

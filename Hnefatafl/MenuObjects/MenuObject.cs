@@ -23,6 +23,19 @@ namespace Hnefatafl
         public Point _pos { get; set; }
         public Point _size { get; set; }
 
+        protected string m_name;
+        public string _name 
+        { 
+            get
+            {
+                return m_name;
+            }
+            protected set
+            {
+                m_name = value;
+            }
+        }
+
         protected string m_text;
         public string _text 
         { 

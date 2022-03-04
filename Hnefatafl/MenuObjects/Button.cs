@@ -24,34 +24,40 @@ namespace Hnefatafl
             }
         }
 
-        public Button(Point position, Point size)
+        public Button(Point position, Point size, string name)
         {
             _pos = position;
             _size = size;
             _status = Unselected;
+            _name = name;
+            _text = name;
+            _fontColour = Color.Black;
+            _selectFontColour = Color.Blue;
+            _textPos = new Vector2(-1, -1);
+        }
+
+        public Button(Point position, Point size, string text, string name)
+        {
+            _pos = position;
+            _size = size;
+            _status = Unselected;
+            _name = name;
+            if (text is null)
+                _text = name;
+            else
+                _text = text;
+            _fontColour = Color.Black;
+            _selectFontColour = Color.Blue;
+            _textPos = new Vector2(-1, -1);
+        }
+
+        public Button(Point position, Point size, Texture2D image, string name)
+        {
+            _pos = position;
+            _size = size;
+            _status = Unselected;
+            _name = name;
             _text = "";
-            _fontColour = Color.Black;
-            _selectFontColour = Color.Blue;
-            _textPos = new Vector2(-1, -1);
-        }
-
-        public Button(Point position, Point size, string text)
-        {
-            _pos = position;
-            _size = size;
-            _status = Unselected;
-            _text = text;
-            _fontColour = Color.Black;
-            _selectFontColour = Color.Blue;
-            _textPos = new Vector2(-1, -1);
-        }
-
-        public Button(Point position, Point size, Texture2D image, string text)
-        {
-            _pos = position;
-            _size = size;
-            _status = Unselected;
-            _text = text;
             _fontColour = Color.Black;
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
@@ -60,7 +66,7 @@ namespace Hnefatafl
 
         public void Update(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _font = Content.Load<SpriteFont>("PixelFont");
+            _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
             Vector2 fontSize = _font.MeasureString(_text);
             //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
             _textPos = new Vector2((int)((_size.X - fontSize.X) / 2) + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);

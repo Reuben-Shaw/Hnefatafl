@@ -61,9 +61,9 @@ namespace Hnefatafl
 
         private void CreatePawns(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _pawnTexture[0] = Content.Load<Texture2D>("pawnE"); //Loading is passed by reference seemingly, this means that all sprites have to be different files to prevent the latter one being the colour of all of them, luckily I planned to do this from the start
-            _pawnTexture[1] = Content.Load<Texture2D>("pawnD");
-            _pawnTexture[2] = Content.Load<Texture2D>("king");
+            _pawnTexture[0] = Content.Load<Texture2D>("Texture/Pawn/pawnA"); //Loading is passed by reference seemingly, this means that all sprites have to be different files to prevent the latter one being the colour of all of them, luckily I planned to do this from the start
+            _pawnTexture[1] = Content.Load<Texture2D>("Texture/Pawn/pawnD");
+            _pawnTexture[2] = Content.Load<Texture2D>("Texture/Pawn/king");
 
             Color[] userColour = new Color[]{ new Color(255, 76, 74), new Color(54, 56, 255),  new Color(54, 56, 255) }; //Pawn colours, currently hard set
             Color[] data; //Used to store a colour bitmap of the image, to be later applied once the new texture has been created in colour
@@ -165,7 +165,7 @@ namespace Hnefatafl
                 return false;
         }
 
-        public bool MakeMove(HPoint move, Player.SideType side, bool doOverride) //Logic used to perform a move, and check if it is possible
+        public bool MakeMove(HPoint move, Player.SideType? side, bool doOverride) //Logic used to perform a move, and check if it is possible
         //Is a bool so it can return true if a move succeeds or false if it fails
         //doOveride is used for multiplayer to tell the game that despite being the wrong side that the move has to go through anyway
         {
@@ -210,7 +210,7 @@ namespace Hnefatafl
             return false;
         }
 
-        private bool PlayerSidePiece(PieceType pieceType, Player.SideType side) //Returns if a checked piece is on the same side as the player
+        private bool PlayerSidePiece(PieceType pieceType, Player.SideType? side) //Returns if a checked piece is on the same side as the player
         {
             if (side == Player.SideType.Attackers && pieceType == Attacker)
             {

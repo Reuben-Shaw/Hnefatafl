@@ -5,9 +5,10 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
-using Lidgren.Network;
+using System.Xml;
 using static Hnefatafl.MenuObject.Status;
 using static Hnefatafl.Player.InstructType;
+using static Hnefatafl.ServerOptions;
 
 namespace Hnefatafl
 {
@@ -34,6 +35,9 @@ namespace Hnefatafl
                 TransferState();
             }
         }
+
+        private enum Langauge { English, German }
+        private Langauge _language = Langauge.English;
 
 
         public Hnefatafl()
@@ -93,34 +97,8 @@ namespace Hnefatafl
 
             if (_gameState != GameState.InGame && _gameState != GameState.EscMenu && _player.IsConnected())
             {
+                _player._currentTurn = false;
                 _gameState = GameState.InGame;
-                
-                if (_server is not null)
-                {
-                    if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.HostAttacker)
-                    {
-                        _player._currentTurn = true;
-                        _player._side = Player.SideType.Attackers;
-                    }
-                    else
-                    {
-                        _player._currentTurn = false;
-                        _player._side = Player.SideType.Defenders;
-                    }
-                }
-                else
-                {
-                    if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.HostAttacker)
-                    {
-                        _player._currentTurn = false;
-                        _player._side = Player.SideType.Defenders;
-                    }
-                    else
-                    {
-                        _player._currentTurn = true;
-                        _player._side = Player.SideType.Attackers;
-                    }
-                }
             }
 
             MouseState currentMouseState = Mouse.GetState();
@@ -185,9 +163,6 @@ namespace Hnefatafl
                     }
                 }
             }
-
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
             
             previousMouse = currentMouseState;
             previousKeyboard = currentKeyboardState;
@@ -203,51 +178,66 @@ namespace Hnefatafl
             Point buttonSize = new Point(viewPorts.Width / 5, viewPorts.Height / 10);
             Point textboxSize = new Point(256, 48);
 
-            List<string> buttonText = new List<string>();
-            List<string> textboxText = new List<string>();
+            List<string> buttonName = new List<string>();
+            List<string> textboxName = new List<string>();
             Point startLoc = new Point(0, 0);
 
             switch (_gameState)
             {
                 case GameState.MainMenu:
                 {
-                    buttonText.Add("MULTIPLAYER");
-                    buttonText.Add("LOCAL CO-OP");
-                    buttonText.Add("OPTIONS");
-                    buttonText.Add("EXIT");
+                    buttonName.Add("multiplayer");
+                    buttonName.Add("localCoOp");
+                    buttonName.Add("options");
+                    buttonName.Add("exit");
                     startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
                     break;
                 }
                 case GameState.MultiplayerMenu:
                 {
-                    buttonText.Add("HOST");
-                    buttonText.Add("CONNECT");
-                    buttonText.Add("SHUTDOWN");
-                    buttonText.Add("BACK");
+                    buttonName.Add("host");
+                    buttonName.Add("connect");
+                    buttonName.Add("shutdown");
+                    buttonName.Add("back");
                     startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
                     break;
                 }
                 case GameState.ServerMenu:
                 {
-                    textboxText.Add("IP");
-                    textboxText.Add("PORT");
-                    buttonText.Add("CONNECT");
-                    buttonText.Add("BACK");
+                    textboxName.Add("ip");
+                    textboxName.Add("port");
+                    buttonName.Add("connect");
+                    buttonName.Add("back");
                     startLoc = new Point(viewPorts.Width / 2 - textboxSize.X / 2, textboxSize.Y * 2);
                     break;
                 }
                 case GameState.GameSetup:
                 {
-                    buttonText.Add("noThrone");
+                    buttonName.Add("playerTurnAttacker");
+                    buttonName.Add("playerTurnDefender");
+                    buttonName.Add("throneDisabled");
+                    buttonName.Add("throneKing");
+                    buttonName.Add("throneDefenderKing");
+                    buttonName.Add("kingArmed");
+                    buttonName.Add("kingUnarmed");
+                    buttonName.Add("sandwichDisabled");
+                    buttonName.Add("sandwichEnabled");
+                    buttonName.Add("captureDisabled");
+                    buttonName.Add("captureCorner");
+                    buttonName.Add("captureCornerThrone");
+                    buttonName.Add("kingCaptureJustThree");
+                    buttonName.Add("kingCaptureAllDefendersThree");
+                    buttonName.Add("winCorner");
+                    buttonName.Add("winSide");
+                    buttonName.Add("host");
                     buttonSize = new Point(viewPorts.Width / 30 * 2, viewPorts.Width / 30 * 2);
-                    startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
+                    startLoc = new Point(viewPorts.Width / 16, viewPorts.Height / 8);
                     break;
                 }
                 case GameState.InGame:
                 {
-                    buttonText.Add("BACK");
+                    buttonName.Add("back");
                     startLoc = new Point(viewPorts.Width / 30, viewPorts.Height - buttonSize.Y - viewPorts.Width / 30);
-                    _player._board.CreatBoard();
                     break;
                 }
                 case GameState.EscMenu:
@@ -255,43 +245,88 @@ namespace Hnefatafl
                     break;
                 }
             }
+            
+            XmlElement xml = MenuXmlLoad();
 
             if (_gameState == GameState.MainMenu || _gameState == GameState.MultiplayerMenu || _gameState == GameState.InGame)
             {
-                for (int i = 0; i < buttonText.Count; i++)
+                for (int i = 0; i < buttonName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * i) / 2)), buttonSize, buttonText[i]));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * i) / 2)), buttonSize, NodeText(xml, buttonName[i]), buttonName[i]));
                     _button[i].Update(_graphics, Content);
                 }
             }
             else if (_gameState == GameState.ServerMenu)
             {
-                for (int i = 0; i < textboxText.Count; i++)
+                for (int i = 0; i < textboxName.Count; i++)
                 {
-                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.X * i) / 2)), textboxSize, textboxText[i]));
+                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.X * i) / 2)), textboxSize, NodeText(xml, textboxName[i]), textboxName[i]));
                     _textbox[i].Update(_graphics, Content);
                 }
 
-                startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, _textbox[textboxText.Count - 1]._pos.Y + _textbox[textboxText.Count - 1]._size.Y + viewPorts.Width / 30);
-                for (int i = textboxText.Count; i < buttonText.Count + textboxText.Count; i++)
+                startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, _textbox[textboxName.Count - 1]._pos.Y + _textbox[textboxName.Count - 1]._size.Y + viewPorts.Width / 30);
+                for (int i = textboxName.Count; i < buttonName.Count + textboxName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * (i - textboxText.Count)) / 2)), buttonSize, buttonText[(i - textboxText.Count)]));
-                    _button[(i - textboxText.Count)].Update(_graphics, Content);
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * (i - textboxName.Count)) / 2)), buttonSize, NodeText(xml, buttonName[i - textboxName.Count]), buttonName[i - textboxName.Count]));
+                    _button[(i - textboxName.Count)].Update(_graphics, Content);
                 }
             }
             else if (_gameState == GameState.GameSetup)
             {
-                for (int i = textboxText.Count; i < buttonText.Count + textboxText.Count; i++)
+                int[] splitList = new int[] {2, 3, 2, 2, 3, 2, 2};
+                int splitTrack = 0, pointer = 0;
+
+                for (int i = 0; i < buttonName.Count - 1; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * (i - textboxText.Count)) / 2)), buttonSize, Content.Load<Texture2D>(_button[i]._text), buttonText[(i - textboxText.Count)]));
-                    _button[(i - textboxText.Count)].Update(_graphics, Content);
+                    splitTrack++;
+
+                    _button.Add(new Button(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), startLoc.Y), buttonSize, Content.Load<Texture2D>("Texture/OpButton/" + buttonName[i]), buttonName[i]));
+                    _button[i].Update(_graphics, Content);
+                    
+                    if (splitTrack == splitList[pointer])
+                    {
+                        pointer++;
+                        splitTrack = 0;
+                        if (pointer >= 3)
+                            startLoc.X = (buttonSize.X * 4) + ((buttonSize.X / 4) * 4) + viewPorts.Width / 16;
+                        else
+                            startLoc.X = viewPorts.Width / 16;
+                        
+                        if (pointer != 3)
+                            startLoc.Y += buttonSize.Y + (buttonSize.Y / 2);
+                        else
+                            startLoc.Y = viewPorts.Height / 8;
+                    }
                 }
+
+                buttonSize = new Point(viewPorts.Width / 5, viewPorts.Height / 10);
+                _button.Add(new Button(new Point(viewPorts.Width / 2 + viewPorts.Width / 4, viewPorts.Height / 2 + viewPorts.Height / 4), buttonSize, NodeText(xml, buttonName[buttonName.Count - 1]), buttonName[buttonName.Count - 1]));
+                _button[_button.Count - 1].Update(_graphics, Content);
             }
+        }
+
+        private string NodeText(XmlElement xml, string objectName)
+        {
+            try
+            {
+                return xml.SelectSingleNode("//Language/" + _gameState.ToString() + "/" + objectName).InnerText;
+            }
+            catch (System.Exception)
+            {
+                return null;
+            }
+        }
+
+        private XmlElement MenuXmlLoad()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(AppDomain.CurrentDomain.BaseDirectory + "Content/Language/" + _language.ToString() + "/Menu.xml");
+            return doc.DocumentElement;
         }
 
         private void MainMenu(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
-            string selected = ButtonCheck(currentState, mouseLoc).ToLower();
+            string selected = ButtonCheck(currentState, mouseLoc);
 
             switch (selected)
             {
@@ -300,8 +335,9 @@ namespace Hnefatafl
                     _gameState = GameState.MultiplayerMenu;
                     break;
                 }
-                case "local co-op":
+                case "localCoOp":
                 {
+                    _player._board.CreatBoard();
                     _gameState = GameState.InGame;
                     break;
                 }
@@ -319,19 +355,14 @@ namespace Hnefatafl
 
         private void MultiplayerMenu(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
-            string selected = ButtonCheck(currentState, mouseLoc).ToLower();
+            string selected = ButtonCheck(currentState, mouseLoc);
 
             switch (selected)
             {
                 case "host":
                 {
-                    if (_server is null)
-                    {
-                        _server = new Server();
-                        _server.StartServer(14242);
-                        _player.EstablishConnection();
-                    }
-                    //_gameState = GameState.GameSetup;
+                    _player._board.CreatBoard();
+                    _gameState = GameState.GameSetup;
                     break;
                 }
                 case "connect":
@@ -358,14 +389,15 @@ namespace Hnefatafl
 
         private void ServerMenu(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
-            string selected = ButtonCheck(currentState, mouseLoc).ToLower();
+            string selected = ButtonCheck(currentState, mouseLoc);
 
             switch (selected)
             {
                 case "connect":
                 {
-                    if (_textbox[0]._text != "" && _textbox[1]._text != "")
+                    if (_textbox[0]._text != "" && _textbox[1]._text != "") //Textbox[0] is IP, Textbo[1] is port
                     {
+                        _player._board.CreatBoard();
                         _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
                     }
                     break;
@@ -380,14 +412,108 @@ namespace Hnefatafl
 
         private void GameSetup(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
+            string selected = ButtonCheck(currentState, mouseLoc);
 
+            switch (selected)
+            {
+                case "host":
+                {
+                    if (_server is null)
+                    {
+                        _server = new Server();
+                        _server.StartServer(14242, _player._board._serverOp);
+                        _player.EstablishConnection();
+                    }
+                    break;
+                }
+                case "playerTurnAttacker":
+                {
+                    _player._board._serverOp._playerTurn = PlayerTurn.Attacker;
+                    break;
+                }
+                case "playerTurnDefender":
+                {
+                    _player._board._serverOp._playerTurn = PlayerTurn.Defender;
+                    break;
+                }
+                case "throneDisabled":
+                {
+                    _player._board._serverOp._throneOp = ThroneOp.Disabled;
+                    break;
+                }
+                case "throneKing":
+                {
+                    _player._board._serverOp._throneOp = ThroneOp.King;
+                    break;
+                }
+                case "throneDefenderKing":
+                {
+                    _player._board._serverOp._throneOp = ThroneOp.DefenderKing;
+                    break;
+                }
+                case "kingArmed":
+                {
+                    _player._board._serverOp._kingOp = KingOp.Armed;
+                    break;
+                }
+                case "kingUnarmed":
+                {
+                    _player._board._serverOp._kingOp = KingOp.Unarmed;
+                    break;
+                }
+                case "sandwichDisabled":
+                {
+                    _player._board._serverOp._sandwichMovementOp = SandwichMovementOp.Disabled;
+                    break;
+                }
+                case "sandwichEnabled":
+                {
+                    _player._board._serverOp._sandwichMovementOp = SandwichMovementOp.Enabled;
+                    break;
+                }
+                case "captureDisabled":
+                {
+                    _player._board._serverOp._captureOp = CaptureOp.Disabled;
+                    break;
+                }
+                case "captureCorner":
+                {
+                    _player._board._serverOp._captureOp = CaptureOp.Corner;
+                    break;
+                }
+                case "captureCornerThrone":
+                {
+                    _player._board._serverOp._captureOp = CaptureOp.CornerThrone;
+                    break;
+                }
+                case "kingCaptureJustThree":
+                {
+                    _player._board._serverOp._kingCaptureOp = KingCaptureOp.JustThree;
+                    break;
+                }
+                case "kingCaptureAllDefendersThree":
+                {
+                    _player._board._serverOp._kingCaptureOp = KingCaptureOp.AllDefendersThree;
+                    break;
+                }
+                case "winCorner":
+                {
+                    _player._board._serverOp._winOp = WinOp.Corner;
+                    break;
+                }
+                case "winSide":
+                {
+                    _player._board._serverOp._winOp = WinOp.Side;
+                    break;
+                }
+            }
         }
 
         private void InGame(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
             if (currentState.LeftButton != previousMouse.LeftButton)
             {
-                string selected = ButtonCheck(currentState, mouseLoc).ToLower();
+                string selected = ButtonCheck(currentState, mouseLoc);
                 Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
 
                 if (selected == "back")
@@ -449,7 +575,7 @@ namespace Hnefatafl
                         else if (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
                         {
                             button._status = Unselected;
-                            text = button._text;
+                            text = button._name;
                         }
                     }
                     else if (button._status == Selected)

@@ -11,10 +11,11 @@ namespace Hnefatafl
     {
         private NetServer _server;
         private List<NetPeer> _clients;
-        ServerOptions _serverOp = new ServerOptions();
+        ServerOptions _serverOp;
 
-        public void StartServer(int port)
+        public void StartServer(int port, ServerOptions serverOp)
         {
+            _serverOp = serverOp;
             NetPeerConfiguration config = new NetPeerConfiguration("Hnefatafl") { Port = port };
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             _server = new NetServer(config);
@@ -74,32 +75,18 @@ namespace Hnefatafl
                         if (message.SenderConnection.Status == NetConnectionStatus.Connected && _clients.Count < 2)
                         {
                             _clients.Add(message.SenderConnection.Peer);
-                            // if (_clients.Count == 2)
-                            // {
-                            //     _server.SendMessage(_server.CreateMessage("false"), _server.Connections[1], NetDeliveryMethod.ReliableOrdered, 0);
-                            // }
-                            // else
-                            // {
-                            //     _server.SendMessage(_server.CreateMessage("true"), _server.Connections[0], NetDeliveryMethod.ReliableOrdered, 0);
-                            // } 
 
+                            if (_clients.Count == 2) //Responsible for sending the correct turn to the second player to connect
+                            {
+                                if (_serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker) _serverOp._playerTurn = ServerOptions.PlayerTurn.Defender;
+                                else _serverOp._playerTurn = ServerOptions.PlayerTurn.Attacker;
+                            }
                             string serialMsg = OptionXmlSerialise(_serverOp);
+
                             NetOutgoingMessage outMsg = _server.CreateMessage();
                             outMsg.Write(serialMsg);
                             _server.SendMessage(outMsg, _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
 
-                            // private ServerOptions ByteArrayToObject(byte[] array)
-                            // {
-                            //     MemoryStream s = new MemoryStream(array);
-                            //     BinaryFormatter b = new BinaryFormatter();
-                            //     s.Position = 0;
-                            //     for (int i = 0; i < array.Length; i++)
-                            //     {
-                            //         Console.WriteLine(array[i]);
-                            //     }
-                            //     return (ServerOptions)b.Deserialize(s);
-                            // }
-                            
                             Console.WriteLine("{0} has connected.", message.SenderConnection.Peer.Configuration.LocalAddress);
                         }
                         else if (_clients.Count >= 2)

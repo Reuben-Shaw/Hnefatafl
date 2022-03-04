@@ -6,7 +6,7 @@ namespace Hnefatafl
     public class ServerOptions //Struct as no methods will be needed in here and it will never be invoked like a method, just read from
     {
         //Made heavy use of enumeration to make code as readable as possible
-        public enum PlayerTurn { HostAttacker = 0, HostDefender = 1 }
+        public enum PlayerTurn { Attacker = 0, Defender = 1 }
         public PlayerTurn _playerTurn { get; set; }
 
         public enum ThroneOp { Disabled = 0, DefenderKing = 1, King = 2 }
@@ -29,7 +29,7 @@ namespace Hnefatafl
 
         public ServerOptions()
         {
-            _playerTurn = PlayerTurn.HostAttacker;
+            _playerTurn = PlayerTurn.Attacker;
             _throneOp = ThroneOp.King;
             _kingOp = KingOp.Armed;
             _sandwichMovementOp = SandwichMovementOp.Enabled;
@@ -39,7 +39,7 @@ namespace Hnefatafl
         }
         public ServerOptions(bool test)
         {
-            _playerTurn = PlayerTurn.HostDefender;
+            _playerTurn = PlayerTurn.Defender;
             _throneOp = ThroneOp.Disabled;
             _kingOp = KingOp.Unarmed;
             _sandwichMovementOp = SandwichMovementOp.Enabled;
@@ -52,8 +52,8 @@ namespace Hnefatafl
         {
             string msg = "";
 
-            if (_playerTurn == PlayerTurn.HostDefender) msg += "Host is the defender\n";
-            else msg += "Host is the attacker\n";
+            if (_playerTurn == PlayerTurn.Attacker) msg += "Player is the attacker\n";
+            else msg += "Player is the defender\n";
 
             if (_throneOp == ThroneOp.Disabled) msg += "Throne is disabled\n";
             else if (_throneOp == ThroneOp.DefenderKing) msg += "Throne is accessible only by the king\n";

@@ -21,8 +21,8 @@ namespace Hnefatafl
         public enum SideType { Attackers, Defenders }
         public Board _board;
         private NetClient _client;
-        public bool _currentTurn = true;
-        public SideType _side = SideType.Attackers;
+        public bool _currentTurn;
+        public SideType? _side;
 
         public Player(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
         {
@@ -79,11 +79,11 @@ namespace Hnefatafl
             _client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
-        int TEST = 0;
         public void CheckMessage()
         {
             NetIncomingMessage message = _client.ReadMessage();
-            
+            try
+            {
                 if (message is not null)
                 {
                     if (message.SenderConnection != null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
@@ -91,7 +91,6 @@ namespace Hnefatafl
                         string msg = message.ReadString();
                         Console.WriteLine(msg);
                         string[] msgDiv = msg.Split(",");
-                        TEST++;
                         
                         if (msgDiv[0] == SELECT.ToString())
                         {
@@ -100,26 +99,37 @@ namespace Hnefatafl
                         else if (msgDiv[0] == MOVE.ToString())
                         {
                             _currentTurn = !_currentTurn;
+                            Console.WriteLine("Is it my turn? " + _currentTurn);
                             _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
                         }
                         else if (msgDiv[0] == MOVEFAIL.ToString())
                         {
                             _board.SelectPiece(new HPoint(-1, -1));
                         }
-                        // else if (IsBool(msgDiv[0]))
-                        // {
-                        //     _currentTurn = Convert.ToBoolean(msgDiv[0]);
-                        //     if (_currentTurn == false)
-                        //         _side = SideType.Defenders;
-                        // }
-                        else if (TEST == 3)
+                        else
                         {
                             _board._serverOp = OptionsXmlDeserialise(msg);
-                            //Console.WriteLine("Server rules:\n" + _board._serverOp.ToString());
+                            
+                            if (_side is null && _board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
+                            {
+                                _currentTurn = true;
+                                _side = Player.SideType.Attackers;
+                            }
+                            else if (_side is null)
+                            {
+                                _currentTurn = false;
+                                _side = Player.SideType.Defenders;
+                            }
+
+                            Console.WriteLine("Completed deserialisation of options");
                         }
                     }
                 }
-            
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("Poor message formatting - probably startup message. Crash averted");
+            }
         }
 
         private ServerOptions OptionsXmlDeserialise(string xml)

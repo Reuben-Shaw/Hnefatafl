@@ -425,9 +425,9 @@ namespace Hnefatafl
             return new HPoint(-1, -1);
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort) //Used for drawing the board and the pieces
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort, Player.SideType? currentSide) //Used for drawing the board and the pieces
         {
-            Rectangle rect= new Rectangle(
+            Rectangle rect = new Rectangle(
                         (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2), 
                         (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2), 
                         TileSizeX(viewPort), TileSizeY(viewPort));
@@ -450,7 +450,7 @@ namespace Hnefatafl
 
 
                     iPiece = _pieces.GetPiece(x.ToString() + "," + y.ToString());
-                    if ((int)iPiece._pawn._type > -1 && iPiece._loc.ToString() != _selectedPiece.ToString())
+                    if ((int)iPiece._pawn._type > -1 && (iPiece._loc.ToString() != _selectedPiece.ToString() || !PlayerSidePiece(iPiece._pawn._type, currentSide)))
                     {
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
                     }
@@ -461,7 +461,7 @@ namespace Hnefatafl
                 rect.X = (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2);
             }
 
-             if (_selectedPiece.X != -1) //Drawn here to allow it to be above the half of the board beneath itself
+            if (_selectedPiece.X != -1 && (PlayerSidePiece(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type, currentSide))) //Drawn here to allow it to be above the half of the board beneath itself
             {
                 spriteBatch.Draw(_pawnTexture[(int)_pieces.GetPiece(_selectedPiece.ToString())._pawn._type], new Rectangle(Mouse.GetState().Position, rect.Size), Color.White);
             }

@@ -692,7 +692,11 @@ namespace Hnefatafl
 
             if (_gameState == GameState.InGame || _gameState == GameState.EscMenu)
             {
-                _player._board.Draw(gameTime, _spriteBatch, viewPort);
+                Player.SideType? currentSide = _player._side;
+                if (!_player.IsConnected())
+                    _player._side = null;
+
+                _player._board.Draw(gameTime, _spriteBatch, viewPort, currentSide);
             }
 
             foreach (Button button in _button)

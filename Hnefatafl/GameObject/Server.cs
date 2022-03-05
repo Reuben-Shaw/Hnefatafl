@@ -88,6 +88,11 @@ namespace Hnefatafl
                             _server.SendMessage(outMsg, _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
 
                             Console.WriteLine("{0} has connected.", message.SenderConnection.Peer.Configuration.LocalAddress);
+
+                            if (_clients.Count == 2) //Responsible for sending the message to clients that the game is to start
+                            {
+                                _server.SendMessage(_server.CreateMessage(Player.InstructType.START.ToString()), _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
+                            }
                         }
                         else if (_clients.Count >= 2)
                         {

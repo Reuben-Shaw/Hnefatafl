@@ -24,6 +24,10 @@ namespace Hnefatafl
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
         //9 or 11 depending on the users options
+
+        public enum BoardState { ActiveGame, InactiveGame }
+        public BoardState _state;
+
         private HPoint _selectedPiece = new HPoint(-1, -1);
         //Stores the current user selected piece, -1, -1 as expected is used as a null storing value
         public ServerOptions _serverOp;
@@ -50,6 +54,8 @@ namespace Hnefatafl
         {
             _serverOp = new ServerOptions(); //Defines the options, currently empty as it will default to automatic options
             _pieces.CreateBoard(_boardSize, BoardTypes.Regular); //Responsible entirely for the creation of the pieces on the board, Board.cs doesn't contain any logic relating to this at all
+            _selectedPiece = new HPoint(-1, -1);
+            _state = BoardState.InactiveGame;
         }
 
         private void CreateColours(GraphicsDeviceManager graphics, Color[] colours)
@@ -344,6 +350,79 @@ namespace Hnefatafl
         public int TileSizeY(Rectangle viewPort) //May ultimately be redundant, as currently tiles are always the same size on the x and y
         {
             return viewPort.Width / 30;
+        }
+
+        public bool MovesStillPossible(Player.SideType? side)
+        {
+            foreach (DictionaryEntry piece in _pieces.AllPieces())
+            {
+                Piece iPiece = piece.Value as Piece;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (PlayerSidePiece(iPiece._pawn._type, side) && PathMaxExtent(iPiece._loc, (Direction)i).ToString() != iPiece._loc.ToString())
+                    {
+                        Console.WriteLine("{0} != {1}, {2}", PathMaxExtent(iPiece._loc, (Direction)i).ToString(), iPiece._loc.ToString(), PathMaxExtent(iPiece._loc, (Direction)i).ToString() != iPiece._loc.ToString());
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        enum Direction { Up = 0, Down = 1, Left = 2, Right = 3 }
+        private HPoint PathMaxExtent(HPoint startLocation, Direction direction)
+        {
+            HPoint locationChk = startLocation;
+            switch (direction)
+            {
+                case Direction.Up:
+                {
+                    while (true)
+                    {
+                        locationChk.Y--;
+                        Console.WriteLine("Checking up " + locationChk.Y);
+                        if (locationChk.Y == 0 || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
+                            return new HPoint(locationChk.X, locationChk.Y + 1);
+                        else if (locationChk.Y > 0 || locationChk.Y < 0)
+                            return startLocation;
+                    }
+                }
+                case Direction.Down:
+                {
+                    while (true)
+                    {
+                        locationChk.Y++;
+                        if (locationChk.Y == _boardSize || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
+                            return new HPoint(locationChk.X, locationChk.Y - 1);
+                        else if (locationChk.Y > 0 || locationChk.Y < 0)
+                            return startLocation;
+                    }
+                }
+                case Direction.Left:
+                {
+                    while (true)
+                    {
+                        locationChk.X--;
+                        if (locationChk.X == 0 || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
+                            return new HPoint(locationChk.X + 1, locationChk.Y);
+                        else if (locationChk.X > 0 || locationChk.X < 0)
+                            return startLocation;
+                    }
+                }
+                case Direction.Right:
+                {
+                    while (true)
+                    {
+                        locationChk.X++;
+                        if (locationChk.X == _boardSize || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
+                            return new HPoint(locationChk.X - 1, locationChk.Y);
+                        else if (locationChk.X > 0 || locationChk.X < 0)
+                            return startLocation;
+                    }
+                }
+            }
+            return new HPoint(-1, -1);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort) //Used for drawing the board and the pieces

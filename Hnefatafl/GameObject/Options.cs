@@ -10,7 +10,7 @@ namespace Hnefatafl
         public PlayerTurn _playerTurn { get; set; } //Works
 
         public enum ThroneOp { Disabled = 0, DefenderKing = 1, King = 2 }
-        public ThroneOp _throneOp { get; set; } //Doesn't work
+        public ThroneOp _throneOp { get; set; } //Works
 
         public enum KingOp { Armed = 0, Unarmed = 1 }
         public KingOp _kingOp { get; set; } //Works

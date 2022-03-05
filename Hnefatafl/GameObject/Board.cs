@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Hnefatafl;
+using Hnefatafl.Audio;
 using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
 
@@ -27,12 +27,14 @@ namespace Hnefatafl
         private HPoint _selectedPiece = new HPoint(-1, -1);
         //Stores the current user selected piece, -1, -1 as expected is used as a null storing value
         public ServerOptions _serverOp;
+        private BoardAudio _audioManager;
 
         public Board(GraphicsDeviceManager graphics, ContentManager Content, Color[] colours, int boardSize, BoardTypes boardType)
         {
             CreateColours(graphics, colours);
             CreatePawns(graphics, Content);
             _pieces.CreateBoard(boardSize, boardType);
+            _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
         }
 
@@ -40,6 +42,7 @@ namespace Hnefatafl
         {
             CreateColours(graphics, new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24)});
             CreatePawns(graphics, Content);
+            _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
         }
 
@@ -189,6 +192,8 @@ namespace Hnefatafl
                             _pieces.Replace(new Piece(new Pawn(Throne), new HPoint(_selectedPiece.ToString())));
                         }
 
+                        _audioManager._move.Play();
+
                         CaptureLogic(move);
                         
                         _selectedPiece = new HPoint(-1, -1);
@@ -199,6 +204,8 @@ namespace Hnefatafl
                     {
                         _pieces.Replace(new Piece(new Pawn(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type), new HPoint(key)));
                         _pieces.RemoveFrom(_selectedPiece.ToString());
+
+                        _audioManager._move.Play();
 
                         CaptureLogic(move);
                         
@@ -276,9 +283,10 @@ namespace Hnefatafl
         {
             if (pieceChk != King)
             {
-                if (!SameSide(pieceMoved, pieceChk) && SameSide(pieceMoved, pieceAhead))
+                if (pieceChk != Empty && !SameSide(pieceMoved, pieceChk) && SameSide(pieceMoved, pieceAhead))
                 {
                     _pieces.RemoveFrom(locChk.ToString());
+                    _audioManager._death.Play(0.7f, 0.0f, 0.0f);
                 }
             }
             else

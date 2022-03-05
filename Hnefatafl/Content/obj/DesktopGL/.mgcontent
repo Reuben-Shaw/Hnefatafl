@@ -4,6 +4,8 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Death.wav</File>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/MainFont.spritefont</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/testfont.png</File>
@@ -26,12 +28,16 @@
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneKing.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/winCorner.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/winSide.png</File>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/IDespiseAvery.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/king.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/king_a.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnD.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnE.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

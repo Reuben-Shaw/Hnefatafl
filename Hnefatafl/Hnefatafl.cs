@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Xml;
 using static Hnefatafl.MenuObject.Status;
 using static Hnefatafl.Player.InstructType;
@@ -39,7 +40,6 @@ namespace Hnefatafl
 
         private enum Langauge { English, German }
         private Langauge _language = Langauge.English;
-
 
         public Hnefatafl()
         {
@@ -87,8 +87,7 @@ namespace Hnefatafl
             Console.WriteLine("Successful UnloadContent");
         }
 
-        MouseState previousMouse;
-        KeyboardState previousKeyboard;
+        KeyboardState previousKeyboard; MouseState previousMouse;
         protected override void Update(GameTime gameTime)
         {
             if (_server is not null)
@@ -236,6 +235,7 @@ namespace Hnefatafl
                     buttonName.Add("winCorner");
                     buttonName.Add("winSide");
                     buttonName.Add("host");
+                    textboxName.Add("port");
                     buttonSize = new Point(viewPorts.Width / 30 * 2, viewPorts.Width / 30 * 2);
                     startLoc = new Point(viewPorts.Width / 16, viewPorts.Height / 8);
                     break;
@@ -402,12 +402,13 @@ namespace Hnefatafl
             {
                 case "connect":
                 {
-                    if (_textbox[0]._text != "" && _textbox[1]._text != "") //Textbox[0] is IP, Textbo[1] is port
+                    //Console.WriteLine($"Valid IP Address: {IsValidIp(_textbox[0]._text)}\nValid Port: {IsValidPort(_textbox[1]._text)}");
+                    if (IsValidIp(_textbox[0]._text) && IsValidPort(_textbox[1]._text)) //Textbox[0] is IP, Textbo[1] is port
                     {
                         _player._board.CreatBoard();
                         _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
                     }
-                    else
+                    else if (_textbox[0]._text == "" && _textbox[1]._text == "")
                     {
                         _player._board.CreatBoard();
                         _player.EstablishConnection("localhost", Convert.ToInt32("14242"));
@@ -622,6 +623,29 @@ namespace Hnefatafl
 
             return text;
         }
+
+        private bool IsValidIp(string ipChk)
+        {
+            Regex r =  new Regex(@"^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9]?)$");
+            if (r.IsMatch(ipChk))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private bool IsValidPort(string portChk)
+        {
+            Regex r =  new Regex(@"^(6[0-5]?[0-5]?[0-3]?[0-5]?|[0-5]?[0-9]?[0-9]?[0-9]?[0-9]?)$");
+            if (r.IsMatch(portChk))
+            {
+                return true;
+            }
+
+            return false;
+        }
+        
 
         protected override void Draw(GameTime gameTime)
         {

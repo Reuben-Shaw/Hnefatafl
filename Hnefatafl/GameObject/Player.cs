@@ -17,12 +17,12 @@ namespace Hnefatafl
 {
     sealed class Player
     {
-        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN }
+        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE }
         public enum SideType { Attackers, Defenders }
         public Board _board;
         private NetClient _client;
         public bool _currentTurn;
-        public SideType? _side;
+        public SideType? _side; //Nullable as the when connecting to a server the player side will not be immediatly sent, and thus null, checks will be done before this however and allowing it to trap for null values prevents exceptions
 
         public Player(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
         {
@@ -86,7 +86,7 @@ namespace Hnefatafl
             {
                 if (message is not null)
                 {
-                    if (message.SenderConnection != null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
+                    if (message.SenderConnection is not null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
                     {
                         string msg = message.ReadString();
                         Console.WriteLine(msg);

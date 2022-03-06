@@ -6,6 +6,7 @@
   <SourceFiles>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Death.wav</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav</File>
+    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Board/HighlightTrail.png</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/MainFont.spritefont</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont</File>
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/testfont.png</File>
@@ -35,6 +36,7 @@
     <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnE.png</File>
   </SourceFiles>
   <DestFiles>
+    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

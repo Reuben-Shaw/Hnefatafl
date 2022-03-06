@@ -1,6 +1,7 @@
 Source File,Dest File,Processor Type,Content Type,Source File Size,Dest File Size,Build Seconds
 "C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Death.wav","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Audio/Death.xnb","SoundEffectProcessor","SoundEffectContent",105212,105273,0.738836
 "C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Audio/Move.xnb","SoundEffectProcessor","SoundEffectContent",102964,103025,0.6399129
+"C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Board/HighlightTrail.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Texture/Board/HighlightTrail.xnb","TextureProcessor","Texture2DContent",287,8277,0.1112772
 "C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/MainFont.spritefont","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Texture/Font/MainFont.xnb","FontDescriptionProcessor","SpriteFontContent",2008,70690,0.2543826
 "C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Texture/Font/PixelFont.xnb","FontDescriptionProcessor","SpriteFontContent",2015,37922,0.0198365
 "C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/testfont.png","C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Texture/Font/testfont.xnb","TextureProcessor","Texture2DContent",58374,716429,0.0248353

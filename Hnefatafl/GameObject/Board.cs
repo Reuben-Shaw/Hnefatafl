@@ -5,9 +5,10 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Hnefatafl.Audio;
+using Hnefatafl.Media;
 using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
+using static Hnefatafl.Media.TextureAtlasLink;
 
 
 namespace Hnefatafl
@@ -20,6 +21,7 @@ namespace Hnefatafl
         //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         //0: Attacker, 1: Defender, 2: King
+        private AtlasTexture _boardHighlight;
         private Pieces _pieces = new Pieces();
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
@@ -37,7 +39,6 @@ namespace Hnefatafl
         {
             CreateColours(graphics, colours);
             CreatePawns(graphics, Content);
-            _pieces.CreateBoard(boardSize, boardType);
             _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
         }
@@ -48,6 +49,8 @@ namespace Hnefatafl
             CreatePawns(graphics, Content);
             _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
+
+            _boardHighlight = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
         }
 
         public void CreatBoard()
@@ -129,6 +132,8 @@ namespace Hnefatafl
             {
                 _pawnTexture[i].Dispose();
             }
+
+            _boardHighlight.UnloadContent();
         }
 
         private bool DefendersRemain() //Used for reference when deciding if a three attacker takedown on a king is doable
@@ -450,6 +455,12 @@ namespace Hnefatafl
 
 
                     iPiece = _pieces.GetPiece(x.ToString() + "," + y.ToString());
+
+                    if (_selectedPiece.X != -1 && iPiece._loc.ToString() == _selectedPiece.ToString())
+                    {
+                        spriteBatch.Draw(_boardHighlight.GetTexture(Seperated), rect, Color.White);
+                    }
+
                     if ((int)iPiece._pawn._type > -1 && (iPiece._loc.ToString() != _selectedPiece.ToString() || !PlayerSidePiece(iPiece._pawn._type, currentSide)))
                     {
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
@@ -457,7 +468,7 @@ namespace Hnefatafl
 
                     rect.X += TileSizeX(viewPort);
                 }
-                rect.Y +=TileSizeY(viewPort);
+                rect.Y += TileSizeY(viewPort);
                 rect.X = (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2);
             }
 

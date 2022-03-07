@@ -696,7 +696,7 @@ namespace Hnefatafl
                 if (!_player.IsConnected())
                     _player._side = null;
 
-                _player._board.Draw(gameTime, _spriteBatch, viewPort, currentSide);
+                _player._board.Draw(_graphics, _spriteBatch, viewPort, currentSide);
             }
 
             foreach (Button button in _button)

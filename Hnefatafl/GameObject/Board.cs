@@ -21,7 +21,8 @@ namespace Hnefatafl
         //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         //0: Attacker, 1: Defender, 2: King
-        private AtlasTexture _boardHighlight;
+        private AtlasTexture _boardHighlightAtlas;
+        private Texture2D _boardHighlight;
         private Pieces _pieces = new Pieces();
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
@@ -50,7 +51,7 @@ namespace Hnefatafl
             _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
 
-            _boardHighlight = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
+            _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
         }
 
         public void CreatBoard()
@@ -133,7 +134,7 @@ namespace Hnefatafl
                 _pawnTexture[i].Dispose();
             }
 
-            _boardHighlight.UnloadContent();
+            _boardHighlightAtlas.UnloadContent();
         }
 
         private bool DefendersRemain() //Used for reference when deciding if a three attacker takedown on a king is doable
@@ -357,80 +358,205 @@ namespace Hnefatafl
             return viewPort.Width / 30;
         }
 
-        public bool MovesStillPossible(Player.SideType? side)
+        public bool MovesStillPossible(Player.SideType? side) //CODE DOES NOT WORK, NEED FIX
         {
-            foreach (DictionaryEntry piece in _pieces.AllPieces())
-            {
-                Piece iPiece = piece.Value as Piece;
-                for (int i = 0; i < 4; i++)
-                {
-                    if (PlayerSidePiece(iPiece._pawn._type, side) && PathMaxExtent(iPiece._loc, (Direction)i).ToString() != iPiece._loc.ToString())
-                    {
-                        Console.WriteLine("{0} != {1}, {2}", PathMaxExtent(iPiece._loc, (Direction)i).ToString(), iPiece._loc.ToString(), PathMaxExtent(iPiece._loc, (Direction)i).ToString() != iPiece._loc.ToString());
-                        return true;
-                    }
-                }
-            }
+            // foreach (DictionaryEntry piece in _pieces.AllPieces())
+            // {
+            //     Piece iPiece = piece.Value as Piece;
+            //     for (int i = 0; i < 4; i++)
+            //     {
+            //         if (PlayerSidePiece(iPiece._pawn._type, side) && PathMaxExtent(iPiece._loc, (Direction)i).ToString() != iPiece._loc.ToString())
+            //         {
+            //             Console.WriteLine("{0} != {1}, {2}", PathMaxExtent(iPiece._loc, (Direction)i).ToString(), iPiece._loc.ToString(), PathMaxExtent(iPiece._loc, (Direction)i).ToString() != iPiece._loc.ToString());
+            //             return true;
+            //         }
+            //     }
+            // }
 
-            return false;
+            // return false;
+            return true;
         }
 
-        enum Direction { Up = 0, Down = 1, Left = 2, Right = 3 }
+        enum Direction { Up = 0, Right = 1, Down = 2, Left = 3 }
         private HPoint PathMaxExtent(HPoint startLocation, Direction direction)
         {
-            HPoint locationChk = startLocation;
-            switch (direction)
+            int start, end, increment;
+            //Console.WriteLine(startLocation);
+
+            if (direction == Direction.Down || direction == Direction.Up)
             {
-                case Direction.Up:
-                {
-                    while (true)
+
+                if (direction == Direction.Down)
+                { 
+                    start = startLocation.Y + 1; end = _boardSize; increment = 1; 
+                    for (int i = start; i < end; i += increment)
                     {
-                        locationChk.Y--;
-                        Console.WriteLine("Checking up " + locationChk.Y);
-                        if (locationChk.Y == 0 || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
-                            return new HPoint(locationChk.X, locationChk.Y + 1);
-                        else if (locationChk.Y > 0 || locationChk.Y < 0)
-                            return startLocation;
+                        if (_pieces.GetPiece(startLocation.X + "," + i)._pawn._type != Empty)
+                            return new HPoint(startLocation.X, i);
                     }
                 }
-                case Direction.Down:
-                {
-                    while (true)
+                else
+                { 
+                    start = startLocation.Y - 1; end = -1; increment = -1; 
+                    for (int i = start; i > end; i += increment)
                     {
-                        locationChk.Y++;
-                        if (locationChk.Y == _boardSize || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
-                            return new HPoint(locationChk.X, locationChk.Y - 1);
-                        else if (locationChk.Y > 0 || locationChk.Y < 0)
-                            return startLocation;
+                        if (_pieces.GetPiece(startLocation.X + "," + i)._pawn._type != Empty)
+                            return new HPoint(startLocation.X, i);
                     }
                 }
-                case Direction.Left:
-                {
-                    while (true)
-                    {
-                        locationChk.X--;
-                        if (locationChk.X == 0 || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
-                            return new HPoint(locationChk.X + 1, locationChk.Y);
-                        else if (locationChk.X > 0 || locationChk.X < 0)
-                            return startLocation;
-                    }
-                }
-                case Direction.Right:
-                {
-                    while (true)
-                    {
-                        locationChk.X++;
-                        if (locationChk.X == _boardSize || _pieces.GetPiece(locationChk.ToString())._pawn._type != Empty)
-                            return new HPoint(locationChk.X - 1, locationChk.Y);
-                        else if (locationChk.X > 0 || locationChk.X < 0)
-                            return startLocation;
-                    }
-                }
+                return new HPoint(startLocation.X, end);
             }
-            return new HPoint(-1, -1);
+            else
+            {
+                if (direction == Direction.Right)
+                { 
+                    start = startLocation.X + 1; end = _boardSize; increment = 1; 
+                    for (int i = start; i < end; i += increment)
+                    {
+                        if (_pieces.GetPiece(i + "," + startLocation.Y)._pawn._type != Empty)
+                            return new HPoint(i, startLocation.Y);
+                    }
+                }
+                else
+                { 
+                    start = startLocation.X - 1; end = -1; increment = -1; 
+                    for (int i = start; i > end; i += increment)
+                    {
+                        if (_pieces.GetPiece(i + "," + startLocation.Y)._pawn._type != Empty)
+                            return new HPoint(i, startLocation.Y);
+                    }
+                }
+                return new HPoint(end, startLocation.Y);
+            }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort, Player.SideType? currentSide) //Used for drawing the board and the pieces
+        private void ConstructBoardHighlight(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Rectangle startRect)
+        {
+            // HPoint[] maxLocations = new HPoint[4];
+            // Color[] boardHilightColour = new Color[TileSizeX(viewPort) * TileSizeY(viewPort)];
+
+            // _boardHighlight = new Texture2D(graphics.GraphicsDevice, TileSizeX(viewPort), TileSizeY(viewPort));
+            // _boardHighlight.GetData<Color>(boardHilightColour);
+
+            // for (int i = 0; i < 4; i++)
+            // {
+            //     maxLocations[i] = PathMaxExtent(_selectedPiece, (Direction)i);
+            // }
+
+            HPoint[] maxLocations = new HPoint[4];
+            Rectangle rect;
+            Point connections = new Point(0, 0);
+
+
+            for (int i = 0; i < 4; i++)
+            {
+                int start, end;
+                rect = startRect;
+                
+                maxLocations[i] = PathMaxExtent(_selectedPiece, (Direction)i);
+                //Console.WriteLine($"{maxLocations[i]} != {_selectedPiece}");
+
+                if ((Direction)i == Direction.Left || (Direction)i == Direction.Right)
+                {
+                    if ((Direction)i == Direction.Right)
+                    { start = _selectedPiece.X + 1; end = maxLocations[i].X; }
+                    else
+                    { start = maxLocations[i].X; end = _selectedPiece.X - 1; }
+
+                    for (int j = start; j < end; j++)
+                    {
+                        if ((Direction)i == Direction.Left)
+                            rect.X -= TileSizeY(viewPort);
+                        else
+                            rect.X += TileSizeY(viewPort);
+
+                        if (j != end - 1)
+                        {
+                            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(LeftRight), rect, Color.White);
+                        }
+                        else if ((Direction)i == Direction.Left && end - 1 != _selectedPiece.X)
+                        {
+                            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(RightEnd), rect, Color.White);
+                        }
+                        else if (end - 1 != _selectedPiece.X)
+                        {
+                            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(LeftEnd), rect, Color.White);
+                        }
+                    }
+                }
+                else
+                {
+                    if ((Direction)i == Direction.Down)
+                    { start = _selectedPiece.Y + 1; end = maxLocations[i].Y; }
+                    else
+                    { start = maxLocations[i].Y; end = _selectedPiece.Y - 1; }
+
+                    for (int j = start; j < end; j++)
+                    {
+                        if ((Direction)i == Direction.Up)
+                            rect.Y -= TileSizeY(viewPort);
+                        else
+                            rect.Y += TileSizeY(viewPort);
+
+                        if (j != end - 1)
+                        {
+                            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(UpDown), rect, Color.White);
+                        }
+                        else if ((Direction)i == Direction.Up && end - 1 != _selectedPiece.Y)
+                        {
+                            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DownEnd), rect, Color.White);
+                        }
+                        else if (end - 1 != _selectedPiece.Y)
+                        {
+                            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(UpEnd), rect, Color.White);
+                        }
+                    }
+                }
+
+                if (start != end)
+                {
+                    connections.X++;
+                }
+                else
+                {
+                    connections.Y = i;
+                }
+            }
+            
+            switch (connections.X)
+            {
+                case 0:
+                {
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Seperated), startRect, Color.White);
+                    break;
+                }
+                case 1:
+                {
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)connections.Y + 2), startRect, Color.White);
+                    break;
+                }
+                case 2:
+                {
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)connections.Y + 12), startRect, Color.White);
+                    break;
+                }
+                case 3:
+                {
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)connections.Y + 8), startRect, Color.White);
+                    break;
+                }
+                case 4:
+                {
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Cross), startRect, Color.White);
+                    break;
+                }
+            }
+
+            Console.WriteLine($"{(Direction)0}: {maxLocations[0]}, {(Direction)1}: {maxLocations[1]}, {(Direction)2}: {maxLocations[2]}, {(Direction)3}: {maxLocations[3]}");
+            
+        }
+
+        public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Player.SideType? currentSide) //Used for drawing the board and the pieces
         {
             Rectangle rect = new Rectangle(
                         (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2), 
@@ -456,15 +582,15 @@ namespace Hnefatafl
 
                     iPiece = _pieces.GetPiece(x.ToString() + "," + y.ToString());
 
-                    if (_selectedPiece.X != -1 && iPiece._loc.ToString() == _selectedPiece.ToString())
-                    {
-                        spriteBatch.Draw(_boardHighlight.GetTexture(Seperated), rect, Color.White);
-                    }
-
-                    if ((int)iPiece._pawn._type > -1 && (iPiece._loc.ToString() != _selectedPiece.ToString() || !PlayerSidePiece(iPiece._pawn._type, currentSide)))
+                    if ((int)iPiece._pawn._type > -1 && iPiece._loc.ToString() != _selectedPiece.ToString())
                     {
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
                     }
+
+                    // if ((int)iPiece._pawn._type > -1 && (iPiece._loc.ToString() != _selectedPiece.ToString() || !PlayerSidePiece(iPiece._pawn._type, currentSide)))
+                    // {
+                    //     spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
+                    // }
 
                     rect.X += TileSizeX(viewPort);
                 }
@@ -472,10 +598,44 @@ namespace Hnefatafl
                 rect.X = (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2);
             }
 
-            if (_selectedPiece.X != -1 && (PlayerSidePiece(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type, currentSide))) //Drawn here to allow it to be above the half of the board beneath itself
+
+            rect = new Rectangle(
+                        (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + (_selectedPiece.X * TileSizeX(viewPort)), 
+                        (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + (_selectedPiece.Y * TileSizeY(viewPort)), 
+                        TileSizeX(viewPort), TileSizeY(viewPort));
+
+            for (int x = 0; x < _boardSize; x++)
+            {
+                for (int y = 0; y < _boardSize; y++)
+                {
+                    if (_selectedPiece.X != -1)
+                    {
+                        ConstructBoardHighlight(graphics, spriteBatch, viewPort, rect);
+                        //spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Seperated), rect, Color.White);
+                    }
+                    else if (_boardHighlight is not null)
+                    {
+                        _boardHighlight.Dispose();
+                    }
+                }
+            }
+
+            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Seperated), 
+                new Rectangle(
+                (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.X - (TileSizeX(viewPort) * _boardSize) + (int)(TileSizeX(viewPort) * 1.5)) / TileSizeX(viewPort) * TileSizeX(viewPort)), 
+                (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (TileSizeY(viewPort) * _boardSize) + (TileSizeY(viewPort) * 8 + (TileSizeY(viewPort) / 16))) / TileSizeY(viewPort) * TileSizeY(viewPort)),
+                TileSizeX(viewPort), TileSizeY(viewPort)),
+                Color.White);
+
+            if (_selectedPiece.X != -1) //Drawn here to allow it to be above the half of the board beneath itself
             {
                 spriteBatch.Draw(_pawnTexture[(int)_pieces.GetPiece(_selectedPiece.ToString())._pawn._type], new Rectangle(Mouse.GetState().Position, rect.Size), Color.White);
             }
+
+            // if (_selectedPiece.X != -1 && (PlayerSidePiece(_pieces.GetPiece(_selectedPiece.ToString())._pawn._type, currentSide))) //Drawn here to allow it to be above the half of the board beneath itself
+            // {
+            //     spriteBatch.Draw(_pawnTexture[(int)_pieces.GetPiece(_selectedPiece.ToString())._pawn._type], new Rectangle(Mouse.GetState().Position, rect.Size), Color.White);
+            // }
         }
     }
 }

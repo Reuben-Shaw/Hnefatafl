@@ -3,7 +3,7 @@
   <SourceFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Death.wav</SourceFile>
   <SourceTime>2022-03-05T13:12:47.4618171+00:00</SourceTime>
   <DestFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Audio/Death.xnb</DestFile>
-  <DestTime>2022-03-06T15:09:09.3372666+00:00</DestTime>
+  <DestTime>2022-03-07T11:39:50.2062181+00:00</DestTime>
   <Importer>WavImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>SoundEffectProcessor</Processor>

@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace Hnefatafl.Media
 {
-    public enum TextureAtlasLink: int { Seperated, UpDown, LeftRight, UpEnd, RightEnd, DownEnd, LeftEnd, Cross, ForkUp, ForkRight, ForkDown, ForkLeft, CornerUp, CornerRight, CornerDown, CornerLeft };
+    public enum TextureAtlasLink: int { Seperated, UpDown, LeftRight, UpEnd, RightEnd, DownEnd, LeftEnd, Cross, UpFork, RightFork, DownFork, LeftFork, UpCorner, RightCorner, DownCorner, LeftCorner };
     sealed class AtlasTexture
     {
         private Texture2D[,] _texture;

@@ -432,21 +432,9 @@ namespace Hnefatafl
 
         private void ConstructBoardHighlight(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Rectangle startRect)
         {
-            // HPoint[] maxLocations = new HPoint[4];
-            // Color[] boardHilightColour = new Color[TileSizeX(viewPort) * TileSizeY(viewPort)];
-
-            // _boardHighlight = new Texture2D(graphics.GraphicsDevice, TileSizeX(viewPort), TileSizeY(viewPort));
-            // _boardHighlight.GetData<Color>(boardHilightColour);
-
-            // for (int i = 0; i < 4; i++)
-            // {
-            //     maxLocations[i] = PathMaxExtent(_selectedPiece, (Direction)i);
-            // }
-
             HPoint[] maxLocations = new HPoint[4];
             Rectangle rect;
-            Point connections = new Point(0, 0);
-
+            bool[] connections = new bool[4];
 
             for (int i = 0; i < 4; i++)
             {
@@ -454,7 +442,6 @@ namespace Hnefatafl
                 rect = startRect;
                 
                 maxLocations[i] = PathMaxExtent(_selectedPiece, (Direction)i);
-                //Console.WriteLine($"{maxLocations[i]} != {_selectedPiece}");
 
                 if ((Direction)i == Direction.Left || (Direction)i == Direction.Right)
                 {
@@ -515,15 +502,12 @@ namespace Hnefatafl
 
                 if (start != end)
                 {
-                    connections.X++;
-                }
-                else
-                {
-                    connections.Y = i;
+                    connections[(int)(Direction)i] = true;
                 }
             }
-            
-            switch (connections.X)
+
+            int amountOfConnects = PositiveDirections(connections);
+            switch (amountOfConnects)
             {
                 case 0:
                 {
@@ -532,17 +516,33 @@ namespace Hnefatafl
                 }
                 case 1:
                 {
-                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)connections.Y + 2), startRect, Color.White);
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)Enum.Parse(typeof(TextureAtlasLink), ((Direction)ConnectionLocation(connections, true)).ToString() + "End")), startRect, Color.White);
                     break;
                 }
                 case 2:
                 {
-                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)connections.Y + 12), startRect, Color.White);
+                    if (connections[0] && connections[2])
+                    {
+                        spriteBatch.Draw(_boardHighlightAtlas.GetTexture(UpDown), startRect, Color.White);
+                    }
+                    else if (connections[1] && connections[3])
+                    {
+                        spriteBatch.Draw(_boardHighlightAtlas.GetTexture(LeftRight), startRect, Color.White);
+                    }
+                    else if (connections[0] && connections[3])
+                    {
+                        spriteBatch.Draw(_boardHighlightAtlas.GetTexture(LeftCorner), startRect, Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)Enum.Parse(typeof(TextureAtlasLink), ((Direction)ConnectionLocation(connections, true)).ToString() + "Corner")), startRect, Color.White);
+                    }
+                    
                     break;
                 }
                 case 3:
                 {
-                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)connections.Y + 8), startRect, Color.White);
+                    spriteBatch.Draw(_boardHighlightAtlas.GetTexture((TextureAtlasLink)Enum.Parse(typeof(TextureAtlasLink), ((Direction)ConnectionLocation(connections, false)).ToString() + "Fork")), startRect, Color.White);
                     break;
                 }
                 case 4:
@@ -552,8 +552,28 @@ namespace Hnefatafl
                 }
             }
 
-            Console.WriteLine($"{(Direction)0}: {maxLocations[0]}, {(Direction)1}: {maxLocations[1]}, {(Direction)2}: {maxLocations[2]}, {(Direction)3}: {maxLocations[3]}");
-            
+            //Console.WriteLine($"{(Direction)0}: {maxLocations[0]}, {(Direction)1}: {maxLocations[1]}, {(Direction)2}: {maxLocations[2]}, {(Direction)3}: {maxLocations[3]}");
+        }
+
+        private int PositiveDirections(bool[] boolArr)
+        {
+            int amount = 0;
+            for (int i = 0; i < boolArr.Length; i++)
+            {
+                if (boolArr[i] == true)
+                    amount++;
+            }
+            return amount;
+        }
+
+        private int ConnectionLocation(bool[] boolArr, bool checkForConnection)
+        {
+            for (int i = 0; i < boolArr.Length; i++)
+            {
+                if (boolArr[i] == checkForConnection)
+                    return i;
+            }
+            return 0;
         }
 
         public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Player.SideType? currentSide) //Used for drawing the board and the pieces
@@ -561,6 +581,11 @@ namespace Hnefatafl
             Rectangle rect = new Rectangle(
                         (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2), 
                         (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2), 
+                        TileSizeX(viewPort), TileSizeY(viewPort));
+
+            Rectangle highlightRect = new Rectangle(
+                        (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + (_selectedPiece.X * TileSizeX(viewPort)), 
+                        (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + (_selectedPiece.Y * TileSizeY(viewPort)), 
                         TileSizeX(viewPort), TileSizeY(viewPort));
             Piece iPiece;
 
@@ -586,6 +611,7 @@ namespace Hnefatafl
                     {
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
                     }
+                    
 
                     // if ((int)iPiece._pawn._type > -1 && (iPiece._loc.ToString() != _selectedPiece.ToString() || !PlayerSidePiece(iPiece._pawn._type, currentSide)))
                     // {
@@ -598,34 +624,20 @@ namespace Hnefatafl
                 rect.X = (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2);
             }
 
-
-            rect = new Rectangle(
-                        (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + (_selectedPiece.X * TileSizeX(viewPort)), 
-                        (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + (_selectedPiece.Y * TileSizeY(viewPort)), 
-                        TileSizeX(viewPort), TileSizeY(viewPort));
-
-            for (int x = 0; x < _boardSize; x++)
+            if (_selectedPiece.X != -1)
             {
-                for (int y = 0; y < _boardSize; y++)
-                {
-                    if (_selectedPiece.X != -1)
-                    {
-                        ConstructBoardHighlight(graphics, spriteBatch, viewPort, rect);
-                        //spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Seperated), rect, Color.White);
-                    }
-                    else if (_boardHighlight is not null)
-                    {
-                        _boardHighlight.Dispose();
-                    }
-                }
+                ConstructBoardHighlight(graphics, spriteBatch, viewPort, highlightRect);
             }
 
-            spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Seperated), 
-                new Rectangle(
-                (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.X - (TileSizeX(viewPort) * _boardSize) + (int)(TileSizeX(viewPort) * 1.5)) / TileSizeX(viewPort) * TileSizeX(viewPort)), 
-                (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (TileSizeY(viewPort) * _boardSize) + (TileSizeY(viewPort) * 8 + (TileSizeY(viewPort) / 16))) / TileSizeY(viewPort) * TileSizeY(viewPort)),
-                TileSizeX(viewPort), TileSizeY(viewPort)),
-                Color.White);
+            if (Mouse.GetState().Position.X >= (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2))
+            {
+                spriteBatch.Draw(_boardHighlightAtlas.GetTexture(Seperated), 
+                                new Rectangle(
+                                (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.X - (TileSizeX(viewPort) * _boardSize) + (int)(TileSizeX(viewPort) * 1.5)) / TileSizeX(viewPort) * TileSizeX(viewPort)), 
+                                (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (TileSizeY(viewPort) * _boardSize) + (TileSizeY(viewPort) * 8 + (TileSizeY(viewPort) / 16))) / TileSizeY(viewPort) * TileSizeY(viewPort)),
+                                TileSizeX(viewPort), TileSizeY(viewPort)),
+                                Color.White);
+            }
 
             if (_selectedPiece.X != -1) //Drawn here to allow it to be above the half of the board beneath itself
             {

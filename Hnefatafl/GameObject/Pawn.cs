@@ -106,7 +106,19 @@ namespace Hnefatafl
             _pieceBoard.Clear();
             if (type == BoardTypes.Regular)
             {
+                // _pieceBoard.Add("2,2", new Piece(new Pawn(Attacker), new HPoint(2, 2)));
+                // _pieceBoard.Add("2,3", new Piece(new Pawn(Attacker), new HPoint(2, 3)));
+                // _pieceBoard.Add("2,4", new Piece(new Pawn(Attacker), new HPoint(2, 4)));
+                // _pieceBoard.Add("2,5", new Piece(new Pawn(Attacker), new HPoint(2, 5)));
+                // _pieceBoard.Add("2,6", new Piece(new Pawn(Attacker), new HPoint(2, 6)));
+                // _pieceBoard.Add("2,7", new Piece(new Pawn(Attacker), new HPoint(2, 7)));
+                // _pieceBoard.Add("5,3", new Piece(new Pawn(Defender), new HPoint(5, 3)));
+                // _pieceBoard.Add("5,4", new Piece(new Pawn(Defender), new HPoint(5, 4)));
+                // _pieceBoard.Add("5,5", new Piece(new Pawn(Defender), new HPoint(5, 5)));
+                // _pieceBoard.Add("5,6", new Piece(new Pawn(Defender), new HPoint(5, 6)));
+
                 HPoint point;
+
                 for (int y = 0; y < boardSize; y++)
                 {
                     for (int x = 0; x < boardSize; x++)

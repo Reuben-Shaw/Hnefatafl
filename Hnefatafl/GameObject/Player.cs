@@ -17,12 +17,29 @@ namespace Hnefatafl
 {
     sealed class Player
     {
-        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN }
+        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START }
         public enum SideType { Attackers, Defenders }
         public Board _board;
         private NetClient _client;
-        public bool _currentTurn;
-        public SideType? _side;
+        private bool m_currentTurn;
+        public bool _currentTurn
+        {
+            get
+            {
+                return m_currentTurn;
+            }
+            set
+            {
+                m_currentTurn = value;
+                if (!_board.MovesStillPossible(_side))
+                {
+                    SendMessage(WIN.ToString());
+                    Console.WriteLine("Lost due to no moves");
+                }
+            }
+        }
+        public SideType? _side; //Nullable as the when connecting to a server the player side will not be immediatly sent, and thus null, checks will be done before this however and allowing it to trap for null values prevents exceptions
+        public List<string> _repeatedMoveChk = new List<string>();
 
         public Player(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
         {
@@ -58,7 +75,6 @@ namespace Hnefatafl
                 _client.FlushSendQueue();
                 return true;
             }
-          
 
             return false;
         }
@@ -86,7 +102,7 @@ namespace Hnefatafl
             {
                 if (message is not null)
                 {
-                    if (message.SenderConnection != null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
+                    if (message.SenderConnection is not null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
                     {
                         string msg = message.ReadString();
                         Console.WriteLine(msg);
@@ -105,6 +121,20 @@ namespace Hnefatafl
                         else if (msgDiv[0] == MOVEFAIL.ToString())
                         {
                             _board.SelectPiece(new HPoint(-1, -1));
+                        }
+                        else if (msgDiv[0] == WIN.ToString())
+                        {
+                            Console.WriteLine("I won");
+                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                        }
+                        else if (msgDiv[0] == LOSE.ToString())
+                        {
+                            Console.WriteLine("I lost");
+                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                        }
+                        else if (msgDiv[0] == START.ToString())
+                        {
+                            _board._state = Board.BoardState.ActiveGame;
                         }
                         else
                         {
@@ -131,12 +161,9 @@ namespace Hnefatafl
                 Console.WriteLine("Poor message formatting - probably startup message. Crash averted");
             }
         }
-
+        
         private ServerOptions OptionsXmlDeserialise(string xml)
         {
-            if (xml is null)
-                return null;
-
             XmlSerializer serializer = new XmlSerializer(typeof(ServerOptions));
 
             using (TextReader reader = new StringReader(xml))
@@ -147,17 +174,14 @@ namespace Hnefatafl
 
         public void EstablishConnection(string ip, int port)
         {
-            _client.Connect(ip, port);
-        }
-
-        public void EstablishConnection(string ip)
-        {
-            _client.Connect(ip, 14242);
-        }
-
-        public void EstablishConnection()
-        {
-            _client.Connect("localhost", 14242);
+            try
+            {
+                _client.Connect(ip, port);
+            }
+            catch
+            {
+                Console.WriteLine("Failed to connect");
+            }
         }
 
         public void Disconnect()

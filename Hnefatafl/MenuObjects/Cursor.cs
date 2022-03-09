@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System;
 
-namespace Hnefatafl
+namespace Hnefatafl.MenuObjects
 {
     sealed class Cursor
     {
@@ -14,6 +14,7 @@ namespace Hnefatafl
         public Texture2D _openHand { get; set; }
         public Texture2D _closedHand { get; set; }
         public Point _pos { get; set; }
+        public bool _hidden { get; set; }
 
         public CursorState _state;
 
@@ -23,6 +24,7 @@ namespace Hnefatafl
             _pointer = Content.Load<Texture2D>("Texture/Menu/PointerCursor");
             _openHand = Content.Load<Texture2D>("Texture/Menu/OpenHandCursor");
             _closedHand = Content.Load<Texture2D>("Texture/Menu/CloseHandCursor");
+            _hidden = false;
         }
 
         public void UnloadContent()
@@ -34,7 +36,7 @@ namespace Hnefatafl
 
         public void Draw(SpriteBatch spriteBatch, Rectangle viewPort)
         {
-            if (viewPort.Contains(_pos))
+            if (viewPort.Contains(_pos) && !_hidden)
             {
                 switch (_state)
                 {

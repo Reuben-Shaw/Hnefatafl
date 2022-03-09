@@ -1,10 +1,10 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
-using static Hnefatafl.MenuObject.Status;
+using static Hnefatafl.MenuObjects.MenuObject.Status;
 using System;
 
-namespace Hnefatafl
+namespace Hnefatafl.MenuObjects
 {
     sealed class Button : MenuObject
     {

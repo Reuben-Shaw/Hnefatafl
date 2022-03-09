@@ -37,16 +37,6 @@ namespace Hnefatafl
             _kingCaptureOp = KingCaptureOp.AllDefendersThree;
             _winOp = WinOp.Corner;
         }
-        public ServerOptions(bool test)
-        {
-            _playerTurn = PlayerTurn.Defender;
-            _throneOp = ThroneOp.Disabled;
-            _kingOp = KingOp.Unarmed;
-            _sandwichMovementOp = SandwichMovementOp.Enabled;
-            _captureOp = CaptureOp.CornerThrone;
-            _kingCaptureOp = KingCaptureOp.AllDefendersThree;
-            _winOp = WinOp.Corner;
-        }
 
         public override string ToString() //Pretty debug features, I'm such a dreamy developer
         {

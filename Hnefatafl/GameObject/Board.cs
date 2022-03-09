@@ -16,13 +16,13 @@ namespace Hnefatafl
 
     sealed class Board
     {
-        private readonly Texture2D[] _boardColours = new Texture2D[6];
-        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
+        private readonly Texture2D[] _boardColours = new Texture2D[7];
+        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner, 6: Highlight colour
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         //0: Attacker, 1: Defender, 2: King
         private AtlasTexture _boardHighlightAtlas;
         private Texture2D _selectHighlight;
-        private bool _redrawSelect = false;
+        private bool? _redrawSelect = null;
         private Texture2D _boardHighlight;
         private Pieces _pieces = new Pieces();
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
@@ -43,6 +43,10 @@ namespace Hnefatafl
             CreatePawns(graphics, Content);
             _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
+
+            _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
+            _boardHighlightAtlas.HueShiftTexture(colours[colours.Length - 1]);
+            SelectHighlightColour(null);
         }
 
         public Board(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
@@ -68,7 +72,7 @@ namespace Hnefatafl
         private void CreateColours(GraphicsDeviceManager graphics, Color[] colours)
         {
             //Creates the Texture2Ds that are used to draw the board from the user selected colours
-            for (int i = 0; i < _boardColours.Length; i++)
+            for (int i = 0; i < _boardColours.Length - 1; i++) //-1 as the highlight colour is dealt with seperately
             {
                 _boardColours[i] = new Texture2D(graphics.GraphicsDevice, 1, 1);
                 _boardColours[i].SetData(new[] { colours[i] });
@@ -129,12 +133,14 @@ namespace Hnefatafl
         {
             for (int i = 0; i < _boardColours.Length; i++)
             {
-                _boardColours[i].Dispose();
+                if (_boardColours[i] is not null)
+                    _boardColours[i].Dispose();
             }
 
             for (int i = 0; i < _pawnTexture.Length; i++)
             {
-                _pawnTexture[i].Dispose();
+                if (_pawnTexture[i] is not null)
+                    _pawnTexture[i].Dispose();
             }
 
             _boardHighlightAtlas.UnloadContent();
@@ -424,17 +430,27 @@ namespace Hnefatafl
         private HPoint PathMaxExtent(HPoint startLocation, Direction direction)
         {
             int start, end, increment;
+            bool isKing = false, defenderThrone = false;
+            PieceType pieceChk;
+
+            if (_pieces.GetPiece(_selectedPiece.ToString())._pawn._type == King)
+                isKing = true;
+            else if (_pieces.GetPiece(_selectedPiece.ToString())._pawn._type == Defender && _serverOp._throneOp == ThroneOp.DefenderKing)
+                defenderThrone = true;
 
             if (direction == Direction.Down || direction == Direction.Up)
             {
-
                 if (direction == Direction.Down)
                 { 
                     start = startLocation.Y + 1; end = _boardSize; increment = 1; 
                     for (int i = start; i < end; i += increment)
                     {
-                        if (_pieces.GetPiece(startLocation.X + "," + i)._pawn._type != Empty)
-                            return new HPoint(startLocation.X, i);
+                        pieceChk = _pieces.GetPiece(startLocation.X + "," + i)._pawn._type;
+                        if (pieceChk != Empty)
+                        {
+                            if ((isKing && (pieceChk == Corner || pieceChk == Throne)) || (defenderThrone && pieceChk == Throne)) return new HPoint(startLocation.X, i + increment);
+                            else return new HPoint(startLocation.X, i);
+                        }
                     }
                 }
                 else
@@ -442,8 +458,12 @@ namespace Hnefatafl
                     start = startLocation.Y - 1; end = -1; increment = -1; 
                     for (int i = start; i > end; i += increment)
                     {
-                        if (_pieces.GetPiece(startLocation.X + "," + i)._pawn._type != Empty)
-                            return new HPoint(startLocation.X, i);
+                        pieceChk = _pieces.GetPiece(startLocation.X + "," + i)._pawn._type;
+                        if (pieceChk != Empty)
+                        {
+                            if ((isKing && (pieceChk == Corner || pieceChk == Throne)) || (defenderThrone && pieceChk == Throne)) return new HPoint(startLocation.X, i + increment);
+                            else return new HPoint(startLocation.X, i);
+                        }
                     }
                 }
                 return new HPoint(startLocation.X, end);
@@ -455,8 +475,12 @@ namespace Hnefatafl
                     start = startLocation.X + 1; end = _boardSize; increment = 1; 
                     for (int i = start; i < end; i += increment)
                     {
-                        if (_pieces.GetPiece(i + "," + startLocation.Y)._pawn._type != Empty)
-                            return new HPoint(i, startLocation.Y);
+                        pieceChk = _pieces.GetPiece(i + "," + startLocation.Y)._pawn._type;
+                        if (pieceChk != Empty)
+                        {
+                            if ((isKing && (pieceChk == Corner || pieceChk == Throne)) || (defenderThrone && pieceChk == Throne)) return new HPoint(i + increment, startLocation.Y);
+                            else return new HPoint(i, startLocation.Y);
+                        }
                     }
                 }
                 else
@@ -464,8 +488,12 @@ namespace Hnefatafl
                     start = startLocation.X - 1; end = -1; increment = -1; 
                     for (int i = start; i > end; i += increment)
                     {
-                        if (_pieces.GetPiece(i + "," + startLocation.Y)._pawn._type != Empty)
-                            return new HPoint(i, startLocation.Y);
+                        pieceChk = _pieces.GetPiece(i + "," + startLocation.Y)._pawn._type;
+                        if (pieceChk != Empty)
+                        {
+                            if ((isKing && (pieceChk == Corner || pieceChk == Throne)) || (defenderThrone && pieceChk == Throne)) return new HPoint(i + increment, startLocation.Y);
+                            else return new HPoint(i, startLocation.Y);
+                        }
                     }
                 }
                 return new HPoint(end, startLocation.Y);
@@ -622,7 +650,7 @@ namespace Hnefatafl
                 }
             }
 
-            SelectHighlightColour(foundSelect);
+            if (foundSelect != _redrawSelect) SelectHighlightColour(foundSelect);
             //Console.WriteLine($"{(Direction)0}: {maxLocations[0]}, {(Direction)1}: {maxLocations[1]}, {(Direction)2}: {maxLocations[2]}, {(Direction)3}: {maxLocations[3]}");
         }
 
@@ -649,6 +677,8 @@ namespace Hnefatafl
 
         public void SelectHighlightColour(bool? positive)
         {
+            _redrawSelect = positive;
+
             Color[] data;
             _selectHighlight = _boardHighlightAtlas.GetTexture(0);
             data = new Color[_selectHighlight.Width * _selectHighlight.Height];

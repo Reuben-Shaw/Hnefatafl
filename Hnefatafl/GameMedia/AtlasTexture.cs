@@ -145,11 +145,14 @@ namespace Hnefatafl.Media
 
         public void UnloadContent()
         {
-            for (int x = 0; x < _texture.GetLength(0); x++)
+            if (_texture is not null)
             {
-                for (int y = 0; y < _texture.GetLength(1); y++)
+                for (int x = 0; x < _texture.GetLength(0); x++)
                 {
-                    _texture[x, y].Dispose();
+                    for (int y = 0; y < _texture.GetLength(1); y++)
+                    {
+                        _texture[x, y].Dispose();
+                    }
                 }
             }
         }

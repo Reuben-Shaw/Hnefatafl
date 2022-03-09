@@ -114,9 +114,8 @@ namespace Hnefatafl
                         }
                         else if (msgDiv[0] == MOVE.ToString())
                         {
-                            _currentTurn = !_currentTurn;
-                            Console.WriteLine("Is it my turn? " + _currentTurn);
                             _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                            _currentTurn = !_currentTurn;
                         }
                         else if (msgDiv[0] == MOVEFAIL.ToString())
                         {

@@ -35,6 +35,11 @@ namespace Hnefatafl
             Y = ToInt32(pointSplit[1]);
         }
 
+        public Point AsPoint()
+        {
+            return new Point(X, Y);
+        }
+
         public override string ToString()
         {
             return "" + X + "," + Y;

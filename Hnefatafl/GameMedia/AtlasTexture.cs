@@ -118,6 +118,31 @@ namespace Hnefatafl.Media
             return _texture[dictionaryPoint.X, dictionaryPoint.Y];
         }
 
+        public void HueShiftTexture(Color userColour)
+        {
+            for (int x = 0; x < _texture.GetLength(0); x++)
+            {
+                for (int y = 0; y < _texture.GetLength(1); y++)
+                {
+                    Color[] data;
+                    data = new Color[_texture[x, y].Width * _texture[x, y].Height];
+                    _texture[x, y].GetData<Color>(data);
+
+                    for (int i = 0; i < data.Length; i++)
+                    {
+                        if (data[i] != Color.Transparent && data[i] != Color.Black)
+                        {
+                            data[i] = new Color((byte)((float)(data[i].R / 255f) * userColour.R), 
+                                                (byte)((float)(data[i].G / 255f) * userColour.G), 
+                                                (byte)((float)(data[i].B / 255f) * userColour.B));
+                        }
+                    }
+                    
+                    _texture[x, y].SetData<Color>(data);
+                }
+            }
+        }
+
         public void UnloadContent()
         {
             for (int x = 0; x < _texture.GetLength(0); x++)

@@ -95,7 +95,7 @@ namespace Hnefatafl
             {
                 _server.ReadMessages();
             }
-            
+
             _player.CheckMessage();
 
             if (_gameState != GameState.InGame && _gameState != GameState.EscMenu && _player.IsConnected())
@@ -107,7 +107,6 @@ namespace Hnefatafl
             MouseState currentMouseState = Mouse.GetState();
             KeyboardState currentKeyboardState = Keyboard.GetState();
             Point mouseLoc = new Point(currentMouseState.Position.X, currentMouseState.Position.Y);
-            
 
             switch (_gameState)
             {
@@ -143,7 +142,7 @@ namespace Hnefatafl
                 }
             }
 
-            if (previousKeyboard != currentKeyboardState)
+            if (previousKeyboard != currentKeyboardState || currentKeyboardState.IsKeyDown(Keys.Back))
             {
                 foreach (TextBox textbox in _textbox)
                 {
@@ -151,7 +150,7 @@ namespace Hnefatafl
                     {
                         foreach (Keys key in currentKeyboardState.GetPressedKeys())
                         {
-                            if (!previousKeyboard.IsKeyDown(key))
+                            if (!previousKeyboard.IsKeyDown(key) || key == Keys.Back)
                             {
                                 if (key != Keys.Back)
                                 {
@@ -159,7 +158,7 @@ namespace Hnefatafl
                                 }
                                 else
                                 {
-                                    textbox.RemoveChar();
+                                    textbox.RemoveChar(gameTime.ElapsedGameTime.TotalSeconds);
                                 }
                             }
                         }
@@ -348,6 +347,8 @@ namespace Hnefatafl
                     _player._board.CreatBoard();
                     _player._board._state = Board.BoardState.ActiveGame;
                     _gameState = GameState.InGame;
+                    _player._side = Player.SideType.Attackers;
+                    _player._currentTurn = true;
                     break;
                 }
                 case "options":
@@ -549,7 +550,7 @@ namespace Hnefatafl
                     }
                 }
 
-                if (selected == "" && _player._board._state == Board.BoardState.ActiveGame && (_player._currentTurn || !_player.IsConnected()))
+                if (selected == "" && _player._board._state == Board.BoardState.ActiveGame && _player._currentTurn)
                 {
                     HPoint point = new HPoint(
                         (mouseLoc.X - (viewPort.Width / 2) + ((_player._board.TileSizeX(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(viewPort),
@@ -558,6 +559,7 @@ namespace Hnefatafl
                     
                     if (_player._board.IsPieceSelected() && currentMouseState.LeftButton == ButtonState.Released)
                     {
+                        _player._board.SelectHighlightColour(null);
                         if (_player._board.MakeMove(point, _player._side, !_player.IsConnected()))
                         {
                             _player._repeatedMoveChk.Add(point.ToString()); //Deals with repeated moves by adding to a list
@@ -573,7 +575,6 @@ namespace Hnefatafl
                                 {
                                     _player.SendMessage(MOVE.ToString() + "," + point.ToString());
                                 }
-                                _player._currentTurn = false;
                             }
                             else
                             {
@@ -589,7 +590,13 @@ namespace Hnefatafl
                                     _player._repeatedMoveChk.RemoveAt(0);
                                 }
                                 _player.SendMessage(MOVE.ToString() + "," + point.ToString());
-                                _player._currentTurn = false;
+                            }
+
+                            if (_player.IsConnected()) _player._currentTurn = false; //Turns for local co-op
+                            else
+                            { 
+                                if (_player._side == Player.SideType.Attackers) {_player._side = Player.SideType.Defenders; _player._currentTurn = true;} 
+                                else {_player._side = Player.SideType.Attackers; _player._currentTurn = true;}
                             }
                         }
                         else
@@ -599,7 +606,7 @@ namespace Hnefatafl
                     }
                     else if (currentMouseState.LeftButton == ButtonState.Pressed)
                     {
-                        _player._board.SelectPiece(point);
+                        _player._board.SelectPiece(point, _player._side);
                         _player.SendMessage(SELECT.ToString() + "," + point.ToString());
                     }
                 }
@@ -662,7 +669,7 @@ namespace Hnefatafl
 
         private bool IsValidIp(string ipChk)
         {
-            Regex r =  new Regex(@"^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9]?)$");
+            Regex r =  new Regex(@"^((25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9][0-9]|[0-9])$");
             if (r.IsMatch(ipChk))
             {
                 return true;
@@ -673,7 +680,7 @@ namespace Hnefatafl
 
         private bool IsValidPort(string portChk)
         {
-            Regex r =  new Regex(@"^(6[0-5]?[0-5]?[0-3]?[0-5]?|[0-5]?[0-9]?[0-9]?[0-9]?[0-9]?)$");
+            Regex r =  new Regex(@"^(6[0-5]?[0-5]?[0-3]?[0-5]?|[0-5]?[0-9]?[0-9]?[0-9]?[0-9])$");
             if (r.IsMatch(portChk))
             {
                 return true;
@@ -694,10 +701,8 @@ namespace Hnefatafl
             if (_gameState == GameState.InGame || _gameState == GameState.EscMenu)
             {
                 Player.SideType? currentSide = _player._side;
-                if (!_player.IsConnected())
-                    _player._side = null;
 
-                _player._board.Draw(_graphics, _spriteBatch, viewPort, currentSide);
+                _player._board.Draw(_graphics, _spriteBatch, viewPort, currentSide, _player._currentTurn);
             }
 
             foreach (Button button in _button)

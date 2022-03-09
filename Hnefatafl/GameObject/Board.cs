@@ -61,7 +61,7 @@ namespace Hnefatafl
             SelectHighlightColour(null);
         }
 
-        public void CreatBoard()
+        public void CreateBoard()
         {
             _serverOp = new ServerOptions(); //Defines the options, currently empty as it will default to automatic options
             _pieces.CreateBoard(_boardSize, BoardTypes.Regular); //Responsible entirely for the creation of the pieces on the board, Board.cs doesn't contain any logic relating to this at all

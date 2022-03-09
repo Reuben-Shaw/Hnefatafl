@@ -5,9 +5,9 @@ using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using static Hnefatafl.MenuObject.Status;
+using static Hnefatafl.MenuObjects.MenuObject.Status;
 
-namespace Hnefatafl
+namespace Hnefatafl.MenuObjects
 {
     sealed class TextBox : MenuObject
     {

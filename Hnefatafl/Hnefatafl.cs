@@ -8,7 +8,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
-using static Hnefatafl.MenuObject.Status;
+using Hnefatafl.MenuObjects;
+using static Hnefatafl.MenuObjects.MenuObject.Status;
 using static Hnefatafl.Player.InstructType;
 using static Hnefatafl.ServerOptions;
 
@@ -344,7 +345,7 @@ namespace Hnefatafl
                 }
                 case "localCoOp":
                 {
-                    _player._board.CreatBoard();
+                    _player._board.CreateBoard();
                     _player._board._state = Board.BoardState.ActiveGame;
                     _gameState = GameState.InGame;
                     _player._side = Player.SideType.Attackers;
@@ -371,7 +372,7 @@ namespace Hnefatafl
             {
                 case "host":
                 {
-                    _player._board.CreatBoard();
+                    _player._board.CreateBoard();
                     _gameState = GameState.GameSetup;
                     break;
                 }
@@ -408,12 +409,12 @@ namespace Hnefatafl
                     //Console.WriteLine($"Valid IP Address: {IsValidIp(_textbox[0]._text)}\nValid Port: {IsValidPort(_textbox[1]._text)}");
                     if (IsValidIp(_textbox[0]._text) && IsValidPort(_textbox[1]._text)) //Textbox[0] is IP, Textbox[1] is port
                     {
-                        _player._board.CreatBoard();
+                        _player._board.CreateBoard();
                         _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
                     }
                     else if (_textbox[0]._text == "" && _textbox[1]._text == "")
                     {
-                        _player._board.CreatBoard();
+                        _player._board.CreateBoard();
                         _player.EstablishConnection("localhost", Convert.ToInt32("14242"));
                     }
                     break;
@@ -526,12 +527,17 @@ namespace Hnefatafl
             }
         }
 
+        double previousInput = 0;
         private void InGame(GameTime gameTime, MouseState currentMouseState, KeyboardState currentKeyboardState, Point mouseLoc)
         {
+            Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
+
+            if (currentMouseState.Position != previousMouse.Position)
+                _cursor._hidden = false;
+
             if (currentMouseState.LeftButton != previousMouse.LeftButton)
             {
                 string selected = ButtonCheck(currentMouseState, mouseLoc);
-                Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
 
                 if (currentMouseState.LeftButton == ButtonState.Released) _cursor._state = Cursor.CursorState.OpenHand;
                 else _cursor._state = Cursor.CursorState.ClosedHand;
@@ -550,72 +556,176 @@ namespace Hnefatafl
                     }
                 }
 
-                if (selected == "" && _player._board._state == Board.BoardState.ActiveGame && _player._currentTurn)
+                if (_player._board._state == Board.BoardState.ActiveGame && _player._currentTurn)
                 {
-                    HPoint point = new HPoint(
-                        (mouseLoc.X - (viewPort.Width / 2) + ((_player._board.TileSizeX(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(viewPort),
-                        (mouseLoc.Y - (viewPort.Height / 2) + ((_player._board.TileSizeY(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeY(viewPort)
-                        );
-                    
-                    if (_player._board.IsPieceSelected() && currentMouseState.LeftButton == ButtonState.Released)
-                    {
-                        _player._board.SelectHighlightColour(null);
-                        if (_player._board.MakeMove(point, _player._side, !_player.IsConnected()))
-                        {
-                            _player._repeatedMoveChk.Add(point.ToString()); //Deals with repeated moves by adding to a list
-                            if (_player._repeatedMoveChk.Count > 2 && _player._repeatedMoveChk[_player._repeatedMoveChk.Count - 1] == _player._repeatedMoveChk[_player._repeatedMoveChk.Count - 3])
-                            {
-                                Console.WriteLine("Repeated detected");
-                                if (_player._repeatedMoveChk.Count == 6)
-                                {
-                                    Console.WriteLine("Loss due to repeat");
-                                    _player.SendMessage(WIN.ToString() + "," + point.ToString());
-                                }
-                                else
-                                {
-                                    _player.SendMessage(MOVE.ToString() + "," + point.ToString());
-                                }
-                            }
-                            else
-                            {
-                                if (_player._repeatedMoveChk.Count > 3)
-                                {
-                                    for (int i = _player._repeatedMoveChk.Count - 1; i > 1; i--)
-                                    {
-                                        _player._repeatedMoveChk.RemoveAt(i);
-                                    }
-                                }
-                                else if (_player._repeatedMoveChk.Count == 3)
-                                {
-                                    _player._repeatedMoveChk.RemoveAt(0);
-                                }
-                                _player.SendMessage(MOVE.ToString() + "," + point.ToString());
-                            }
+                    Movement(mouseLoc, viewPort, currentMouseState.LeftButton == ButtonState.Released);
+                }
+            }
 
-                            if (_player.IsConnected()) _player._currentTurn = false; //Turns for local co-op
-                            else
-                            { 
-                                if (_player._side == Player.SideType.Attackers) {_player._side = Player.SideType.Defenders; _player._currentTurn = true;} 
-                                else {_player._side = Player.SideType.Attackers; _player._currentTurn = true;}
-                            }
-                        }
-                        else
-                        {
-                            _player.SendMessage(MOVEFAIL.ToString());
-                        }
-                    }
-                    else if (currentMouseState.LeftButton == ButtonState.Pressed)
+            Point selectOffset = new Point(0, 0);
+            bool resetPreviousInput = false;
+
+            foreach (Keys key in currentKeyboardState.GetPressedKeys())
+            {
+                switch (key)
+                {
+                    case Keys.Up:
+                    case Keys.W:
                     {
-                        _player._board.SelectPiece(point, _player._side);
-                        _player.SendMessage(SELECT.ToString() + "," + point.ToString());
+                        if (previousInput > 0.12)
+                        {
+                            selectOffset.Y -= _player._board.TileSizeY(viewPort);
+                            _cursor._hidden = true;
+                            resetPreviousInput = true;
+                        }
+                        break;
+                    }
+                    case Keys.Right:
+                    case Keys.D:
+                    {
+                        if (previousInput > 0.12)
+                        {
+                            selectOffset.X += _player._board.TileSizeX(viewPort);
+                            _cursor._hidden = true;
+                            resetPreviousInput = true;
+                        }
+                        break;
+                    }
+                    case Keys.Down:
+                    case Keys.S:
+                    {
+                        if (previousInput > 0.12)
+                        {
+                            selectOffset.Y += _player._board.TileSizeY(viewPort);
+                            _cursor._hidden = true;
+                            resetPreviousInput = true;
+                        }
+                        break;
+                    }
+                    case Keys.Left:
+                    case Keys.A:
+                    {
+                        if (previousInput > 0.12)
+                        {
+                            selectOffset.X -= _player._board.TileSizeX(viewPort);
+                            _cursor._hidden = true;
+                            resetPreviousInput = true;
+                        }
+                        break;
+                    }
+                    case Keys.Enter:
+                    case Keys.E:
+                    {
+                        if (!previousKeyboard.IsKeyDown(Keys.E) && !previousKeyboard.IsKeyDown(Keys.Enter) && _player._board._state == Board.BoardState.ActiveGame && _player._currentTurn)
+                        {
+                            Movement(mouseLoc, viewPort, _player._board.IsPieceSelected());
+                        }
+                        break;
+                    }
+                    case Keys.R:
+                    {
+                        _player._board.CreateBoard();
+                        break;
                     }
                 }
             }
 
-            if (currentKeyboardState.IsKeyDown(Keys.R) && !previousKeyboard.IsKeyDown(Keys.R)) //Resets board
+            if (_cursor._hidden)
             {
-                _player._board.CreatBoard();
+                Point newPos = new Point(currentMouseState.X + selectOffset.X, currentMouseState.Y + selectOffset.Y);
+                Rectangle boardArea = new Rectangle((viewPort.Width / 2) - ((_player._board.TileSizeX(viewPort) * _player._board._boardSize) / 2), (viewPort.Height / 2) - ((_player._board.TileSizeY(viewPort) * _player._board._boardSize) / 2), _player._board.TileSizeX(viewPort) * _player._board._boardSize, _player._board.TileSizeY(viewPort) * _player._board._boardSize);
+
+                if (!boardArea.Contains(newPos))
+                {
+                    if (newPos.X < boardArea.X)
+                    {
+                        newPos.X = boardArea.X;
+                    }
+                    else if (newPos.X > boardArea.X + boardArea.Width - _player._board.TileSizeX(viewPort))
+                    {
+                        newPos.X = boardArea.X + boardArea.Width - _player._board.TileSizeX(viewPort);
+                    }
+
+                    if (newPos.Y < boardArea.Y)
+                    {
+                        newPos.Y = boardArea.Y;
+                    }
+                    else if (newPos.Y > boardArea.Y + boardArea.Height - _player._board.TileSizeY(viewPort))
+                    {
+                       newPos.Y = boardArea.Y + boardArea.Height - _player._board.TileSizeY(viewPort);
+                    }
+                }
+
+                Mouse.SetPosition(newPos.X, newPos.Y);
             }
+            
+            if (resetPreviousInput)
+            {
+                previousInput = 0;
+            }
+            previousInput += gameTime.ElapsedGameTime.TotalSeconds;
+        }
+
+        private void Movement(Point mouseLoc, Rectangle viewPort, bool moving)
+        {
+            HPoint point = new HPoint(
+                (mouseLoc.X - (viewPort.Width / 2) + ((_player._board.TileSizeX(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(viewPort),
+                (mouseLoc.Y - (viewPort.Height / 2) + ((_player._board.TileSizeY(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeY(viewPort)
+                );
+            
+            if (moving && _player._board.IsPieceSelected())
+            {
+                _player._board.SelectHighlightColour(null);
+                if (_player._board.MakeMove(point, _player._side, !_player.IsConnected()))
+                {
+                    _player._repeatedMoveChk.Add(point.ToString()); //Deals with repeated moves by adding to a list
+                    if (_player._repeatedMoveChk.Count > 2 && _player._repeatedMoveChk[_player._repeatedMoveChk.Count - 1] == _player._repeatedMoveChk[_player._repeatedMoveChk.Count - 3])
+                    {
+                        Console.WriteLine("Repeated detected");
+                        if (_player._repeatedMoveChk.Count == 6)
+                        {
+                            Console.WriteLine("Loss due to repeat");
+                            _player.SendMessage(WIN.ToString() + "," + point.ToString());
+                        }
+                        else
+                        {
+                            _player.SendMessage(MOVE.ToString() + "," + point.ToString());
+                        }
+                    }
+                    else
+                    {
+                        if (_player._repeatedMoveChk.Count > 3)
+                        {
+                            for (int i = _player._repeatedMoveChk.Count - 1; i > 1; i--)
+                            {
+                                _player._repeatedMoveChk.RemoveAt(i);
+                            }
+                        }
+                        else if (_player._repeatedMoveChk.Count == 3)
+                        {
+                            _player._repeatedMoveChk.RemoveAt(0);
+                        }
+                        _player.SendMessage(MOVE.ToString() + "," + point.ToString());
+                    }
+
+                    if (_player.IsConnected()) _player._currentTurn = false; //Turns for local co-op
+                    else
+                    { 
+                        if (_player._side == Player.SideType.Attackers) {_player._side = Player.SideType.Defenders; _player._currentTurn = true;} 
+                        else {_player._side = Player.SideType.Attackers; _player._currentTurn = true;}
+                    }
+                }
+                else
+                {
+                    _player.SendMessage(MOVEFAIL.ToString());
+                }
+            }
+            else if (!moving)
+            {
+                _player._board.SelectPiece(point, _player._side);
+                _player.SendMessage(SELECT.ToString() + "," + point.ToString());
+            }
+            
         }
 
         private string ButtonCheck(MouseState currentState, Point mouseLoc)

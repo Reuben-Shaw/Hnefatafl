@@ -262,3 +262,9 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\win-x6
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\win-x64\Hnefatafl.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\win-x64\Hnefatafl.pdb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Release\netcoreapp3.1\win-x64\Hnefatafl.genruntimeconfig.cache
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Audio\Death.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Audio\Move.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Board\HighlightTrail.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\CloseHandCursor.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\PointerCursor.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Pawn\IDespiseAvery.xnb

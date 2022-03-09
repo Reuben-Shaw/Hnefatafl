@@ -9,7 +9,6 @@ using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
 using static Hnefatafl.Media.TextureAtlasLink;
 
-
 namespace Hnefatafl
 {
     enum BoardTypes { Regular }

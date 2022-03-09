@@ -4,39 +4,37 @@
   <Platform>DesktopGL</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Death.wav</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Board/HighlightTrail.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/MainFont.spritefont</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/testfont.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/CloseHandCursor.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/OpenHandCursor.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/PointerCursor.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureCorner.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureCornerThrone.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureDisabled.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingArmed.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingCaptureAllDefendersThree.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingCaptureJustThree.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingUnarmed.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/playerTurnAttacker.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/playerTurnDefender.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/sandwichDisabled.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/sandwichEnabled.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneDefenderKing.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneDisabled.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneKing.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/winCorner.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/winSide.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/IDespiseAvery.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/king.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/king_a.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnD.png</File>
-    <File>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnE.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Death.wav</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Board/HighlightTrail.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/MainFont.spritefont</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/testfont.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/CloseHandCursor.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/PointerCursor.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureCorner.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureCornerThrone.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/captureDisabled.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingArmed.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingCaptureAllDefendersThree.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingCaptureJustThree.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingUnarmed.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/playerTurnAttacker.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/playerTurnDefender.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/sandwichDisabled.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/sandwichEnabled.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneDefenderKing.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneDisabled.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/throneKing.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/winCorner.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/winSide.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/IDespiseAvery.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/king.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/king_a.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnD.png</File>
+    <File>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnE.png</File>
   </SourceFiles>
   <DestFiles>
-    <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />
     <File xsi:nil="true" />

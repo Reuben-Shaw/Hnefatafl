@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -722,8 +721,11 @@ namespace Hnefatafl
             }
             else if (!moving)
             {
-                _player._board.SelectPiece(point, _player._side);
-                _player.SendMessage(SELECT.ToString() + "," + point.ToString());
+                if (!_player._board.IsPieceSelected())
+                {        
+                    _player._board.SelectPiece(point, _player._side);
+                    _player.SendMessage(SELECT.ToString() + "," + point.ToString());
+                }
             }
             
         }

@@ -54,3 +54,8 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Audio\Death.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Audio\Move.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Board\HighlightTrail.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Menu\BackMenuDivide.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Menu\ButtonDivideSelect.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Menu\ButtonDivideUnselect.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Board\BorderDivide.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Debug\netcoreapp3.1\Content\Texture\Menu\SelectBevel.xnb

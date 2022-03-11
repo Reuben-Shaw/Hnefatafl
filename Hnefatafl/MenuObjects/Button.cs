@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Content;
+using Hnefatafl.Media;
 using static Hnefatafl.MenuObjects.MenuObject.Status;
 using System;
 
@@ -70,8 +71,10 @@ namespace Hnefatafl.MenuObjects
         {
             _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
             Vector2 fontSize = _font.MeasureString(_text);
-            //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
-            _textPos = new Vector2((int)((_size.X - fontSize.X) / 2) + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);
+            fontSize.X *= 1.5f;
+            fontSize.Y *= 1.5f;
+            _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 2f)) + _pos.Y);
+            //Console.WriteLine($"{_textPos}, {_size}, {fontSize}");
             CreateTextures(graphics, Color.DarkGray, Color.Gray);
         }
 
@@ -87,23 +90,21 @@ namespace Hnefatafl.MenuObjects
             _disabledColour.SetData(new[] { new Color(20, 20, 20, 128) });
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, TextureDivide displaySelect, TextureDivide displayUnselect, Rectangle viewPort)
         {
-            Rectangle rect= new Rectangle(_pos, _size);
+            Rectangle rect = new Rectangle(_pos, _size);
             
             if (_image is null)
             {
                 if (_status == Unselected || _status == Disabled)
                 {
-                    spriteBatch.Draw(_backColour, rect, Color.White);
-                    spriteBatch.DrawString(_font, _text, _textPos, _fontColour);
-                    //spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                    displayUnselect.Draw(spriteBatch, tileSizeX, tileSizeY, rect);
+                    spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
                 }
                 else if (_status == Selected)
                 {
-                    spriteBatch.Draw(_selectBackColour, rect, Color.White);
-                    spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour);
-                    //spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                    displaySelect.Draw(spriteBatch, tileSizeX, tileSizeY, rect);
+                    spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
                 }
             }
             else

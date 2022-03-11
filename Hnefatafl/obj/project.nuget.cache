@@ -1,15 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "gCswFyO/PcELXf/sIJwXMDy8cmEtp8b6w0LhIVD/FB2434oi1QPlBZrlGy1egBF4NMrR5lcAqn0yk5nUYUkwKw==",
+  "dgSpecHash": "4cqNK+WJps+PvZm4lxLptrNT5ZnfFQtt6SItq4PQbQYg1n3OB/8W+/8r1Y17NTjAP9VfHGrlj1gJ3bfVh2//uQ==",
   "success": true,
   "projectFilePath": "C:\\Users\\plecc\\source\\repos\\Hnefatafl\\Hnefatafl\\Hnefatafl.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\plecc\\.nuget\\packages\\lidgren.network\\1.0.2\\lidgren.network.1.0.2.nupkg.sha512",
     "C:\\Users\\plecc\\.nuget\\packages\\monogame.content.builder.task\\3.8.0.1641\\monogame.content.builder.task.3.8.0.1641.nupkg.sha512",
-    "C:\\Users\\plecc\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.0.1641\\monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512",
-    "C:\\Users\\plecc\\.nuget\\packages\\microsoft.netcore.app.runtime.win-x64\\3.1.22\\microsoft.netcore.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\plecc\\.nuget\\packages\\microsoft.windowsdesktop.app.runtime.win-x64\\3.1.22\\microsoft.windowsdesktop.app.runtime.win-x64.3.1.22.nupkg.sha512",
-    "C:\\Users\\plecc\\.nuget\\packages\\microsoft.aspnetcore.app.runtime.win-x64\\3.1.22\\microsoft.aspnetcore.app.runtime.win-x64.3.1.22.nupkg.sha512"
+    "C:\\Users\\plecc\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.0.1641\\monogame.framework.desktopgl.3.8.0.1641.nupkg.sha512"
   ],
   "logs": [
     {

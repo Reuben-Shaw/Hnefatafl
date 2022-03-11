@@ -20,6 +20,7 @@ namespace Hnefatafl
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         //0: Attacker, 1: Defender, 2: King
         private AtlasTexture _boardHighlightAtlas;
+        private TextureDivide _boarder; //BOARDer!!!!!!! XDXDXDXDXD Oh the fun I have with programming
         private Texture2D _selectHighlight;
         private bool? _redrawSelect = null;
         private Texture2D _boardHighlight;
@@ -45,6 +46,7 @@ namespace Hnefatafl
 
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
             _boardHighlightAtlas.HueShiftTexture(colours[colours.Length - 1]);
+            _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide");
             SelectHighlightColour(null);
         }
 
@@ -57,6 +59,7 @@ namespace Hnefatafl
 
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
             _boardHighlightAtlas.HueShiftTexture(new Color(236, 179, 19));
+            _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide");
             SelectHighlightColour(null);
         }
 
@@ -708,6 +711,9 @@ namespace Hnefatafl
                         (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + (_selectedPiece.Y * TileSizeY(viewPort)), 
                         TileSizeX(viewPort), TileSizeY(viewPort));
             Piece iPiece;
+
+            _boarder.Draw(spriteBatch, TileSizeX(viewPort), TileSizeY(viewPort), 
+            new Rectangle(rect.X - TileSizeX(viewPort), rect.Y - TileSizeY(viewPort), TileSizeX(viewPort) * _boardSize + (TileSizeX(viewPort) * 2), TileSizeY(viewPort) * _boardSize + (TileSizeY(viewPort) * 2)));
 
             for (int y = 0; y < _boardSize; y++)
             {

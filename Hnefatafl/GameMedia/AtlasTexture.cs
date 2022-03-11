@@ -9,11 +9,15 @@ using System.Collections.Generic;
 namespace Hnefatafl.Media
 {
     public enum TextureAtlasLink: int { Seperated, UpDown, LeftRight, UpEnd, RightEnd, DownEnd, LeftEnd, Cross, UpFork, RightFork, DownFork, LeftFork, UpCorner, RightCorner, DownCorner, LeftCorner };
-    sealed class AtlasTexture
+    public enum DivideLink: int { UpLeft, UpMid, UpRight, MidLeft, MidMid, MidRight, DownLeft, DownMid, DownRight}
+    
+    class AtlasTexture
     {
-        private Texture2D[,] _texture;
+        protected Texture2D[,] _texture;
 
-        private Dictionary<string, Point> _locator = new Dictionary<string, Point>();
+        protected Dictionary<string, Point> _locator = new Dictionary<string, Point>();
+
+        protected AtlasTexture() {  } //Used for inheretance
         
         public AtlasTexture(GraphicsDeviceManager graphics, ContentManager Content, string texturePath)
         {
@@ -47,14 +51,13 @@ namespace Hnefatafl.Media
 
                     _texture[x, y] = new Texture2D(graphics.GraphicsDevice, 16, 16);
                     _texture[x, y].SetData<Color>(data);
-                    Console.WriteLine($"Data size: {data.Length}");
 
                     x++;
                     if (x * 16 == fullAtlas.Width) { x = 0; y++; }
                 }
 
                 fullAtlas.Dispose();
-                }
+            }
             catch (System.Exception)
             {
                 Console.WriteLine("There was an exception loading the texture");
@@ -99,7 +102,7 @@ namespace Hnefatafl.Media
                 }
 
                 fullAtlas.Dispose();
-                }
+            }
             catch (System.Exception)
             {
                 Console.WriteLine("There was an exception loading the texture");
@@ -154,6 +157,101 @@ namespace Hnefatafl.Media
                         _texture[x, y].Dispose();
                     }
                 }
+            }
+        }
+    }
+
+    sealed class TextureDivide : AtlasTexture
+    {
+        public TextureDivide(GraphicsDeviceManager graphics, ContentManager Content, string texturePath)
+        {
+            Texture2D fullAtlas;
+            Color[] atlasColourArray, data;
+
+            try
+            {
+                fullAtlas = Content.Load<Texture2D>(texturePath);
+
+                atlasColourArray = new Color[fullAtlas.Width * fullAtlas.Height];
+                data = new Color[16 * 16];
+
+                fullAtlas.GetData<Color>(atlasColourArray);
+
+                this._texture = new Texture2D[fullAtlas.Width / 16, fullAtlas.Height / 16];
+
+                int x = 0, y = 0;
+                for (int piece = 0; piece < (fullAtlas.Width / 16) * (fullAtlas.Height / 16); piece++)
+                {
+                    _locator.Add(((DivideLink)piece).ToString(), new Point(x, y));
+
+                    //Console.WriteLine($"Location: {x}, {y} which is {x * 16}, {y * 16}");
+                    for (int i = y * 16; i < (y + 1) * 16; i++)
+                    {
+                        for (int j = x * 16; j < (x + 1) * 16; j++)
+                        {
+                            data[((i - (y * 16)) * 16) + (j - (x * 16))] = atlasColourArray[(j) + (i * fullAtlas.Width)];
+                        }
+                    }
+
+                    _texture[x, y] = new Texture2D(graphics.GraphicsDevice, 16, 16);
+                    _texture[x, y].SetData<Color>(data);
+
+                    x++;
+                    if (x * 16 == fullAtlas.Width) { x = 0; y++; }
+                }
+
+                fullAtlas.Dispose();
+            }
+            catch (System.Exception)
+            {
+                Console.WriteLine("There was an exception loading the texture");
+            }
+        }
+
+        private Texture2D GetTexture(DivideLink key)
+        {
+            Point dictionaryPoint = _locator[key.ToString()];
+            return _texture[dictionaryPoint.X, dictionaryPoint.Y];
+        }
+
+        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, Rectangle rect)
+        {
+            Rectangle drawRect = new Rectangle(rect.X, rect.Y, tileSizeX, tileSizeY);
+            int xEnd = rect.Width / tileSizeX, yEnd = rect.Height / tileSizeY;
+
+            for (int x = 0; x < xEnd; x++)
+            {
+                for (int y = 0; y < yEnd; y++)
+                {
+                    if ((x == 0 || x == xEnd - 1) || (y == 0 || y == yEnd - 1))
+                    {
+                        if (x == 0 && y == 0)
+                            spriteBatch.Draw(GetTexture(DivideLink.UpLeft), drawRect, Color.White);
+                        else if (x == xEnd - 1 && y == yEnd - 1)
+                            spriteBatch.Draw(GetTexture(DivideLink.DownRight), drawRect, Color.White);
+                        else if (x == 0 && y == yEnd - 1)
+                            spriteBatch.Draw(GetTexture(DivideLink.DownLeft), drawRect, Color.White);
+                        else if (x == xEnd - 1 && y == 0)
+                            spriteBatch.Draw(GetTexture(DivideLink.UpRight), drawRect, Color.White);
+                        else if (x == 0)
+                            spriteBatch.Draw(GetTexture(DivideLink.MidLeft), drawRect, Color.White);
+                        else if (x == xEnd - 1)
+                            spriteBatch.Draw(GetTexture(DivideLink.MidRight), drawRect, Color.White);
+                        else if (y == 0)
+                            spriteBatch.Draw(GetTexture(DivideLink.UpMid), drawRect, Color.White);
+                        else if (y == yEnd - 1)
+                            spriteBatch.Draw(GetTexture(DivideLink.DownMid), drawRect, Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(GetTexture(DivideLink.MidMid), drawRect, Color.White);
+                    }
+
+                    drawRect.Y += tileSizeY;
+                }
+                
+                drawRect.Y = rect.Y;
+                drawRect.X += tileSizeX;
             }
         }
     }

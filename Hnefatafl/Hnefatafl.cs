@@ -1,4 +1,4 @@
-﻿#undef DEBUG
+﻿#define DEBUG
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Xml;
 using Hnefatafl.MenuObjects;
+using Hnefatafl.Media;
 using static Hnefatafl.MenuObjects.MenuObject.Status;
 using static Hnefatafl.Player.InstructType;
 using static Hnefatafl.ServerOptions;
@@ -23,8 +24,12 @@ namespace Hnefatafl
         private Server _server; 
         private List<Button> _button = new List<Button>();
         private List<TextBox> _textbox = new List<TextBox>();
+        //private List<Label>
+        private ColourPicker _picker;
+        private TextureDivide _buttonSelect, _buttonUnselect;
+        private TextureDivide _menuBack;
 
-        private enum GameState { MainMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
+        private enum GameState { MainMenu, OptionsMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
         private GameState m_gameState;
         private GameState _gameState
         {
@@ -59,6 +64,10 @@ namespace Hnefatafl
             
             _cursor = new Cursor(Content);
             _player = new Player(_graphics, Content, 11);
+
+            _picker = new ColourPicker(new Point(0, 0), "mainPicker");
+            _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds);
+
             _gameState = GameState.MainMenu;
             
             base.Initialize();
@@ -77,6 +86,15 @@ namespace Hnefatafl
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            _buttonSelect = new TextureDivide(_graphics, Content, "Texture/Menu/ButtonDivideSelect");
+            _buttonUnselect = new TextureDivide(_graphics, Content, "Texture/Menu/ButtonDivideUnselect");
+            _buttonSelect.HueShiftTexture(Color.DarkGray);
+            _buttonUnselect.HueShiftTexture(Color.Gray);
+
+            _picker.LoadContent(_graphics, Content);
+
+            _menuBack = new TextureDivide(_graphics, Content, "Texture/Menu/BackMenuDivide");
+
             Console.WriteLine("Successful LoadContent");
         }
 
@@ -84,6 +102,10 @@ namespace Hnefatafl
         {
             _player._board.UnloadContent();
             _cursor.UnloadContent();
+            _buttonSelect.UnloadContent();
+            _buttonUnselect.UnloadContent();
+            _picker.UnloadContent();
+            _menuBack.UnloadContent();
 
             Console.WriteLine("Successful UnloadContent");
         }
@@ -107,6 +129,12 @@ namespace Hnefatafl
             MouseState currentMouseState = Mouse.GetState();
             KeyboardState currentKeyboardState = Keyboard.GetState();
             Point mouseLoc = new Point(currentMouseState.Position.X, currentMouseState.Position.Y);
+
+            if (currentKeyboardState.IsKeyDown(Keys.D))
+            {
+                _picker.Increment();
+                _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds);
+            }
 
             switch (_gameState)
             {
@@ -180,11 +208,13 @@ namespace Hnefatafl
             _cursor._state = Cursor.CursorState.Pointer;
 
             Rectangle viewPorts = GraphicsDevice.Viewport.Bounds;
-            Point buttonSize = new Point(viewPorts.Width / 5, viewPorts.Height / 10);
+            Point buttonSize = new Point((int)((float)viewPorts.Width / 3), (int)((float)viewPorts.Height / 5.5));
             Point textboxSize = new Point(256, 48);
+            Point labelSize = new Point(256, 48);
 
             List<string> buttonName = new List<string>();
             List<string> textboxName = new List<string>();
+            List<string> labelName = new List<string>();
             Point startLoc = new Point(0, 0);
 
             switch (_gameState)
@@ -195,7 +225,20 @@ namespace Hnefatafl
                     buttonName.Add("localCoOp");
                     buttonName.Add("options");
                     buttonName.Add("exit");
-                    startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
+                    startLoc = new Point(buttonSize.X / 4, buttonSize.Y / 2);
+                    break;
+                }
+                case GameState.OptionsMenu:
+                {
+                    labelName.Add("boardA");
+                    labelName.Add("boardAColour");
+                    labelName.Add("boardB");
+                    labelName.Add("boardBColour");
+                    labelName.Add("defender");
+                    labelName.Add("defenderColour");
+                    labelName.Add("attacker");
+                    labelName.Add("attackerColour");
+                    startLoc = new Point(labelSize.X / 4, labelSize.Y / 2);
                     break;
                 }
                 case GameState.MultiplayerMenu:
@@ -204,7 +247,7 @@ namespace Hnefatafl
                     buttonName.Add("connect");
                     buttonName.Add("shutdown");
                     buttonName.Add("back");
-                    startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, viewPorts.Height / 8 + buttonSize.Y);
+                    startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, buttonSize.Y / 2);
                     break;
                 }
                 case GameState.ServerMenu:
@@ -243,7 +286,8 @@ namespace Hnefatafl
                 case GameState.InGame:
                 {
                     buttonName.Add("back");
-                    startLoc = new Point(viewPorts.Width / 30, viewPorts.Height - buttonSize.Y - viewPorts.Width / 30);
+                    startLoc = new Point(viewPorts.Width / 30, viewPorts.Height - buttonSize.Y);
+                    buttonSize = new Point(viewPorts.Width / 5, (int)((float)viewPorts.Height / 8));
                     _cursor._state = Cursor.CursorState.OpenHand;
                     break;
                 }
@@ -259,8 +303,15 @@ namespace Hnefatafl
             {
                 for (int i = 0; i < buttonName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * i) / 2)), buttonSize, NodeText(xml, buttonName[i]), buttonName[i]));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, NodeText(xml, buttonName[i]), buttonName[i]));
                     _button[i].Update(_graphics, Content);
+                }
+            }
+            else if (_gameState == GameState.OptionsMenu)
+            {
+                for (int i = 0; i < labelName.Count; i++)
+                {
+
                 }
             }
             else if (_gameState == GameState.ServerMenu)
@@ -274,7 +325,7 @@ namespace Hnefatafl
                 startLoc = new Point(viewPorts.Width / 2 - buttonSize.X / 2, _textbox[textboxName.Count - 1]._pos.Y + _textbox[textboxName.Count - 1]._size.Y + viewPorts.Width / 30);
                 for (int i = textboxName.Count; i < buttonName.Count + textboxName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + ((buttonSize.X * (i - textboxName.Count)) / 2)), buttonSize, NodeText(xml, buttonName[i - textboxName.Count]), buttonName[i - textboxName.Count]));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, NodeText(xml, buttonName[i - textboxName.Count]), buttonName[i - textboxName.Count]));
                     _button[(i - textboxName.Count)].Update(_graphics, Content);
                 }
             }
@@ -306,7 +357,7 @@ namespace Hnefatafl
                     }
                 }
 
-                buttonSize = new Point(viewPorts.Width / 5, viewPorts.Height / 10);
+                buttonSize = new Point(viewPorts.Width / 5, (int)((float)viewPorts.Height / 5.5));
                 _button.Add(new Button(new Point(viewPorts.Width / 2 + viewPorts.Width / 4, viewPorts.Height / 2 + viewPorts.Height / 4), buttonSize, NodeText(xml, buttonName[buttonName.Count - 1]), buttonName[buttonName.Count - 1]));
                 _button[_button.Count - 1].Update(_graphics, Content);
             }
@@ -361,6 +412,11 @@ namespace Hnefatafl
                     break;
                 }
             }
+        }
+
+        private void OptionsMenu(MouseState currentState, Point mouseLoc)
+        {
+
         }
 
         private void MultiplayerMenu(GameTime gameTime, MouseState currentState, Point mouseLoc)
@@ -800,7 +856,6 @@ namespace Hnefatafl
 
             return false;
         }
-        
 
         protected override void Draw(GameTime gameTime)
         {
@@ -816,16 +871,32 @@ namespace Hnefatafl
 
                 _player._board.Draw(_graphics, _spriteBatch, viewPort, currentSide, _player._currentTurn);
             }
+            else if (_gameState == GameState.MainMenu)
+            {
+                _menuBack.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), 
+                new Rectangle(_button[0]._size.X + (_button[0]._size.X / 3), _player._board.TileSizeX(viewPort) / 2, viewPort.Width / 2 + _player._board.TileSizeX(viewPort), viewPort.Height));
+            
+                // Label label = new Label(new Point(_button[0]._size.X + (_button[0]._size.X / 3), _player._board.TileSizeX(viewPort) / 2),
+                // new Point(viewPort.Width / 2 + _player._board.TileSizeX(viewPort), viewPort.Height),
+                // "test", "HNEFATAFL", 2.0f);
+
+                // label.Update(_graphics, Content);
+
+                // label.Draw(_spriteBatch, viewPort);
+            }
 
             foreach (Button button in _button)
             {
-                button.Draw(gameTime, _spriteBatch, viewPort);
+                button.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _buttonSelect, _buttonUnselect, viewPort);
             }
 
             foreach (TextBox textbox in _textbox)
             {
                 textbox.Draw(gameTime, _spriteBatch, viewPort);
             }
+
+            //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
+            _picker.Draw(_spriteBatch, viewPort, _player._board.TileSizeY(viewPort) / 4);
 
             _cursor.Draw(_spriteBatch, viewPort);
 

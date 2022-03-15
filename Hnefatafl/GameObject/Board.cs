@@ -15,21 +15,24 @@ namespace Hnefatafl
 
     sealed class Board
     {
-        private readonly Texture2D[] _boardColours = new Texture2D[7];
-        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner, 6: Highlight colour
+        ContentManager Content;
+        private readonly Texture2D[] _boardColours = new Texture2D[6];
+        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         //0: Attacker, 1: Defender, 2: King
         private AtlasTexture _boardHighlightAtlas;
         private TextureDivide _boarder; //BOARDer!!!!!!! XDXDXDXDXD Oh the fun I have with programming
         private Texture2D _selectHighlight;
         private bool? _redrawSelect = null;
+        private Color[] _selectColours = new Color[3];
+        //0: Highlight colour, 1: Positive select colour, 2: Negative select colour
         private Texture2D _boardHighlight;
         private Pieces _pieces = new Pieces();
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
         //9 or 11 depending on the users options
-        private int _tileSizeX = 32;
-        private int _tileSizeY = 32;
+        private int _tileSizeX;
+        private int _tileSizeY;
 
         public enum BoardState { ActiveGame, InactiveGame }
         public BoardState _state;
@@ -39,33 +42,33 @@ namespace Hnefatafl
         public ServerOptions _serverOp;
         private BoardAudio _audioManager;
 
-        public Board(GraphicsDeviceManager graphics, ContentManager Content, Color[] colours, int boardSize, BoardTypes boardType)
+        public Board(GraphicsDeviceManager graphics, ContentManager content, Color[] boardColours, Color[] pawnColours, Color[] selectColours, int boardSize)
         {
-            CreateColours(graphics, colours);
-            CreatePawns(graphics, Content);
-            _audioManager = new BoardAudio(Content);
+            Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+            CreateBoardColours(graphics, boardColours);
+            CreatePawns(graphics, pawnColours);
+            CreateSelectColours(selectColours);
+            _audioManager = new BoardAudio(content);
             _boardSize = boardSize;
 
             _tileSizeX = TileSizeX(graphics.GraphicsDevice.Viewport.Bounds);
             _tileSizeY = TileSizeY(graphics.GraphicsDevice.Viewport.Bounds);
 
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
-            _boardHighlightAtlas.HueShiftTexture(colours[colours.Length - 1]);
+            _boardHighlightAtlas.HueShiftTexture(_selectColours[0]);
             _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide", _tileSizeX, _tileSizeY);
             SelectHighlightColour(null);
         }
 
-        public Board(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
+        public void ReloadContent(GraphicsDeviceManager graphics, UserOptions options)
         {
-            CreateColours(graphics, new Color[]{new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24)});
-            CreatePawns(graphics, Content);
-            _audioManager = new BoardAudio(Content);
-            _boardSize = boardSize;
-
-            _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
-            _boardHighlightAtlas.HueShiftTexture(new Color(236, 179, 19));
-            _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide", _tileSizeX, _tileSizeY);
-            SelectHighlightColour(null);
+            if (Content is not null)
+            {
+                Content.Unload();
+            }
+            CreateBoardColours(graphics, options._boardColours);
+            CreatePawns(graphics, new Color[] {options._pawnAttacker, options._pawnDefender, options._pawnDefender});
+            CreateSelectColours(options._selectColours);
         }
 
         public void CreateBoard()
@@ -76,23 +79,30 @@ namespace Hnefatafl
             _state = BoardState.InactiveGame;
         }
 
-        private void CreateColours(GraphicsDeviceManager graphics, Color[] colours)
+        private void CreateBoardColours(GraphicsDeviceManager graphics, Color[] colours)
         {
             //Creates the Texture2Ds that are used to draw the board from the user selected colours
-            for (int i = 0; i < _boardColours.Length - 1; i++) //-1 as the highlight colour is dealt with seperately
+            for (int i = 0; i < colours.Length; i++)
             {
                 _boardColours[i] = new Texture2D(graphics.GraphicsDevice, 1, 1);
                 _boardColours[i].SetData(new[] { colours[i] });
             }
         }
+        
+        private void CreateSelectColours(Color[] colours)
+        {
+            for (int i = 0; i < colours.Length; i++)
+            {
+                _selectColours[i] = colours[i];
+            }
+        }
 
-        private void CreatePawns(GraphicsDeviceManager graphics, ContentManager Content)
+        private void CreatePawns(GraphicsDeviceManager graphics, Color[] colours)
         {
             _pawnTexture[0] = Content.Load<Texture2D>("Texture/Pawn/pawnA"); //Loading is passed by reference seemingly, this means that all sprites have to be different files to prevent the latter one being the colour of all of them, luckily I planned to do this from the start
             _pawnTexture[1] = Content.Load<Texture2D>("Texture/Pawn/pawnD");
             _pawnTexture[2] = Content.Load<Texture2D>("Texture/Pawn/king");
 
-            Color[] userColour = new Color[]{ new Color(255, 76, 74), new Color(54, 56, 255),  new Color(54, 56, 255) }; //Pawn colours, currently hard set
             Color[] data; //Used to store a colour bitmap of the image, to be later applied once the new texture has been created in colour
 
             Texture2D alphaBlend; //Used to store an alpha channel that allows colours on a texture, such as the king's crown, to be drawn as the colour in the image file and not colour shifted
@@ -110,9 +120,9 @@ namespace Hnefatafl
                     {
                         if (alphaBlendArray[j] == Color.Black && data[j] != Color.Transparent && data[j] != Color.Black) 
                         {
-                            data[j] = new Color((byte)((float)(data[j].R / 255f) * userColour[i].R), //Equation used to shift colour, 255f is important to facilitate float division otherwise it just does integer and then floats the value
-                                                (byte)((float)(data[j].G / 255f) * userColour[i].G), 
-                                                (byte)((float)(data[j].B / 255f) * userColour[i].B));
+                            data[j] = new Color((byte)((float)(data[j].R / 255f) * colours[i].R), //Equation used to shift colour, 255f is important to facilitate float division otherwise it just does integer and then floats the value
+                                                (byte)((float)(data[j].G / 255f) * colours[i].G), 
+                                                (byte)((float)(data[j].B / 255f) * colours[i].B));
                         }
                     }
 
@@ -125,9 +135,9 @@ namespace Hnefatafl
                     {
                         if (data[j] != Color.Transparent && data[j] != Color.Black)
                         {
-                            data[j] = new Color((byte)((float)(data[j].R / 255f) * userColour[i].R), 
-                                                (byte)((float)(data[j].G / 255f) * userColour[i].G), 
-                                                (byte)((float)(data[j].B / 255f) * userColour[i].B));
+                            data[j] = new Color((byte)((float)(data[j].R / 255f) * colours[i].R), 
+                                                (byte)((float)(data[j].G / 255f) * colours[i].G), 
+                                                (byte)((float)(data[j].B / 255f) * colours[i].B));
                         }
                     }
                 }
@@ -507,7 +517,7 @@ namespace Hnefatafl
             }
         }
 
-        private void ConstructBoardHighlight(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Rectangle startRect, Rectangle selectRect)
+        private void ConstructBoardHighlight(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle startRect, Rectangle selectRect)
         {
             HPoint[] maxLocations = new HPoint[4];
             Rectangle rect;
@@ -532,9 +542,9 @@ namespace Hnefatafl
                     for (int j = start; j < end; j++)
                     {
                         if ((Direction)i == Direction.Left)
-                            rect.X -= TileSizeY(viewPort);
+                            rect.X -= _tileSizeX;
                         else
-                            rect.X += TileSizeY(viewPort);
+                            rect.X += _tileSizeX;
 
                         if (j != end - 1)
                         {
@@ -553,13 +563,13 @@ namespace Hnefatafl
                         
                         if ((Direction)i == Direction.Left)
                         {
-                            Rectangle test = new Rectangle(startRect.X - (end - start) * TileSizeX(viewPort), startRect.Y, (end - start) * TileSizeX(viewPort) + TileSizeX(viewPort), startRect.Height);
+                            Rectangle test = new Rectangle(startRect.X - (end - start) * _tileSizeX, startRect.Y, (end - start) * _tileSizeX + _tileSizeX, startRect.Height);
                             if (test.Contains(selectRect)) foundSelect = true;
                             //Console.WriteLine($"OLD RECT {startRect.ToString()} NEW RECT: {test.ToString()}, SELECT: {selectRect.ToString()}");
                         }
                         else
                         {
-                            Rectangle test = new Rectangle(startRect.X, startRect.Y, (end - start) * TileSizeX(viewPort) + TileSizeX(viewPort), startRect.Height);
+                            Rectangle test = new Rectangle(startRect.X, startRect.Y, (end - start) * _tileSizeX + _tileSizeX, startRect.Height);
                             if (test.Contains(selectRect)) foundSelect = true;
                         }
                     }
@@ -574,9 +584,9 @@ namespace Hnefatafl
                     for (int j = start; j < end; j++)
                     {
                         if ((Direction)i == Direction.Up)
-                            rect.Y -= TileSizeY(viewPort);
+                            rect.Y -= _tileSizeY;
                         else
-                            rect.Y += TileSizeY(viewPort);
+                            rect.Y += _tileSizeY;
 
                         if (j != end - 1)
                         {
@@ -593,13 +603,13 @@ namespace Hnefatafl
 
                         if ((Direction)i == Direction.Up)
                         {
-                            Rectangle test = new Rectangle(startRect.X, startRect.Y - (end - start) * TileSizeY(viewPort), startRect.Width, (end - start) * TileSizeY(viewPort) + TileSizeY(viewPort));
+                            Rectangle test = new Rectangle(startRect.X, startRect.Y - (end - start) * _tileSizeY, startRect.Width, (end - start) * _tileSizeY + _tileSizeY);
                             if (test.Contains(selectRect)) foundSelect = true;
                             //Console.WriteLine($"OLD RECT {startRect.ToString()} NEW RECT: {test.ToString()}, SELECT: {selectRect.ToString()}");
                         }
                         else
                         {
-                            Rectangle test = new Rectangle(startRect.X, startRect.Y, startRect.Width, (end - start) * TileSizeY(viewPort) + TileSizeY(viewPort));
+                            Rectangle test = new Rectangle(startRect.X, startRect.Y, startRect.Width, (end - start) * _tileSizeY + _tileSizeY);
                             if (test.Contains(selectRect)) foundSelect = true;
                         }
                     }
@@ -691,13 +701,16 @@ namespace Hnefatafl
             data = new Color[_selectHighlight.Width * _selectHighlight.Height];
             _selectHighlight.GetData<Color>(data);
 
+            Color hueColour;
+            if (positive == true) hueColour = _selectColours[1];
+            else if (positive == false) hueColour = _selectColours[2];
+            else hueColour = _selectColours[0];
+
             for (int i = 0; i < data.Length; i++)
             {
                 if (data[i] != Color.Transparent && data[i] != Color.Black)
                 {
-                    if (positive == true) data[i] = new Color(0, 255, 0);
-                    else if (positive == false) data[i] = new Color(255, 0, 0);
-                    else data[i] = new Color(236, 179, 19);
+                    data[i] = hueColour;
                 }
             }
             
@@ -707,18 +720,18 @@ namespace Hnefatafl
         public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Player.SideType? currentSide, bool currentTurn) //Used for drawing the board and the pieces
         {
             Rectangle rect = new Rectangle(
-                        (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2), 
-                        (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2), 
-                        TileSizeX(viewPort), TileSizeY(viewPort));
+                        (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2), 
+                        (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2), 
+                        _tileSizeX, _tileSizeY);
 
             Rectangle highlightRect = new Rectangle(
-                        (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + (_selectedPiece.X * TileSizeX(viewPort)), 
-                        (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + (_selectedPiece.Y * TileSizeY(viewPort)), 
-                        TileSizeX(viewPort), TileSizeY(viewPort));
+                        (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2) + (_selectedPiece.X * _tileSizeX), 
+                        (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2) + (_selectedPiece.Y * _tileSizeY), 
+                        _tileSizeX, _tileSizeY);
             Piece iPiece;
 
             _boarder.Draw(spriteBatch, 
-            new Rectangle(rect.X - TileSizeX(viewPort), rect.Y - TileSizeY(viewPort), TileSizeX(viewPort) * _boardSize + (TileSizeX(viewPort) * 2), TileSizeY(viewPort) * _boardSize + (TileSizeY(viewPort) * 2)));
+            new Rectangle(rect.X - _tileSizeX, rect.Y - _tileSizeY, _tileSizeY * _boardSize + (_tileSizeX * 2), _tileSizeY  * _boardSize + (_tileSizeY * 2)));
 
             for (int y = 0; y < _boardSize; y++)
             {
@@ -743,23 +756,23 @@ namespace Hnefatafl
                         spriteBatch.Draw(_pawnTexture[(int)iPiece._pawn._type], rect, Color.White);
                     }
                 
-                    rect.X += TileSizeX(viewPort);
+                    rect.X += _tileSizeX;
                 }
-                rect.Y += TileSizeY(viewPort);
-                rect.X = (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2);
+                rect.Y += _tileSizeY;
+                rect.X = (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2);
             }
 
             Rectangle selectRect = new Rectangle(
-                (viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.X - (TileSizeX(viewPort) * _boardSize) + (int)(TileSizeX(viewPort) * 1.5)) / TileSizeX(viewPort) * TileSizeX(viewPort)), 
-                (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (TileSizeY(viewPort) * _boardSize) + (TileSizeY(viewPort) * 8 + (TileSizeY(viewPort) / 16))) / TileSizeY(viewPort) * TileSizeY(viewPort)),
-                TileSizeX(viewPort), TileSizeY(viewPort));
+                (viewPort.Width / 2) - ((_tileSizeX* _boardSize) / 2) + ((Mouse.GetState().Position.X - (_tileSizeX * _boardSize) + (int)(_tileSizeX * 1.5)) / _tileSizeX * _tileSizeX), 
+                (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (_tileSizeY * _boardSize) + (_tileSizeY * 8 + (_tileSizeY / 16))) / _tileSizeY * _tileSizeY),
+                _tileSizeX, _tileSizeY);
 
             if (currentTurn && _selectedPiece.X != -1)
             {
-                ConstructBoardHighlight(graphics, spriteBatch, viewPort, highlightRect, selectRect);
+                ConstructBoardHighlight(graphics, spriteBatch, highlightRect, selectRect);
             }
 
-            if (new Rectangle((viewPort.Width / 2) - ((TileSizeX(viewPort) * _boardSize) / 2), (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2), TileSizeX(viewPort) * _boardSize, TileSizeY(viewPort) * _boardSize).Contains(Mouse.GetState().Position))
+            if (new Rectangle((viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2), (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2), _tileSizeX * _boardSize, _tileSizeY * _boardSize).Contains(Mouse.GetState().Position))
             {
                 spriteBatch.Draw(_selectHighlight, selectRect, Color.White);
             }

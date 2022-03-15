@@ -9,25 +9,25 @@ namespace Hnefatafl
     public struct ServerOptions //Struct as no methods will be needed in here and it will never be invoked like a method
     {
         //Made heavy use of enumeration to make code as readable as possible
-        public enum PlayerTurn { Attacker = 0, Defender = 1 }
+        public enum PlayerTurn { Attacker, Defender }
         public PlayerTurn _playerTurn { get; set; } //Works
 
-        public enum ThroneOp { Disabled = 0, DefenderKing = 1, King = 2 }
+        public enum ThroneOp { Disabled, DefenderKing, King }
         public ThroneOp _throneOp { get; set; } //Works
 
-        public enum KingOp { Armed = 0, Unarmed = 1 }
+        public enum KingOp { Armed, Unarmed }
         public KingOp _kingOp { get; set; } //Works
 
-        public enum SandwichMovementOp { Enabled = 0, Disabled = 1 }
+        public enum SandwichMovementOp { Enabled, Disabled }
         public SandwichMovementOp _sandwichMovementOp { get; set; } //Doesn't work
 
-        public enum CaptureOp { CornerThrone = 0, Corner = 1, Disabled = 2 } //Refers to if certain pieces on the bord can be used to capture pieces
+        public enum CaptureOp { CornerThrone, Corner, Disabled } //Refers to if certain pieces on the bord can be used to capture pieces
         public CaptureOp _captureOp { get; set; } //Works
 
-        public enum KingCaptureOp { AllDefendersThree = 0, JustThree = 1 } //Refers to if all defenders have to be captured to allow the king to be captured with just three units on the side of the board
+        public enum KingCaptureOp { AllDefendersThree, JustThree  } //Refers to if all defenders have to be captured to allow the king to be captured with just three units on the side of the board
         public KingCaptureOp _kingCaptureOp { get; set; } //Works
 
-        public enum WinOp { Side = 0, Corner = 1 }
+        public enum WinOp { Side, Corner }
         public WinOp _winOp { get; set; } //Doesn't work
 
         public ServerOptions()
@@ -80,16 +80,18 @@ namespace Hnefatafl
         public Color _pawnAttacker { get; set; }
         public Color _pawnDefender { get; set; }
         public Color[] _boardColours { get; set; }
-        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner, 6: Highlight colour
+        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner
+        public Color[] _selectColours { get; set; }
 
-        public UserOptions(Color pawnAttacker, Color pawnDefender, Color[] boardColours)
+        public UserOptions(Color pawnAttacker, Color pawnDefender, Color[] boardColours, Color[] selectColours)
         {
             _pawnAttacker = pawnAttacker;
             _pawnDefender = pawnDefender;
             _boardColours = boardColours;
+            _selectColours = selectColours;
         }
 
-        public Color GetColor(ColourButtons pickerName) => pickerName switch
+        public Color GetDefaultColor(ColourButtons pickerName) => pickerName switch
         {
             pawnA => new Color(255, 76, 74),
             pawnD => new Color(54, 56, 255),
@@ -104,6 +106,48 @@ namespace Hnefatafl
             boardA => new Color(0, 255, 255),
             _ => new Color(0, 0, 0)
         };
+
+        public bool SetFromButton(string pickerName, Color newColour)
+        {
+            switch ((UserOptions.ColourButtons)Enum.Parse(typeof(UserOptions.ColourButtons), pickerName))
+            {
+                case (pawnA):
+                    _pawnAttacker = newColour;
+                    return true;
+                case (pawnD):
+                    _pawnDefender = newColour;
+                    return true;
+                case (board1):
+                    _boardColours[0] = newColour;
+                    return true;
+                case (board2):
+                    _boardColours[1] = newColour;
+                    return true;
+                case (throne):
+                    _boardColours[4] = newColour;
+                    return true;
+                case (corner):
+                    _boardColours[5] = newColour;
+                    return true;
+                case (boardA):
+                    _boardColours[2] = newColour;
+                    return true;
+                case (boardD):
+                    _boardColours[3] = newColour;
+                    return true;
+                case (highlightTrail):
+                    _selectColours[0] = newColour;
+                    return true;
+                case (selectPositive):
+                    _selectColours[1] = newColour;
+                    return true;
+                case (selectNegative):
+                    _selectColours[2] = newColour;
+                    return true;
+            }
+        
+            return true;
+        }
 
         public override string ToString()
         {

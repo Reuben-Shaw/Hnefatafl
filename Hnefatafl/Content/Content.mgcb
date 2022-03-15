@@ -1,7 +1,7 @@
 
 #----------------------------- Global Properties ----------------------------#
 
-/outputDir:bin/$(Platform)
+/outputDir:..\bin\Debug\netcoreapp3.1\Content
 /intermediateDir:obj/$(Platform)
 /platform:DesktopGL
 /config:
@@ -87,18 +87,6 @@
 /processorParam:TextureFormat=Color
 /build:Texture/Menu/BackMenuDivide.png
 
-#begin Texture/Menu/BackMenuDivide.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/Menu/BackMenuDivide.png
-
 #begin Texture/Menu/ButtonDivideSelect.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -135,7 +123,7 @@
 /processorParam:TextureFormat=Color
 /build:Texture/Menu/CloseHandCursor.png
 
-#begin Texture/Menu/CloseHandCursor.png
+#begin Texture/Menu/LabelDivide.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -145,7 +133,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Texture/Menu/CloseHandCursor.png
+/build:Texture/Menu/LabelDivide.png
+
+#begin Texture/Menu/Logo.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/Menu/Logo.png
 
 #begin Texture/Menu/OpenHandCursor.png
 /importer:TextureImporter
@@ -158,30 +158,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/Menu/OpenHandCursor.png
-
-#begin Texture/Menu/OpenHandCursor.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/Menu/OpenHandCursor.png
-
-#begin Texture/Menu/PointerCursor.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/Menu/PointerCursor.png
 
 #begin Texture/Menu/PointerCursor.png
 /importer:TextureImporter
@@ -399,18 +375,6 @@
 /processorParam:TextureFormat=Color
 /build:Texture/OpButton/winSide.png
 
-#begin Texture/Pawn/IDespiseAvery.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/Pawn/IDespiseAvery.png
-
 #begin Texture/Pawn/king.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -435,6 +399,18 @@
 /processorParam:TextureFormat=Color
 /build:Texture/Pawn/king_a.png
 
+#begin Texture/Pawn/pawnA.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/Pawn/pawnA.png
+
 #begin Texture/Pawn/pawnD.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -446,16 +422,4 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/Pawn/pawnD.png
-
-#begin Texture/Pawn/pawnE.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/Pawn/pawnE.png;Texture/Pawn/pawnA.png
 

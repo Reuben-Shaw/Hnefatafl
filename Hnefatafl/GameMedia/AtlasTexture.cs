@@ -163,8 +163,14 @@ namespace Hnefatafl.Media
 
     sealed class TextureDivide : AtlasTexture
     {
-        public TextureDivide(GraphicsDeviceManager graphics, ContentManager Content, string texturePath)
+        public int _tileSizeX { get; set; }
+        public int _tileSizeY { get; set; }
+        
+        public TextureDivide(GraphicsDeviceManager graphics, ContentManager Content, string texturePath, int tileSizeX, int tileSizeY)
         {
+            _tileSizeX = tileSizeX;
+            _tileSizeY = tileSizeY;
+            
             Texture2D fullAtlas;
             Color[] atlasColourArray, data;
 
@@ -214,45 +220,20 @@ namespace Hnefatafl.Media
             return _texture[dictionaryPoint.X, dictionaryPoint.Y];
         }
 
-        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, Rectangle rect)
+        public void Draw(SpriteBatch spriteBatch, Rectangle rect)
         {
-            Rectangle drawRect = new Rectangle(rect.X, rect.Y, tileSizeX, tileSizeY);
-            int xEnd = rect.Width / tileSizeX, yEnd = rect.Height / tileSizeY;
+            spriteBatch.Draw(GetTexture(DivideLink.MidMid), new Rectangle(rect.X + _tileSizeX, rect.Y + _tileSizeY, rect.Width - (_tileSizeX * 2), rect.Height - (_tileSizeY * 2)), Color.White);
 
-            for (int x = 0; x < xEnd; x++)
-            {
-                for (int y = 0; y < yEnd; y++)
-                {
-                    if ((x == 0 || x == xEnd - 1) || (y == 0 || y == yEnd - 1))
-                    {
-                        if (x == 0 && y == 0)
-                            spriteBatch.Draw(GetTexture(DivideLink.UpLeft), drawRect, Color.White);
-                        else if (x == xEnd - 1 && y == yEnd - 1)
-                            spriteBatch.Draw(GetTexture(DivideLink.DownRight), drawRect, Color.White);
-                        else if (x == 0 && y == yEnd - 1)
-                            spriteBatch.Draw(GetTexture(DivideLink.DownLeft), drawRect, Color.White);
-                        else if (x == xEnd - 1 && y == 0)
-                            spriteBatch.Draw(GetTexture(DivideLink.UpRight), drawRect, Color.White);
-                        else if (x == 0)
-                            spriteBatch.Draw(GetTexture(DivideLink.MidLeft), drawRect, Color.White);
-                        else if (x == xEnd - 1)
-                            spriteBatch.Draw(GetTexture(DivideLink.MidRight), drawRect, Color.White);
-                        else if (y == 0)
-                            spriteBatch.Draw(GetTexture(DivideLink.UpMid), drawRect, Color.White);
-                        else if (y == yEnd - 1)
-                            spriteBatch.Draw(GetTexture(DivideLink.DownMid), drawRect, Color.White);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(GetTexture(DivideLink.MidMid), drawRect, Color.White);
-                    }
+            spriteBatch.Draw(GetTexture(DivideLink.UpMid), new Rectangle(rect.X + _tileSizeX, rect.Y, rect.Width - (_tileSizeX * 2), _tileSizeY), Color.White);
+            spriteBatch.Draw(GetTexture(DivideLink.DownMid), new Rectangle(rect.X + _tileSizeX, rect.Y + rect.Height - _tileSizeY, rect.Width - (_tileSizeX * 2), _tileSizeY), Color.White);
 
-                    drawRect.Y += tileSizeY;
-                }
-                
-                drawRect.Y = rect.Y;
-                drawRect.X += tileSizeX;
-            }
+            spriteBatch.Draw(GetTexture(DivideLink.MidLeft), new Rectangle(rect.X, rect.Y + _tileSizeY, _tileSizeX, rect.Height - (_tileSizeY * 2)), Color.White);
+            spriteBatch.Draw(GetTexture(DivideLink.MidRight), new Rectangle(rect.X + rect.Width - _tileSizeX, rect.Y + _tileSizeY, _tileSizeX, rect.Height - (_tileSizeY * 2)), Color.White);
+
+            spriteBatch.Draw(GetTexture(DivideLink.UpLeft), new Rectangle(rect.X, rect.Y, _tileSizeX, _tileSizeY), Color.White);
+            spriteBatch.Draw(GetTexture(DivideLink.DownRight), new Rectangle(rect.X + rect.Width - _tileSizeX, rect.Y + rect.Height - _tileSizeY, _tileSizeX, _tileSizeY), Color.White);
+            spriteBatch.Draw(GetTexture(DivideLink.DownLeft), new Rectangle(rect.X, rect.Y + rect.Height - _tileSizeY, _tileSizeX, _tileSizeY), Color.White);
+            spriteBatch.Draw(GetTexture(DivideLink.UpRight), new Rectangle(rect.X + rect.Width - _tileSizeX, rect.Y, _tileSizeX, _tileSizeY), Color.White);
         }
     }
 }

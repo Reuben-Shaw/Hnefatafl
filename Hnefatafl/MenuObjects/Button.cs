@@ -98,12 +98,12 @@ namespace Hnefatafl.MenuObjects
             {
                 if (_status == Unselected || _status == Disabled)
                 {
-                    displayUnselect.Draw(spriteBatch, tileSizeX, tileSizeY, rect);
+                    displayUnselect.Draw(spriteBatch, rect);
                     spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
                 }
                 else if (_status == Selected)
                 {
-                    displaySelect.Draw(spriteBatch, tileSizeX, tileSizeY, rect);
+                    displaySelect.Draw(spriteBatch, rect);
                     spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
                 }
             }

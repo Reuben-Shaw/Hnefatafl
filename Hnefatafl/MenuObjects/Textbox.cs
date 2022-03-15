@@ -25,6 +25,17 @@ namespace Hnefatafl.MenuObjects
                 m_defaultText = value;
             }
         }
+        public new string _text 
+        { 
+            get
+            {
+                return m_text;
+            }
+            set
+            {
+                m_text = value;
+            }
+        }
         private double m_lastPress;
         public double _lastPress 
         { 
@@ -109,6 +120,10 @@ namespace Hnefatafl.MenuObjects
                 {
                     keyString = ".";
                     _text += keyString;
+                }
+                else if (keyString == "enter")
+                {
+                    _status = Unselected;
                 }
 
                 TextboxFull();

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <SourceFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnE.png</SourceFile>
+  <SourceFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Pawn/pawnA.png</SourceFile>
   <SourceTime>2022-03-04T20:11:30.1244559+00:00</SourceTime>
-  <DestFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Texture/Pawn/pawnA.xnb</DestFile>
-  <DestTime>2022-03-11T22:25:34.7580696+00:00</DestTime>
+  <DestFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Texture/Pawn/pawnA.xnb</DestFile>
+  <DestTime>2022-03-15T14:53:33.3155112+00:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

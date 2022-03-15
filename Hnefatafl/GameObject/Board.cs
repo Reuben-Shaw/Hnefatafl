@@ -9,7 +9,6 @@ using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
 using static Hnefatafl.Media.TextureAtlasLink;
 
-
 namespace Hnefatafl
 {
     enum BoardTypes { Regular }
@@ -21,6 +20,7 @@ namespace Hnefatafl
         private readonly Texture2D[] _pawnTexture = new Texture2D[3];
         //0: Attacker, 1: Defender, 2: King
         private AtlasTexture _boardHighlightAtlas;
+        private TextureDivide _boarder; //BOARDer!!!!!!! XDXDXDXDXD Oh the fun I have with programming
         private Texture2D _selectHighlight;
         private bool? _redrawSelect = null;
         private Texture2D _boardHighlight;
@@ -28,6 +28,8 @@ namespace Hnefatafl
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
         //9 or 11 depending on the users options
+        private int _tileSizeX = 32;
+        private int _tileSizeY = 32;
 
         public enum BoardState { ActiveGame, InactiveGame }
         public BoardState _state;
@@ -44,8 +46,12 @@ namespace Hnefatafl
             _audioManager = new BoardAudio(Content);
             _boardSize = boardSize;
 
+            _tileSizeX = TileSizeX(graphics.GraphicsDevice.Viewport.Bounds);
+            _tileSizeY = TileSizeY(graphics.GraphicsDevice.Viewport.Bounds);
+
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
             _boardHighlightAtlas.HueShiftTexture(colours[colours.Length - 1]);
+            _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide", _tileSizeX, _tileSizeY);
             SelectHighlightColour(null);
         }
 
@@ -58,6 +64,7 @@ namespace Hnefatafl
 
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
             _boardHighlightAtlas.HueShiftTexture(new Color(236, 179, 19));
+            _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide", _tileSizeX, _tileSizeY);
             SelectHighlightColour(null);
         }
 
@@ -709,6 +716,9 @@ namespace Hnefatafl
                         (viewPort.Height / 2) - ((TileSizeY(viewPort) * _boardSize) / 2) + (_selectedPiece.Y * TileSizeY(viewPort)), 
                         TileSizeX(viewPort), TileSizeY(viewPort));
             Piece iPiece;
+
+            _boarder.Draw(spriteBatch, 
+            new Rectangle(rect.X - TileSizeX(viewPort), rect.Y - TileSizeY(viewPort), TileSizeX(viewPort) * _boardSize + (TileSizeX(viewPort) * 2), TileSizeY(viewPort) * _boardSize + (TileSizeY(viewPort) * 2)));
 
             for (int y = 0; y < _boardSize; y++)
             {

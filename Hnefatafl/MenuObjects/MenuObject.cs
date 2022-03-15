@@ -20,7 +20,7 @@ namespace Hnefatafl.MenuObjects
             }
         }
 
-        public Point _pos { get; set; }
+        public virtual Point _pos { get; set; }
         public Point _size { get; set; }
 
         protected string m_name;

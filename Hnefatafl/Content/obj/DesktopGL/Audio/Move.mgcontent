@@ -2,8 +2,8 @@
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav</SourceFile>
   <SourceTime>2022-03-05T13:14:49.081518+00:00</SourceTime>
-  <DestFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Audio/Move.xnb</DestFile>
-  <DestTime>2022-03-05T13:14:52.1863137+00:00</DestTime>
+  <DestFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/bin/Debug/netcoreapp3.1/Content/Audio/Move.xnb</DestFile>
+  <DestTime>2022-03-15T13:54:36.8849985+00:00</DestTime>
   <Importer>WavImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>SoundEffectProcessor</Processor>

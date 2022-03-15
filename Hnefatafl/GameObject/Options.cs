@@ -1,4 +1,7 @@
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
+using static Hnefatafl.UserOptions.ColourButtons;
 
 namespace Hnefatafl
 {
@@ -72,6 +75,44 @@ namespace Hnefatafl
     [Serializable]
     public struct UserOptions
     {
-        
+        public enum ColourButtons { pawnA, pawnD, board1, board2, throne, corner, highlightTrail, selectPositive, selectNegative, boardD, boardA }
+
+        public Color _pawnAttacker { get; set; }
+        public Color _pawnDefender { get; set; }
+        public Color[] _boardColours { get; set; }
+        //0: Board main colour 1, 1: Board main colour 2, 2: Defender board colour, 3: Attacker board colour, 4: Throne, 5: Corner, 6: Highlight colour
+
+        public UserOptions(Color pawnAttacker, Color pawnDefender, Color[] boardColours)
+        {
+            _pawnAttacker = pawnAttacker;
+            _pawnDefender = pawnDefender;
+            _boardColours = boardColours;
+        }
+
+        public Color GetColor(ColourButtons pickerName) => pickerName switch
+        {
+            pawnA => new Color(255, 76, 74),
+            pawnD => new Color(54, 56, 255),
+            board1 => new Color(173, 99, 63), 
+            board2 => new Color(80, 53, 30), 
+            throne => new Color(175, 0, 0), 
+            corner => new Color(249, 200, 24),
+            highlightTrail => new Color(236, 179, 19),
+            selectPositive => new Color(0, 255, 0),
+            selectNegative => new Color(255, 0, 0),
+            boardD => new Color(255, 255, 0), 
+            boardA => new Color(0, 255, 255),
+            _ => new Color(0, 0, 0)
+        };
+
+        public override string ToString()
+        {
+            string output = $"Attacker Colour: {_pawnAttacker.ToString()}\nDefender Colour: {_pawnDefender.ToString()}\n";
+            foreach (Color colour in _boardColours)
+            {
+                output += $"{colour.ToString()}\n";
+            }
+            return output;
+        }
     }
 }

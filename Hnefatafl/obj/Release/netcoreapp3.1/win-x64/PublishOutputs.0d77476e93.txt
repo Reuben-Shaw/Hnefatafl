@@ -1,8 +1,13 @@
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Hnefatafl.exe
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Audio\Death.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Audio\Move.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Board\HighlightTrail.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Font\MainFont.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Font\PixelFont.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Font\testfont.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Menu\CloseHandCursor.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Menu\OpenHandCursor.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Menu\PointerCursor.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\OpButton\captureCorner.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\OpButton\captureCornerThrone.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\OpButton\captureDisabled.xnb
@@ -19,6 +24,7 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x6
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\OpButton\throneKing.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\OpButton\winCorner.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\OpButton\winSide.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Pawn\IDespiseAvery.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Pawn\king.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Pawn\king_a.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\publish\Content/Texture\Pawn\pawnA.xnb

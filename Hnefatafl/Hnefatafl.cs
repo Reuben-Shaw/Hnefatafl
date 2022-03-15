@@ -67,9 +67,17 @@ namespace Hnefatafl
             _graphics.ApplyChanges();
             
             _cursor = new Cursor(Content);
-            _player = new Player(_graphics, Content, 11);
 
-            _picker = new ColourPicker(new Point(20, 20), "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
+            XmlSerializer ser = new XmlSerializer(typeof(UserOptions));
+            using (XmlReader reader = XmlReader.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
+            {
+                _userOptions = (UserOptions)ser.Deserialize(reader);
+            }
+            Console.WriteLine(_userOptions.ToString());
+
+            _player = new Player(_graphics, Content, _userOptions, 11);
+
+            _picker = new ColourPicker(new Point(20, 20), GraphicsDevice.Viewport.Bounds, "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
             _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds, true);
 
             _gameState = GameState.MainMenu;
@@ -86,13 +94,6 @@ namespace Hnefatafl
             //         file.Close();  
             //     }
             // }
-
-            XmlSerializer ser = new XmlSerializer(typeof(UserOptions));
-            using (XmlReader reader = XmlReader.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
-            {
-                _userOptions = (UserOptions)ser.Deserialize(reader);
-            }
-            Console.WriteLine(_userOptions.ToString());
 
             base.Initialize();
         }
@@ -518,6 +519,17 @@ namespace Hnefatafl
 
             if (selected == "back")
             {
+                XmlSerializer xsSubmit = new XmlSerializer(typeof(UserOptions));
+                using(StringWriter writerS = new StringWriter())
+                {
+                    using(XmlWriter writerX = XmlWriter.Create(writerS))
+                    {
+                        System.IO.FileStream file = System.IO.File.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml");  
+                        xsSubmit.Serialize(file, _userOptions);
+                        file.Close();  
+                    }
+                }
+                _player._board.ReloadContent(_graphics, _userOptions);
                 _gameState = GameState.MainMenu;
             }
             else if (!string.IsNullOrWhiteSpace(selected))
@@ -564,6 +576,20 @@ namespace Hnefatafl
                     }
                     case highlightTrail:
                     {
+                        _gameState = GameState.ColourPickerMenu;
+                        _picker.SetDisplayColour(_userOptions._selectColours[0]);
+                        break;
+                    }
+                    case selectPositive:
+                    {
+                        _gameState = GameState.ColourPickerMenu;
+                        _picker.SetDisplayColour(_userOptions._selectColours[1]);
+                        break;
+                    }
+                    case selectNegative:
+                    {
+                        _gameState = GameState.ColourPickerMenu;
+                        _picker.SetDisplayColour(_userOptions._selectColours[2]);
                         break;
                     }
                     case boardD:
@@ -593,12 +619,13 @@ namespace Hnefatafl
             {
                 case "back":
                 {
+                    _userOptions.SetFromButton(_picker._name, _picker.GetColour());
                     _gameState = GameState.OptionsMenu;
                     break;
                 }
                 case "default":
                 {
-                    _picker.SetDisplayColour(_userOptions.GetColor((UserOptions.ColourButtons)Enum.Parse(typeof(UserOptions.ColourButtons), _picker._name)));
+                    _picker.SetDisplayColour(_userOptions.GetDefaultColor((UserOptions.ColourButtons)Enum.Parse(typeof(UserOptions.ColourButtons), _picker._name)));
                     _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds, false);
                     break;
                 }

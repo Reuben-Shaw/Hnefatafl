@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Hnefatafl.Media;
-using static Hnefatafl.MenuObjects.MenuObject.Status;
 
 namespace Hnefatafl.MenuObjects
 {
@@ -47,7 +46,8 @@ namespace Hnefatafl.MenuObjects
         {
             int width;
             if (viewport.Width < 1024) width = (int)Math.Round((decimal)(viewport.Width / 512)) * 512;
-            else width = (int)Math.Round((decimal)(1500 / 512)) * 512;
+            else if (viewport.Width < 1500) width = 768;
+            else width = 1536;
 
             _pos = position;
             _size = new Point(width, viewport.Height / 33);
@@ -288,7 +288,7 @@ namespace Hnefatafl.MenuObjects
         {
             for (int i = 0; i < 3; i++)
             {
-                _border.Draw(spriteBatch, new Rectangle(_subDisplayRect[i].X - _border._tileSizeX, _subDisplayRect[i].Y - _border._tileSizeY, _subDisplayRect[i].Width + (_border._tileSizeX * 2), _subDisplayRect[i].Height * 3 + _border._tileSizeY));
+                _border.Draw(spriteBatch, new Rectangle(_subDisplayRect[i].X - _border._tileSizeX, _subDisplayRect[i].Y - _border._tileSizeY, _subDisplayRect[i].Width + (_border._tileSizeX * 2), _subDisplayRect[i].Height + (_border._tileSizeY * 2)));
                 spriteBatch.Draw(_subDisplay[i], _subDisplayRect[i], Color.White);
                 
                 int bevelLoc = 0;

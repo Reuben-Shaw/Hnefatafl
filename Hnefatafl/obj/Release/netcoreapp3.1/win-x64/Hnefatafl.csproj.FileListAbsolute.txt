@@ -268,3 +268,10 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x6
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\CloseHandCursor.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\PointerCursor.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Pawn\IDespiseAvery.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Board\BorderDivide.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\BackMenuDivide.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\ButtonDivideSelect.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\ButtonDivideUnselect.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\LabelDivide.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\Logo.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\SelectBevel.xnb

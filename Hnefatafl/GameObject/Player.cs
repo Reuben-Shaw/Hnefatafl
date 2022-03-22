@@ -17,7 +17,7 @@ namespace Hnefatafl
 {
     sealed class Player
     {
-        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START }
+        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START, RESPONSE }
         public enum SideType { Attackers, Defenders }
         public Board _board;
         private NetClient _client;

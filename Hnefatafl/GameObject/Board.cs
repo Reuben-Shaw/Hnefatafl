@@ -68,7 +68,9 @@ namespace Hnefatafl
             }
             CreateBoardColours(graphics, options._boardColours);
             CreatePawns(graphics, new Color[] {options._pawnAttacker, options._pawnDefender, options._pawnDefender});
+            _boardHighlightAtlas.ReloadContent(graphics, options._selectColours[0]);
             CreateSelectColours(options._selectColours);
+            SelectHighlightColour(null);
         }
 
         public void CreateBoard()

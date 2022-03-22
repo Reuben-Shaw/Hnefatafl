@@ -9,11 +9,13 @@ using static Hnefatafl.MenuObjects.MenuObject.Status;
 
 namespace Hnefatafl.MenuObjects
 {
-    sealed class Label : MenuObject
+    class Label : MenuObject
     {
-        private float _fontSize { get; set; }
-        private Texture2D _colourDisplay { get; set; }
-        private Color _colour { get; set; }
+        protected float _fontSize { get; set; }
+        protected Texture2D _colourDisplay { get; set; }
+        protected Color _colour { get; set; }
+
+        public Label() {  }
 
         public Label(Point position, Point size, string name, string text, float fontSize)
         {
@@ -59,5 +61,22 @@ namespace Hnefatafl.MenuObjects
                 spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0f, new Vector2(0f, 0f), _fontSize, SpriteEffects.None, 0f);
             }   
         }
+    }
+
+    class SelectLabel : Label
+    {
+        public SelectLabel(Point position, Point size, string name, string text, float fontSize)
+        {
+            _pos = position;
+            _size = size;
+            _name = name;
+            _text = text;
+            _fontColour = Color.Black;
+            _textPos = new Vector2(position.X + 36, position.Y + 16);
+            _fontSize = fontSize;
+            _status = Unselected;
+        }
+
+        
     }
 }

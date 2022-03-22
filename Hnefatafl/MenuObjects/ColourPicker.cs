@@ -7,7 +7,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Hnefatafl.Media;
-using static Hnefatafl.MenuObjects.MenuObject.Status;
 
 namespace Hnefatafl.MenuObjects
 {
@@ -43,10 +42,15 @@ namespace Hnefatafl.MenuObjects
             }
         }
 
-        public ColourPicker(Point position, string name, int gap)
+        public ColourPicker(Point position, Rectangle viewport, string name, int gap)
         {
+            int width;
+            if (viewport.Width < 1024) width = (int)Math.Round((decimal)(viewport.Width / 512)) * 512;
+            else if (viewport.Width < 1500) width = 768;
+            else width = 1536;
+
             _pos = position;
-            _size = new Point(512, 16);
+            _size = new Point(width, viewport.Height / 33);
             _name = name;
             _subDisplay = new Texture2D[3];
             R = 0;
@@ -237,6 +241,11 @@ namespace Hnefatafl.MenuObjects
             B = colour.B;
         }
 
+        public Color GetColour()
+        {
+            return new Color(R, G, B);
+        }
+
         public Rectangle GetTextboxData(int i)
         {
             return new Rectangle(_subDisplayRect[i].X + _subDisplayRect[i].Width + _gap, _subDisplayRect[i].Y - ((_subDisplayRect[i].Height * 3) / 4), 48 * 2, _subDisplayRect[i].Height * 3);
@@ -279,9 +288,9 @@ namespace Hnefatafl.MenuObjects
         {
             for (int i = 0; i < 3; i++)
             {
+                _border.Draw(spriteBatch, new Rectangle(_subDisplayRect[i].X - _border._tileSizeX, _subDisplayRect[i].Y - _border._tileSizeY, _subDisplayRect[i].Width + (_border._tileSizeX * 2), _subDisplayRect[i].Height + (_border._tileSizeY * 2)));
                 spriteBatch.Draw(_subDisplay[i], _subDisplayRect[i], Color.White);
-                _border.Draw(spriteBatch, new Rectangle(_subDisplayRect[i].X - _border._tileSizeX, _subDisplayRect[i].Y - _border._tileSizeY, _subDisplayRect[i].Width + (_border._tileSizeX * 2), _subDisplayRect[i].Height * 3 + _border._tileSizeY));
-
+                
                 int bevelLoc = 0;
                 switch (i)
                 {

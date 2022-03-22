@@ -29,6 +29,20 @@ namespace Hnefatafl
         private List<TextBox> _textbox = new List<TextBox>();
         private List<Label> _label  = new List<Label>();
         private ColourPicker _picker;
+        private int m_selectedMenuObject;
+        private int _selectedMenuObject
+        {
+            get
+            {
+                return m_selectedMenuObject;
+            }
+            set
+            {
+                m_selectedMenuObject = value;
+                TransferMenuObject();
+            }
+        }
+        private bool _keyboardSelect = false;
         private TextureDivide _buttonSelect, _buttonUnselect;
         private TextureDivide _menuBack;
         private UserOptions _userOptions;
@@ -53,47 +67,46 @@ namespace Hnefatafl
 
         public Hnefatafl()
         {
+            using (StreamWriter sw = File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt"))
+            {
+                sw.Write("");
+                sw.Write("Starting boot up");
+            }
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
         }
 
-        const bool _doFull = false;
         protected override void Initialize()
         {
+            string readText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt");
+            readText += "\nBeginning Initialisation";
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText);
+            
             _graphics.PreferredBackBufferWidth = 960;
             _graphics.PreferredBackBufferHeight = 540;
             FullScreen();
             _graphics.ApplyChanges();
             
             _cursor = new Cursor(Content);
-            _player = new Player(_graphics, Content, 11);
-
-            _picker = new ColourPicker(new Point(20, 20), "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
-            _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds, true);
-
-            _gameState = GameState.MainMenu;
-
-            // UserOptions ops = new UserOptions(new Color(255, 76, 74), new Color(54, 56, 255), new Color[] { new Color(173, 99, 63), new Color(80, 53, 30), new Color(0, 0, 0), new Color(0, 0, 0), new Color(175, 0, 0), new Color(249, 200, 24) });
-            // XmlSerializer xsSubmit = new XmlSerializer(typeof(UserOptions));
-            
-            // using(StringWriter writerS = new StringWriter())
-            // {
-            //     using(XmlWriter writerX = XmlWriter.Create(writerS))
-            //     {
-            //         System.IO.FileStream file = System.IO.File.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml");  
-            //         xsSubmit.Serialize(file, ops);
-            //         file.Close();  
-            //     }
-            // }
 
             XmlSerializer ser = new XmlSerializer(typeof(UserOptions));
             using (XmlReader reader = XmlReader.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
             {
                 _userOptions = (UserOptions)ser.Deserialize(reader);
             }
-            Console.WriteLine(_userOptions.ToString());
+            readText += $"\nUser Options:\n{_userOptions}";
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText);
 
+            _player = new Player(_graphics, Content, _userOptions, 11);
+
+            _picker = new ColourPicker(new Point(20, 20), GraphicsDevice.Viewport.Bounds, "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
+            _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds, true);
+
+            _gameState = GameState.MainMenu;
+
+            readText += "\nSuccessful Initialise";
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText);
             base.Initialize();
         }
 
@@ -119,6 +132,8 @@ namespace Hnefatafl
 
             _menuBack = new TextureDivide(_graphics, Content, "Texture/Menu/BackMenuDivide", _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds));
 
+            string readText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt");
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText + "\nSuccessful LoadContent");
             Console.WriteLine("Successful LoadContent");
         }
 
@@ -131,6 +146,8 @@ namespace Hnefatafl
             _picker.UnloadContent();
             _menuBack.UnloadContent();
 
+            string readText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt");
+            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText + "\nSuccessful UnloadContent");
             Console.WriteLine("Successful UnloadContent");
         }
 
@@ -234,6 +251,9 @@ namespace Hnefatafl
                         }
                     }
                 }
+
+                if (currentKeyboardState.IsKeyDown(Keys.Tab)) _selectedMenuObject++;
+                if (currentKeyboardState.IsKeyDown(Keys.Enter)) _keyboardSelect = true;
             }
 
             if (_picker._visible) PickerCheck(currentMouseState);
@@ -245,12 +265,55 @@ namespace Hnefatafl
             base.Update(gameTime);
         }
 
+        private void TransferMenuObject()
+        {
+            if (_selectedMenuObject > -1)
+            {
+                if (_selectedMenuObject < _button.Count) 
+                { 
+                    if (_selectedMenuObject > 0) 
+                    { 
+                        _button[_selectedMenuObject - 1]._status = Unselected;
+                    } 
+                    _button[_selectedMenuObject]._status = Selected; 
+                }
+                else if (_selectedMenuObject - _button.Count < _textbox.Count) 
+                { 
+                    if (_selectedMenuObject - _button.Count > 0) 
+                    { 
+                        _textbox[_selectedMenuObject - _button.Count - 1]._status = Unselected; 
+                    }
+                    else
+                    {
+                        _button[_selectedMenuObject - 1]._status = Unselected;
+                    }
+                    _textbox[_selectedMenuObject - _button.Count]._status = Selected; 
+                }
+                else 
+                {
+                    if (_textbox.Count > 0)
+                    {
+                        _textbox[_selectedMenuObject - _button.Count - 1]._status = Unselected; 
+                    }
+                    else if (_button.Count > 0)
+                    {
+                        _button[_selectedMenuObject - 1]._status = Unselected;
+                    }
+                    _selectedMenuObject = -1;
+                }
+            }
+        }
+
         private void TransferState()
         {
+            string readText = File.ReadAllText(@"..\Log.txt");
+            File.WriteAllText(@"..\Log.txt", readText + "\nTransfering state");
+
             _button.Clear();
             _textbox.Clear();
             _cursor._state = Cursor.CursorState.Pointer;
             _picker._visible = false;
+            _selectedMenuObject = -1;
 
             Rectangle viewPorts = GraphicsDevice.Viewport.Bounds;
             Point buttonSize = new Point((int)((float)viewPorts.Width / 3), (int)((float)viewPorts.Height / 5.5));
@@ -282,6 +345,8 @@ namespace Hnefatafl
                     buttonName.Add("throne");
                     buttonName.Add("corner");
                     buttonName.Add("highlightTrail");
+                    buttonName.Add("selectPositive");
+                    buttonName.Add("selectNegative");
                     buttonName.Add("boardD");
                     buttonName.Add("boardA");
                     buttonName.Add("back");
@@ -518,6 +583,17 @@ namespace Hnefatafl
 
             if (selected == "back")
             {
+                XmlSerializer xsSubmit = new XmlSerializer(typeof(UserOptions));
+                using(StringWriter writerS = new StringWriter())
+                {
+                    using(XmlWriter writerX = XmlWriter.Create(writerS))
+                    {
+                        System.IO.FileStream file = System.IO.File.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml");  
+                        xsSubmit.Serialize(file, _userOptions);
+                        file.Close();  
+                    }
+                }
+                _player._board.ReloadContent(_graphics, _userOptions);
                 _gameState = GameState.MainMenu;
             }
             else if (!string.IsNullOrWhiteSpace(selected))
@@ -564,6 +640,20 @@ namespace Hnefatafl
                     }
                     case highlightTrail:
                     {
+                        _gameState = GameState.ColourPickerMenu;
+                        _picker.SetDisplayColour(_userOptions._selectColours[0]);
+                        break;
+                    }
+                    case selectPositive:
+                    {
+                        _gameState = GameState.ColourPickerMenu;
+                        _picker.SetDisplayColour(_userOptions._selectColours[1]);
+                        break;
+                    }
+                    case selectNegative:
+                    {
+                        _gameState = GameState.ColourPickerMenu;
+                        _picker.SetDisplayColour(_userOptions._selectColours[2]);
                         break;
                     }
                     case boardD:
@@ -593,12 +683,13 @@ namespace Hnefatafl
             {
                 case "back":
                 {
+                    _userOptions.SetFromButton(_picker._name, _picker.GetColour());
                     _gameState = GameState.OptionsMenu;
                     break;
                 }
                 case "default":
                 {
-                    _picker.SetDisplayColour(_userOptions.GetColor((UserOptions.ColourButtons)Enum.Parse(typeof(UserOptions.ColourButtons), _picker._name)));
+                    _picker.SetDisplayColour(_userOptions.GetDefaultColor((UserOptions.ColourButtons)Enum.Parse(typeof(UserOptions.ColourButtons), _picker._name)));
                     _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds, false);
                     break;
                 }
@@ -773,7 +864,7 @@ namespace Hnefatafl
         {
             Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
 
-            if (currentMouseState.Position != previousMouse.Position)
+            if (currentMouseState.Position != previousMouse.Position && currentKeyboardState.GetPressedKeyCount() == 0)
                 _cursor._hidden = false;
 
             if (currentMouseState.LeftButton != previousMouse.LeftButton)
@@ -854,10 +945,10 @@ namespace Hnefatafl
                         }
                         break;
                     }
-                    case Keys.Enter:
+                    case Keys.Space:
                     case Keys.E:
                     {
-                        if (!previousKeyboard.IsKeyDown(Keys.E) && !previousKeyboard.IsKeyDown(Keys.Enter) && _player._board._state == Board.BoardState.ActiveGame && _player._currentTurn)
+                        if (!previousKeyboard.IsKeyDown(Keys.E) && !previousKeyboard.IsKeyDown(Keys.Space) && _player._board._state == Board.BoardState.ActiveGame && _player._currentTurn)
                         {
                             Movement(mouseLoc, viewPort, _player._board.IsPieceSelected());
                         }
@@ -880,11 +971,11 @@ namespace Hnefatafl
                 {
                     if (newPos.X < boardArea.X)
                     {
-                        newPos.X = boardArea.X;
+                        newPos.X = boardArea.X + (_player._board.TileSizeX(viewPort) / 2);
                     }
                     else if (newPos.X > boardArea.X + boardArea.Width - _player._board.TileSizeX(viewPort))
                     {
-                        newPos.X = boardArea.X + boardArea.Width - _player._board.TileSizeX(viewPort);
+                        newPos.X = boardArea.X + boardArea.Width - (_player._board.TileSizeX(viewPort) / 2);
                     }
 
                     if (newPos.Y < boardArea.Y)
@@ -976,17 +1067,17 @@ namespace Hnefatafl
         {
             string text = "";
 
-            if (currentState.LeftButton != previousMouse.LeftButton)
+            if (currentState.LeftButton != previousMouse.LeftButton || _keyboardSelect)
             {
                 foreach (Button button in _button)
                 {
-                    if (new Rectangle(button._pos, button._size).Contains(mouseLoc))
+                    if (_keyboardSelect || new Rectangle(button._pos, button._size).Contains(mouseLoc))
                     {
                         if (previousMouse.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
                         {
                             button._status = Selected;
                         }
-                        else if (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
+                        else if ((_keyboardSelect && button._status == Selected) || (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released))
                         {
                             button._status = Unselected;
                             text = button._name;
@@ -1025,6 +1116,7 @@ namespace Hnefatafl
                         _textbox[2]._text = _picker.B.ToString();
                     }
                 }
+                _keyboardSelect = false;
             }
 
             return text;

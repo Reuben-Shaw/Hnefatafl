@@ -17,7 +17,7 @@ namespace Hnefatafl
 {
     sealed class Player
     {
-        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START }
+        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START, RESPONSE }
         public enum SideType { Attackers, Defenders }
         public Board _board;
         private NetClient _client;
@@ -41,9 +41,9 @@ namespace Hnefatafl
         public SideType? _side; //Nullable as the when connecting to a server the player side will not be immediatly sent, and thus null, checks will be done before this however and allowing it to trap for null values prevents exceptions
         public List<string> _repeatedMoveChk = new List<string>();
 
-        public Player(GraphicsDeviceManager graphics, ContentManager Content, int boardSize)
+        public Player(GraphicsDeviceManager graphics, ContentManager Content,  UserOptions options, int boardSize)
         {
-            _board = new Board(graphics, Content, boardSize);
+            _board = new Board(graphics, Content, options._boardColours, new Color[] {options._pawnAttacker, options._pawnDefender, options._pawnDefender}, options._selectColours, boardSize);
             CreateClient();
         }
 

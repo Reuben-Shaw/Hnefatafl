@@ -14,99 +14,103 @@ namespace Hnefatafl.Media
     class AtlasTexture
     {
         protected Texture2D[,] _texture;
-
+        protected string _texturePath;
+        protected ContentManager Content;
+        
         protected Dictionary<string, Point> _locator = new Dictionary<string, Point>();
 
         protected AtlasTexture() {  } //Used for inheretance
         
-        public AtlasTexture(GraphicsDeviceManager graphics, ContentManager Content, string texturePath)
-        {
-            Texture2D fullAtlas;
-            Color[] atlasColourArray, data;
-
-            try
-            {
-                fullAtlas = Content.Load<Texture2D>(texturePath);
-
-                atlasColourArray = new Color[fullAtlas.Width * fullAtlas.Height];
-                data = new Color[16 * 16];
-
-                fullAtlas.GetData<Color>(atlasColourArray);
-
-                _texture = new Texture2D[fullAtlas.Width / 16, fullAtlas.Height / 16];
-
-                int x = 0, y = 0;
-                for (int orientation = 0; orientation < (fullAtlas.Width / 16) * (fullAtlas.Height / 16); orientation++)
-                {
-                    _locator.Add(((TextureAtlasLink)orientation).ToString(), new Point(x, y));
-
-                    //Console.WriteLine($"Location: {x}, {y} which is {x * 16}, {y * 16}");
-                    for (int i = y * 16; i < (y + 1) * 16; i++)
-                    {
-                        for (int j = x * 16; j < (x + 1) * 16; j++)
-                        {
-                            data[((i - (y * 16)) * 16) + (j - (x * 16))] = atlasColourArray[(j) + (i * fullAtlas.Width)];
-                        }
-                    }
-
-                    _texture[x, y] = new Texture2D(graphics.GraphicsDevice, 16, 16);
-                    _texture[x, y].SetData<Color>(data);
-
-                    x++;
-                    if (x * 16 == fullAtlas.Width) { x = 0; y++; }
-                }
-
-                fullAtlas.Dispose();
-            }
-            catch (System.Exception)
-            {
-                Console.WriteLine("There was an exception loading the texture");
-            }
+        public AtlasTexture(GraphicsDeviceManager graphics, ContentManager content, string texturePath)
+        { 
+           Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+           LoadTexture(graphics, texturePath, null);
         }
 
-        public AtlasTexture(GraphicsDeviceManager graphics, ContentManager Content, string texturePath, string[] names)
+        // public AtlasTexture(GraphicsDeviceManager graphics, ContentManager Content, string texturePath, string[] names)
+        // {
+        //     _texturePath = texturePath;
+        //     Texture2D fullAtlas;
+        //     Color[] atlasColourArray, data;
+        //     Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+
+        //     try
+        //     {
+        //         fullAtlas = Content.Load<Texture2D>(texturePath);
+
+        //         atlasColourArray = new Color[fullAtlas.Width * fullAtlas.Height];
+        //         data = new Color[16 * 16];
+
+        //         fullAtlas.GetData<Color>(atlasColourArray);
+
+        //         _texture = new Texture2D[fullAtlas.Width / 16, fullAtlas.Height / 16];
+
+        //         int x = 0, y = 0;
+        //         for (int name = 0; name < (fullAtlas.Width / 16) * (fullAtlas.Height / 16); name++)
+        //         {
+        //             _locator.Add(names[name], new Point(x, y));
+
+        //             for (int i = y * 16; i < (y + 1) * 16; i++)
+        //             {
+        //                 for (int j = x * 16; j < (x + 1) * 16; j++)
+        //                 {
+        //                     data[((i - (y * 16)) * 16) + (j - (x * 16))] = atlasColourArray[(j) + (i * fullAtlas.Width)];
+        //                 }
+        //             }
+
+        //             _texture[x, y] = new Texture2D(graphics.GraphicsDevice, 16, 16);
+        //             _texture[x, y].SetData<Color>(data);
+        //             Console.WriteLine($"Data size: {data.Length}");
+
+        //             x++;
+        //             if (x * 16 == fullAtlas.Width) { x = 0; y++; }
+        //         }
+
+        //         fullAtlas.Dispose();
+        //     }
+        //     catch (System.Exception)
+        //     {
+        //         Console.WriteLine("There was an exception loading the texture");
+        //     }
+        // }
+
+        private void LoadTexture(GraphicsDeviceManager graphics, string texturePath, string[] names)
         {
+            _texturePath = texturePath;
             Texture2D fullAtlas;
             Color[] atlasColourArray, data;
 
-            try
+            fullAtlas = Content.Load<Texture2D>(texturePath);
+
+            atlasColourArray = new Color[fullAtlas.Width * fullAtlas.Height];
+            data = new Color[16 * 16];
+
+            fullAtlas.GetData<Color>(atlasColourArray);
+
+            _texture = new Texture2D[fullAtlas.Width / 16, fullAtlas.Height / 16];
+
+            int x = 0, y = 0;
+            for (int orientation = 0; orientation < (fullAtlas.Width / 16) * (fullAtlas.Height / 16); orientation++)
             {
-                fullAtlas = Content.Load<Texture2D>(texturePath);
+                _locator.Add(((TextureAtlasLink)orientation).ToString(), new Point(x, y));
 
-                atlasColourArray = new Color[fullAtlas.Width * fullAtlas.Height];
-                data = new Color[16 * 16];
-
-                fullAtlas.GetData<Color>(atlasColourArray);
-
-                _texture = new Texture2D[fullAtlas.Width / 16, fullAtlas.Height / 16];
-
-                int x = 0, y = 0;
-                for (int name = 0; name < (fullAtlas.Width / 16) * (fullAtlas.Height / 16); name++)
+                //Console.WriteLine($"Location: {x}, {y} which is {x * 16}, {y * 16}");
+                for (int i = y * 16; i < (y + 1) * 16; i++)
                 {
-                    _locator.Add(names[name], new Point(x, y));
-
-                    for (int i = y * 16; i < (y + 1) * 16; i++)
+                    for (int j = x * 16; j < (x + 1) * 16; j++)
                     {
-                        for (int j = x * 16; j < (x + 1) * 16; j++)
-                        {
-                            data[((i - (y * 16)) * 16) + (j - (x * 16))] = atlasColourArray[(j) + (i * fullAtlas.Width)];
-                        }
+                        data[((i - (y * 16)) * 16) + (j - (x * 16))] = atlasColourArray[(j) + (i * fullAtlas.Width)];
                     }
-
-                    _texture[x, y] = new Texture2D(graphics.GraphicsDevice, 16, 16);
-                    _texture[x, y].SetData<Color>(data);
-                    Console.WriteLine($"Data size: {data.Length}");
-
-                    x++;
-                    if (x * 16 == fullAtlas.Width) { x = 0; y++; }
                 }
 
-                fullAtlas.Dispose();
+                _texture[x, y] = new Texture2D(graphics.GraphicsDevice, 16, 16);
+                _texture[x, y].SetData<Color>(data);
+
+                x++;
+                if (x * 16 == fullAtlas.Width) { x = 0; y++; }
             }
-            catch (System.Exception)
-            {
-                Console.WriteLine("There was an exception loading the texture");
-            }
+
+            fullAtlas.Dispose();
         }
 
         public Texture2D GetTexture(TextureAtlasLink key)
@@ -119,6 +123,15 @@ namespace Hnefatafl.Media
         {
             Point dictionaryPoint = _locator[key];
             return _texture[dictionaryPoint.X, dictionaryPoint.Y];
+        }
+
+        public void ReloadContent(GraphicsDeviceManager graphics, Color userColour)
+        {
+            Content.Unload();
+
+            _locator.Clear();
+            LoadTexture(graphics, _texturePath, null);
+            HueShiftTexture(userColour);
         }
 
         public void HueShiftTexture(Color userColour)
@@ -166,13 +179,15 @@ namespace Hnefatafl.Media
         public int _tileSizeX { get; set; }
         public int _tileSizeY { get; set; }
         
-        public TextureDivide(GraphicsDeviceManager graphics, ContentManager Content, string texturePath, int tileSizeX, int tileSizeY)
+        public TextureDivide(GraphicsDeviceManager graphics, ContentManager content, string texturePath, int tileSizeX, int tileSizeY)
         {
             _tileSizeX = tileSizeX;
             _tileSizeY = tileSizeY;
             
+            _texturePath = texturePath;
             Texture2D fullAtlas;
             Color[] atlasColourArray, data;
+            Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
 
             try
             {

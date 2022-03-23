@@ -172,7 +172,7 @@ namespace Hnefatafl
 
         public override string ToString()
         {
-            return $"There is {_pieceBoard.Count} on the board";
+            return $"There are {_pieceBoard.Count} pieces on the board";
         }
     }
 }

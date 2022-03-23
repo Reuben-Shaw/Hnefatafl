@@ -47,7 +47,7 @@ namespace Hnefatafl.MenuObjects
             int width;
             if (viewport.Width < 1024) width = (int)Math.Round((decimal)(viewport.Width / 512)) * 512;
             else if (viewport.Width < 1500) width = 768;
-            else width = 1280;
+            else width = 1536;
 
             _pos = position;
             _size = new Point(width, viewport.Height / 33);

@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using Hnefatafl.Media;
 using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
@@ -12,7 +11,7 @@ using static Hnefatafl.Media.TextureAtlasLink;
 
 namespace Hnefatafl
 {
-    public enum BoardTypes { Regular }
+    enum BoardTypes { Regular }
 
     sealed class Board
     {
@@ -72,21 +71,6 @@ namespace Hnefatafl
             _boardHighlightAtlas.ReloadContent(graphics, options._selectColours[0]);
             CreateSelectColours(options._selectColours);
             SelectHighlightColour(null);
-        }
-
-        public void ReceivePawns(List<Piece> pieces)
-        {
-            _pieces.CreateBoard(pieces);
-        }
-
-        public Pieces GetPieces()
-        {
-            return _pieces;
-        }
-
-        public void WritePieces()
-        {
-            Console.WriteLine(_pieces.ToString());
         }
 
         public void CreateBoard()
@@ -216,7 +200,7 @@ namespace Hnefatafl
             }
         }
 
-        public void SelectPiece(HPoint select, SideType? side) //Used for selecting a piece, doesn't use PlayerSidePiece as it's used for the server selecting enemies as well
+        public void SelectPiece(HPoint select, Player.SideType? side) //Used for selecting a piece, doesn't use PlayerSidePiece as it's used for the server selecting enemies as well
         {
             PieceType pawnChk = _pieces.GetPiece(select.ToString())._pawn._type;
             if (PlayerSidePiece(pawnChk, side))
@@ -237,7 +221,7 @@ namespace Hnefatafl
                 return false;
         }
 
-        public bool MakeMove(HPoint move, SideType? side, bool doOverride) //Logic used to perform a move, and check if it is possible
+        public bool MakeMove(HPoint move, Player.SideType? side, bool doOverride) //Logic used to perform a move, and check if it is possible
         //Is a bool so it can return true if a move succeeds or false if it fails
         //doOveride is used for multiplayer to tell the game that despite being the wrong side that the move has to go through anyway
         {
@@ -287,13 +271,13 @@ namespace Hnefatafl
             return false;
         }
 
-        private bool PlayerSidePiece(PieceType pieceType, SideType? side) //Returns if a checked piece is on the same side as the player
+        private bool PlayerSidePiece(PieceType pieceType, Player.SideType? side) //Returns if a checked piece is on the same side as the player
         {
-            if (side == SideType.Attackers && pieceType == Attacker)
+            if (side == Player.SideType.Attackers && pieceType == Attacker)
             {
                 return true;
             }
-            else if (side == SideType.Defenders && (pieceType == Defender || pieceType == King))
+            else if (side == Player.SideType.Defenders && (pieceType == Defender || pieceType == King))
             {
                 return true;
             }
@@ -415,7 +399,7 @@ namespace Hnefatafl
             return viewPort.Width / 30;
         }
 
-        public bool MovesStillPossible(SideType? side) //CODE DOES NOT WORK, NEED FIX
+        public bool MovesStillPossible(Player.SideType? side) //CODE DOES NOT WORK, NEED FIX
         {
             foreach (DictionaryEntry piece in _pieces.AllPieces())
             {
@@ -735,7 +719,7 @@ namespace Hnefatafl
             _selectHighlight.SetData<Color>(data);
         }
 
-        public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, SideType? currentSide, bool currentTurn) //Used for drawing the board and the pieces
+        public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, Rectangle viewPort, Player.SideType? currentSide, bool currentTurn) //Used for drawing the board and the pieces
         {
             Rectangle rect = new Rectangle(
                         (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2), 
@@ -748,7 +732,8 @@ namespace Hnefatafl
                         _tileSizeX, _tileSizeY);
             Piece iPiece;
 
-            _boarder.Draw(spriteBatch, new Rectangle(rect.X - _tileSizeX, rect.Y - _tileSizeY, _tileSizeY * _boardSize + (_tileSizeX * 2), _tileSizeY  * _boardSize + (_tileSizeY * 2)));
+            _boarder.Draw(spriteBatch, 
+            new Rectangle(rect.X - _tileSizeX, rect.Y - _tileSizeY, _tileSizeY * _boardSize + (_tileSizeX * 2), _tileSizeY  * _boardSize + (_tileSizeY * 2)));
 
             for (int y = 0; y < _boardSize; y++)
             {

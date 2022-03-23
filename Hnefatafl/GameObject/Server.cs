@@ -88,7 +88,7 @@ namespace Hnefatafl
                             string serialMsg = OptionXmlSerialise(_serverOp);
 
                             NetOutgoingMessage outMsg = _server.CreateMessage();
-                            outMsg.Write(Player.InstructType.GAMEOPTIONS.ToString() + "," + serialMsg);
+                            outMsg.Write(serialMsg);
                             _server.SendMessage(outMsg, _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
 
                             Console.WriteLine("{0} has connected.", message.SenderConnection.Peer.Configuration.LocalAddress);

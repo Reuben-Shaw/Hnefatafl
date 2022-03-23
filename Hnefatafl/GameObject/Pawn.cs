@@ -1,12 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using System;
 using static Hnefatafl.PieceType;
 
 namespace Hnefatafl
 {
     public enum PieceType { Empty = -1, Attacker = 0, Defender = 1, King = 2, Throne = -2, Corner = -3 };
-    public struct Pawn
+    struct Pawn
     {
         public PieceType _type { get; set; }
 
@@ -31,13 +30,10 @@ namespace Hnefatafl
         }
     }
     
-    [Serializable()]
-    public sealed class Piece
+    sealed class Piece
     {
         public Pawn _pawn { get; set; }
         public HPoint _loc  { get; set; }
-
-        public Piece() { } //For serialising
 
         public Piece(Pawn pawn, HPoint loc)
         {
@@ -56,8 +52,8 @@ namespace Hnefatafl
             return _pawn + " " + _loc.ToString();
         }
     }
-    
-    public sealed class Pieces
+
+    sealed class Pieces
     {
         private Hashtable _pieceBoard;
 
@@ -105,18 +101,8 @@ namespace Hnefatafl
             return _pieceBoard.ContainsKey(key);
         }
 
-        public void CreateBoard(List<Piece> pieces)
-        {
-            _pieceBoard.Clear();
-            foreach (Piece piece in pieces)
-            {
-                _pieceBoard.Add(piece._loc.ToString(), piece);
-            }
-        }
-
         public void CreateBoard(int boardSize, BoardTypes type)
         {
-            Console.WriteLine("REDID IT ALL");
             _pieceBoard.Clear();
             if (type == BoardTypes.Regular)
             {
@@ -168,11 +154,6 @@ namespace Hnefatafl
                     }
                 }
             }
-        }
-
-        public override string ToString()
-        {
-            return $"There are {_pieceBoard.Count} pieces on the board";
         }
     }
 }

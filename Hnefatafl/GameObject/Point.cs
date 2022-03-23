@@ -10,6 +10,8 @@ namespace Hnefatafl
         public int X { get; set; }
         public int Y { get; set; }
 
+        public HPoint() { } //For serialisation
+
         public HPoint(int x, int y)
         {
             X = x;

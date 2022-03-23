@@ -15,10 +15,11 @@ using static Hnefatafl.Player.InstructType;
 
 namespace Hnefatafl
 {
+    public enum SideType { Attackers, Defenders }
+
     sealed class Player
     {
-        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START, RESPONSE }
-        public enum SideType { Attackers, Defenders }
+        public enum InstructType { SELECT, MOVE, MOVEFAIL, WIN, LOSE, START, RESPONSE, GAMEOPTIONS, FULLPIECES }
         public Board _board;
         private NetClient _client;
         private bool m_currentTurn;
@@ -40,6 +41,10 @@ namespace Hnefatafl
         }
         public SideType? _side; //Nullable as the when connecting to a server the player side will not be immediatly sent, and thus null, checks will be done before this however and allowing it to trap for null values prevents exceptions
         public List<string> _repeatedMoveChk = new List<string>();
+
+        public bool _awaitingResponse;
+        public double _timeSinceSend;
+        public string _messageSent;
 
         public Player(GraphicsDeviceManager graphics, ContentManager Content,  UserOptions options, int boardSize)
         {
@@ -79,95 +84,128 @@ namespace Hnefatafl
             return false;
         }
 
-        public void SendOptions()
+        public void SendPieces()
         {
-            XmlSerializer xsSubmit = new XmlSerializer(typeof(ServerOptions));
+            Console.WriteLine("Attempting piece send");
             NetOutgoingMessage outMsg = _client.CreateMessage();
+
+            Hashtable fullTable = _board.GetPieces().AllPieces();
+            List<Piece> piecesToSend = new List<Piece>();
+
+            foreach (DictionaryEntry entry in fullTable)
+            {
+                Piece piece = entry.Value as Piece; //Converts the DictionaryEntry into a Piece, as it will always be a Piece
+                piecesToSend.Add(piece);
+            }
+
+            XmlSerializer xsSubmit = new XmlSerializer(typeof(List<Piece>));
 
             using(StringWriter writerS = new StringWriter())
             {
                 using(XmlWriter writerX = XmlWriter.Create(writerS))
                 {
-                    xsSubmit.Serialize(writerX, _board._serverOp);
-                    outMsg.Write(writerS.ToString());
+                    xsSubmit.Serialize(writerX, piecesToSend);
+                    outMsg.Write(FULLPIECES.ToString() + "," + writerS.ToString());
                 }
             }
+
             _client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
 
-        public void CheckMessage()
+        public string CheckMessage()
         {
             NetIncomingMessage message = _client.ReadMessage();
-            try
+        
+            if (message is not null)
             {
-                if (message is not null)
+                if (message.SenderConnection is not null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
                 {
-                    if (message.SenderConnection is not null && message.SenderConnection.RemoteUniqueIdentifier != _client.UniqueIdentifier)
-                    {
-                        string msg = message.ReadString();
-                        Console.WriteLine(msg);
-                        string[] msgDiv = msg.Split(",");
-                        
-                        if (msgDiv[0] == SELECT.ToString())
-                        {
-                            _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
-                        }
-                        else if (msgDiv[0] == MOVE.ToString())
-                        {
-                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
-                            _currentTurn = !_currentTurn;
-                        }
-                        else if (msgDiv[0] == MOVEFAIL.ToString())
-                        {
-                            _board.SelectPiece(new HPoint(-1, -1));
-                        }
-                        else if (msgDiv[0] == WIN.ToString())
-                        {
-                            Console.WriteLine("I won");
-                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
-                        }
-                        else if (msgDiv[0] == LOSE.ToString())
-                        {
-                            Console.WriteLine("I lost");
-                            _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
-                        }
-                        else if (msgDiv[0] == START.ToString())
-                        {
-                            _board._state = Board.BoardState.ActiveGame;
-                        }
-                        else
-                        {
-                            _board._serverOp = OptionsXmlDeserialise(msg);
-                            
-                            if (_side is null && _board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
-                            {
-                                _currentTurn = true;
-                                _side = Player.SideType.Attackers;
-                            }
-                            else if (_side is null)
-                            {
-                                _currentTurn = false;
-                                _side = Player.SideType.Defenders;
-                            }
+                    string msg = message.ReadString();
+                    Console.WriteLine(msg);
+                    string[] msgDiv = msg.Split(",");
 
-                            Console.WriteLine("Completed deserialisation of options");
-                        }
+                    if (msgDiv[0] == RESPONSE.ToString())
+                    {
+                        _awaitingResponse = false;
+                        _timeSinceSend = 0;
+                        return msg;
                     }
+                    else if (msgDiv[0] == SELECT.ToString())
+                    {
+                        _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
+                    }
+                    else if (msgDiv[0] == MOVE.ToString())
+                    {
+                        _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                        _currentTurn = !_currentTurn;
+                    }
+                    else if (msgDiv[0] == MOVEFAIL.ToString())
+                    {
+                        _board.SelectPiece(new HPoint(-1, -1));
+                    }
+                    else if (msgDiv[0] == WIN.ToString())
+                    {
+                        Console.WriteLine("I won");
+                        //_board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                    }
+                    else if (msgDiv[0] == LOSE.ToString())
+                    {
+                        Console.WriteLine("I lost");
+                        //_board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
+                    }
+                    else if (msgDiv[0] == START.ToString())
+                    {
+                        _board._state = Board.BoardState.ActiveGame;
+                    }
+                    else if (msgDiv[0] == GAMEOPTIONS.ToString())
+                    {
+                        _board._serverOp = OptionsXmlDeserialise(msg);
+                        
+                        if (_side is null && _board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
+                        {
+                            _currentTurn = true;
+                            _side = SideType.Attackers;
+                        }
+                        else if (_side is null)
+                        {
+                            _currentTurn = false;
+                            _side = SideType.Defenders;
+                        }
+
+                        Console.WriteLine("Completed deserialisation of options");
+                    }
+                    else if (msgDiv[0] == FULLPIECES.ToString())
+                    {
+                        _board.ReceivePawns(PiecesXmlDeserialise(msg));
+                        
+                        Console.WriteLine("Completed deserialisation of server");
+                    }
+
+                    SendMessage(RESPONSE.ToString());
+                    return msg;
                 }
             }
-            catch (System.Exception)
-            {
-                Console.WriteLine("Poor message formatting - probably startup message. Crash averted");
-            }
+        
+            return "";
         }
         
         private ServerOptions OptionsXmlDeserialise(string xml)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(ServerOptions));
 
-            using (TextReader reader = new StringReader(xml))
+            using (TextReader reader = new StringReader(xml.Split(',')[1]))
             {
                 return (ServerOptions) serializer.Deserialize(reader);
+            }
+        }
+
+        private List<Piece> PiecesXmlDeserialise(string xml)
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(List<Piece>));
+
+            using (TextReader reader = new StringReader(xml.Split(',')[1]))
+            {
+                return (List<Piece>) serializer.Deserialize(reader);
             }
         }
 

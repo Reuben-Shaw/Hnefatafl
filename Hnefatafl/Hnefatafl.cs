@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 using Hnefatafl.MenuObjects;
 using Hnefatafl.Media;
 using static Hnefatafl.MenuObjects.MenuObject.Status;
@@ -65,13 +67,10 @@ namespace Hnefatafl
         private enum Langauge { English }
         private Langauge _language = Langauge.English;
 
+        private Logger _logger = new Logger();
+
         public Hnefatafl()
         {
-            using (StreamWriter sw = File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt"))
-            {
-                sw.Write("");
-                sw.Write("Starting boot up");
-            }
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = false;
@@ -79,9 +78,7 @@ namespace Hnefatafl
 
         protected override void Initialize()
         {
-            string readText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt");
-            readText += "\nBeginning Initialisation";
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText);
+            _logger.Add("Beginning Initialisation");
             
             _graphics.PreferredBackBufferWidth = 960;
             _graphics.PreferredBackBufferHeight = 540;
@@ -95,18 +92,19 @@ namespace Hnefatafl
             {
                 _userOptions = (UserOptions)ser.Deserialize(reader);
             }
-            readText += $"\nUser Options:\n{_userOptions}";
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText);
+            _logger.Add($"User Options:\n{_userOptions}");
 
             _player = new Player(_graphics, Content, _userOptions, 11);
+            _logger.Add("Player Created");
 
             _picker = new ColourPicker(new Point(20, 20), GraphicsDevice.Viewport.Bounds, "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
             _picker.ChangeColour(_graphics, GraphicsDevice.Viewport.Bounds, true);
+            _logger.Add("Picker Created");
 
             _gameState = GameState.MainMenu;
+            _logger.Add("Main Menu Initialised");
 
-            readText += "\nSuccessful Initialise";
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText);
+            _logger.Add("Successful Initialise");
             base.Initialize();
         }
 
@@ -132,8 +130,7 @@ namespace Hnefatafl
 
             _menuBack = new TextureDivide(_graphics, Content, "Texture/Menu/BackMenuDivide", _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds));
 
-            string readText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt");
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText + "\nSuccessful LoadContent");
+            _logger.Add("Successful LoadContent");
             Console.WriteLine("Successful LoadContent");
         }
 
@@ -146,8 +143,7 @@ namespace Hnefatafl
             _picker.UnloadContent();
             _menuBack.UnloadContent();
 
-            string readText = File.ReadAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt");
-            File.WriteAllText(AppDomain.CurrentDomain.BaseDirectory + "Log.txt", readText + "\nSuccessful UnloadContent");
+            _logger.Add("Successful UnloadContent");
             Console.WriteLine("Successful UnloadContent");
         }
 
@@ -159,7 +155,34 @@ namespace Hnefatafl
                 _server.ReadMessages();
             }
 
-            _player.CheckMessage();
+            if (_player._awaitingResponse)
+            {
+                _player._timeSinceSend += gameTime.ElapsedGameTime.TotalSeconds;
+                _player.CheckMessage();
+
+                if (!_player._awaitingResponse)
+                {
+                    Console.WriteLine("Got awaited response");
+                }
+                else if (_player._timeSinceSend >= 30)
+                {
+                    _player._awaitingResponse = false;
+                    _player.Disconnect();
+                    if (_server is not null) _server.StopServer();
+                    Console.WriteLine("No Response, Exiting Server");
+                    _logger.Add("No Response, Exiting Server");
+                }
+                else if (_player._timeSinceSend >= 5)
+                {
+                    Console.WriteLine($"Time Out {_player._timeSinceSend}");
+                    _logger.Add("Time Out, Attempting Re-Send");
+                    _player.SendPieces();
+                }
+            }
+            else
+            {
+                _player.CheckMessage();
+            }
 
             if (_gameState != GameState.InGame && _gameState != GameState.EscMenu && _player.IsConnected())
             {
@@ -306,8 +329,7 @@ namespace Hnefatafl
 
         private void TransferState()
         {
-            string readText = File.ReadAllText(@"..\Log.txt");
-            File.WriteAllText(@"..\Log.txt", readText + "\nTransfering state");
+            _logger.Add("Transfering State");
 
             _button.Clear();
             _textbox.Clear();
@@ -521,6 +543,7 @@ namespace Hnefatafl
                 _button.Add(new Button(new Point(viewPorts.Width / 2 + viewPorts.Width / 4, viewPorts.Height / 2 + viewPorts.Height / 4), buttonSize, NodeText(xml, buttonName[buttonName.Count - 1]), buttonName[buttonName.Count - 1]));
                 _button[_button.Count - 1].Update(_graphics, Content);
             }
+            _logger.Add($"New State {_gameState.ToString()}");
         }
 
         private string NodeText(XmlElement xml, string objectName)
@@ -558,7 +581,7 @@ namespace Hnefatafl
                     _player._board.CreateBoard();
                     _player._board._state = Board.BoardState.ActiveGame;
                     _gameState = GameState.InGame;
-                    _player._side = Player.SideType.Attackers;
+                    _player._side = SideType.Attackers;
                     _player._currentTurn = true;
                     break;
                 }
@@ -956,7 +979,7 @@ namespace Hnefatafl
                     }
                     case Keys.R:
                     {
-                        _player._board.CreateBoard();
+                        _player.SendPieces();
                         break;
                     }
                 }
@@ -1004,6 +1027,8 @@ namespace Hnefatafl
                 (mouseLoc.X - (viewPort.Width / 2) + ((_player._board.TileSizeX(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeX(viewPort),
                 (mouseLoc.Y - (viewPort.Height / 2) + ((_player._board.TileSizeY(viewPort) * _player._board._boardSize) / 2)) / _player._board.TileSizeY(viewPort)
                 );
+
+            string messageSend = "";
             
             if (moving && _player._board.IsPieceSelected())
             {
@@ -1017,11 +1042,12 @@ namespace Hnefatafl
                         if (_player._repeatedMoveChk.Count == 6)
                         {
                             Console.WriteLine("Loss due to repeat");
-                            _player.SendMessage(WIN.ToString() + "," + point.ToString());
+                            messageSend = WIN.ToString() + "," + point.ToString();
                         }
                         else
                         {
-                            _player.SendMessage(MOVE.ToString() + "," + point.ToString());
+                            messageSend = MOVE.ToString() + "," + point.ToString();
+                            _player._currentTurn = false;
                         }
                     }
                     else
@@ -1037,19 +1063,13 @@ namespace Hnefatafl
                         {
                             _player._repeatedMoveChk.RemoveAt(0);
                         }
-                        _player.SendMessage(MOVE.ToString() + "," + point.ToString());
-                    }
-
-                    if (_player.IsConnected()) _player._currentTurn = false; //Turns for local co-op
-                    else
-                    { 
-                        if (_player._side == Player.SideType.Attackers) {_player._side = Player.SideType.Defenders; _player._currentTurn = true;} 
-                        else {_player._side = Player.SideType.Attackers; _player._currentTurn = true;}
+                        messageSend = MOVE.ToString() + "," + point.ToString();
+                        _player._currentTurn = false;
                     }
                 }
                 else
                 {
-                    _player.SendMessage(MOVEFAIL.ToString());
+                    messageSend = MOVEFAIL.ToString() + "," + point.ToString();
                 }
             }
             else if (!moving)
@@ -1057,10 +1077,29 @@ namespace Hnefatafl
                 if (!_player._board.IsPieceSelected())
                 {        
                     _player._board.SelectPiece(point, _player._side);
-                    _player.SendMessage(SELECT.ToString() + "," + point.ToString());
+                    messageSend = SELECT.ToString() + "," + point.ToString();
                 }
             }
-            
+
+            _player._messageSent = messageSend;
+            _player.SendMessage(messageSend);
+
+            if (_player.IsConnected())
+            {
+                if (_player._awaitingResponse)
+                {
+                    _player.SendPieces();
+                }
+                else
+                {
+                    _player._awaitingResponse = true;
+                }
+            }
+            else if (messageSend == MOVE.ToString() + "," + point.ToString()) //Turns for local co-op
+            { 
+                if (_player._side == SideType.Attackers) {_player._side = SideType.Defenders; _player._currentTurn = true;} 
+                else {_player._side = SideType.Attackers; _player._currentTurn = true;}
+            }
         }
 
         private string ButtonCheck(MouseState currentState, Point mouseLoc)
@@ -1177,7 +1216,7 @@ namespace Hnefatafl
 
             if (_gameState == GameState.InGame || _gameState == GameState.EscMenu)
             {
-                Player.SideType? currentSide = _player._side;
+                SideType? currentSide = _player._side;
 
                 _player._board.Draw(_graphics, _spriteBatch, viewPort, currentSide, _player._currentTurn);
             }

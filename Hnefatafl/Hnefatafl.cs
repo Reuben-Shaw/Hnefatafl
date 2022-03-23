@@ -164,7 +164,7 @@ namespace Hnefatafl
                 {
                     Console.WriteLine("Got awaited response");
                 }
-                else if (_player._timeSinceSend >= 30)
+                else if (_player._timeSinceSend >= 60)
                 {
                     _player._awaitingResponse = false;
                     _player.Disconnect();

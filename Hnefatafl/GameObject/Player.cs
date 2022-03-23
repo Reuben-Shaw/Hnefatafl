@@ -105,9 +105,9 @@ namespace Hnefatafl
                 using(XmlWriter writerX = XmlWriter.Create(writerS))
                 {
                     xsSubmit.Serialize(writerX, piecesToSend);
-                    outMsg.Write(FULLPIECES.ToString() + "," + writerS.ToString());
+                    outMsg.Write(FULLPIECES.ToString() + "," + writerS.ToString() + "," + _board.GetSelectPiece().ToString());
                 }
-            }
+            }       
 
             _client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }
@@ -133,15 +133,18 @@ namespace Hnefatafl
                     else if (msgDiv[0] == SELECT.ToString())
                     {
                         _board.SelectPiece(new HPoint(msgDiv[1], msgDiv[2]));
+                        SendMessage(RESPONSE.ToString());
                     }
                     else if (msgDiv[0] == MOVE.ToString())
                     {
                         _board.MakeMove(new HPoint(msgDiv[1], msgDiv[2]), _side, true);
                         _currentTurn = !_currentTurn;
+                        SendMessage(RESPONSE.ToString());
                     }
                     else if (msgDiv[0] == MOVEFAIL.ToString())
                     {
                         _board.SelectPiece(new HPoint(-1, -1));
+                        SendMessage(RESPONSE.ToString());
                     }
                     else if (msgDiv[0] == WIN.ToString())
                     {
@@ -177,11 +180,12 @@ namespace Hnefatafl
                     else if (msgDiv[0] == FULLPIECES.ToString())
                     {
                         _board.ReceivePawns(PiecesXmlDeserialise(msg));
+                        _board.SelectPiece(HPointXmlDeserialise(msg));
+                        SendMessage(RESPONSE.ToString());
                         
                         Console.WriteLine("Completed deserialisation of server");
                     }
 
-                    SendMessage(RESPONSE.ToString());
                     return msg;
                 }
             }
@@ -207,6 +211,11 @@ namespace Hnefatafl
             {
                 return (List<Piece>) serializer.Deserialize(reader);
             }
+        }
+
+        private HPoint HPointXmlDeserialise(string xml)
+        {
+            return new HPoint(xml.Split(',')[2], xml.Split(',')[3]);
         }
 
         public void EstablishConnection(string ip, int port)

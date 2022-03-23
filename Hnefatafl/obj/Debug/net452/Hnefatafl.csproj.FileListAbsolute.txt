@@ -1,6 +1,0 @@
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\net452\Hnefatafl.csproj.AssemblyReference.cache
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\net452\Hnefatafl.csproj.SuggestedBindingRedirects.cache
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\net452\Hnefatafl.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\net452\Hnefatafl.AssemblyInfoInputs.cache
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\net452\Hnefatafl.AssemblyInfo.cs
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\obj\Debug\net452\Hnefatafl.csproj.CoreCompileInputs.cache

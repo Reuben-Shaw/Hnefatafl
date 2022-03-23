@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Font/PixelFont.spritefont</SourceFile>
-  <SourceTime>2022-03-23T15:42:28.5501664+00:00</SourceTime>
+  <SourceTime>2022-03-23T16:02:35.7848681+00:00</SourceTime>
   <DestFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Texture/Font/PixelFont.xnb</DestFile>
-  <DestTime>2022-03-23T15:42:46.9815227+00:00</DestTime>
+  <DestTime>2022-03-23T16:40:53.3384372+00:00</DestTime>
   <Importer>FontDescriptionImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>FontDescriptionProcessor</Processor>

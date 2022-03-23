@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <SourceFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/OpButton/kingArmed.png</SourceFile>
-  <SourceTime>2022-03-23T15:42:28.5591743+00:00</SourceTime>
+  <SourceTime>2022-03-23T16:02:36.1970965+00:00</SourceTime>
   <DestFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Texture/OpButton/kingArmed.xnb</DestFile>
-  <DestTime>2022-03-23T15:42:47.051964+00:00</DestTime>
+  <DestTime>2022-03-23T16:40:53.4460656+00:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

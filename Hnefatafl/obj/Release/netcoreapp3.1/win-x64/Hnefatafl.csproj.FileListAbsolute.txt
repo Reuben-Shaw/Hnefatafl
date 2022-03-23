@@ -248,7 +248,6 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x6
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\hostfxr.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\hostpolicy.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\mscordaccore.dll
-C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\mscordaccore_amd64_amd64_4.700.21.56803.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\mscordbi.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\mscorrc.debug.dll
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\mscorrc.dll
@@ -275,3 +274,4 @@ C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x6
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\LabelDivide.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\Logo.xnb
 C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\Content\Texture\Menu\SelectBevel.xnb
+C:\Users\plecc\source\repos\Hnefatafl\Hnefatafl\bin\Release\netcoreapp3.1\win-x64\mscordaccore_amd64_amd64_4.700.22.11601.dll

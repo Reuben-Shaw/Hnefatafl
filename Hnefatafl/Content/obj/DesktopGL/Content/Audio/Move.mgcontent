@@ -3,7 +3,7 @@
   <SourceFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Audio/Move.wav</SourceFile>
   <SourceTime>2022-03-23T16:02:35.6316701+00:00</SourceTime>
   <DestFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Audio/Move.xnb</DestFile>
-  <DestTime>2022-03-23T16:05:29.2421032+00:00</DestTime>
+  <DestTime>2022-03-23T16:22:12.2937855+00:00</DestTime>
   <Importer>WavImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>SoundEffectProcessor</Processor>

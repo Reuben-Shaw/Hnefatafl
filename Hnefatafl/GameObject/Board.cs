@@ -229,6 +229,11 @@ namespace Hnefatafl
             }
         }
 
+        public HPoint GetSelectPiece()
+        {
+            return _selectedPiece;
+        }
+
         public bool IsPieceSelected() //Used in the main update loop to assertain if a click is to move or select
         {
             if (_selectedPiece.X != -1)

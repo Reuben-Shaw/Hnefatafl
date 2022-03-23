@@ -1,4 +1,4 @@
-Starting boot up
+Starting Boot Up
 Beginning Initialisation
 User Options:
 Attacker Colour: {R:255 G:76 B:74 A:255}
@@ -10,6 +10,43 @@ Defender Colour: {R:54 G:56 B:255 A:255}
 {R:175 G:0 B:0 A:255}
 {R:249 G:200 B:24 A:255}
 
+Player Created
+Picker Created
+Transfering State
+New State MainMenu
+Main Menu Initialised
 Successful Initialise
 Successful LoadContent
+Transfering State
+New State MultiplayerMenu
+Transfering State
+New State ServerMenu
+Transfering State
+New State InGame
+Transfering State
+New State MainMenu
+Transfering State
+New State MultiplayerMenu
+Transfering State
+New State ServerMenu
+Transfering State
+New State InGame
+Transfering State
+New State MainMenu
+Transfering State
+New State MultiplayerMenu
+Transfering State
+New State ServerMenu
+Transfering State
+New State InGame
+Transfering State
+New State MainMenu
+Transfering State
+New State MultiplayerMenu
+Transfering State
+New State ServerMenu
+Transfering State
+New State InGame
+Transfering State
+New State MainMenu
 Successful UnloadContent

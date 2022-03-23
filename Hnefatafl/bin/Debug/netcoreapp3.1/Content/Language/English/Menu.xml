@@ -10,7 +10,6 @@
   <MultiplayerMenu>
     <host>HOST</host>
     <connect>CONNECT</connect>
-    <shutdown>SHUTDOWN</shutdown>
     <back>BACK</back>
   </MultiplayerMenu>
 

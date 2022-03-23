@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<<<<<<< Updated upstream
   <SourceFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/ButtonDivideSelect.png</SourceFile>
   <SourceTime>2022-03-22T16:20:36.521141+00:00</SourceTime>
   <DestFile>C:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Texture/Menu/ButtonDivideSelect.xnb</DestFile>
   <DestTime>2022-03-23T15:04:21.670338+00:00</DestTime>
+=======
+  <SourceFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/Texture/Menu/ButtonDivideSelect.png</SourceFile>
+  <SourceTime>2022-03-23T15:42:28.5531731+00:00</SourceTime>
+  <DestFile>c:/Users/plecc/source/repos/Hnefatafl/Hnefatafl/Content/bin/DesktopGL/Content/Texture/Menu/ButtonDivideSelect.xnb</DestFile>
+  <DestTime>2022-03-23T15:42:47.0117091+00:00</DestTime>
+>>>>>>> Stashed changes
   <Importer>TextureImporter</Importer>
   <ImporterTime>2020-08-10T17:17:54+01:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

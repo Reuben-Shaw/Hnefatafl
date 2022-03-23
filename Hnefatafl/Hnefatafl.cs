@@ -279,6 +279,11 @@ namespace Hnefatafl
                 if (currentKeyboardState.IsKeyDown(Keys.Enter)) _keyboardSelect = true;
             }
 
+            if (_gameState == GameState.InGame)
+            {
+                _player._board._turnDisplay.Transition((float)gameTime.ElapsedGameTime.TotalSeconds);
+            }
+
             if (_picker._visible) PickerCheck(currentMouseState);
             
             _cursor._pos = currentMouseState.Position;
@@ -979,7 +984,7 @@ namespace Hnefatafl
                     }
                     case Keys.R:
                     {
-                        _player.SendPieces();
+                        //_player.SendPieces();
                         break;
                     }
                 }

@@ -107,7 +107,7 @@ namespace Hnefatafl
                     xsSubmit.Serialize(writerX, piecesToSend);
                     outMsg.Write(FULLPIECES.ToString() + "," + writerS.ToString() + "," + _board.GetSelectPiece().ToString());
                 }
-            }       
+            }
 
             _client.SendMessage(outMsg, NetDeliveryMethod.ReliableOrdered);
         }

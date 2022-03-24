@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Hnefatafl.Media;
+using Hnefatafl.MenuObjects;
 using static Hnefatafl.ServerOptions;
 using static Hnefatafl.PieceType;
 using static Hnefatafl.Media.TextureAtlasLink;
@@ -27,7 +28,6 @@ namespace Hnefatafl
         private bool? _redrawSelect = null;
         private Color[] _selectColours = new Color[3];
         //0: Highlight colour, 1: Positive select colour, 2: Negative select colour
-        private Texture2D _boardHighlight;
         private Pieces _pieces = new Pieces();
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
@@ -42,6 +42,7 @@ namespace Hnefatafl
         //Stores the current user selected piece, -1, -1 as expected is used as a null storing value
         public ServerOptions _serverOp;
         private BoardAudio _audioManager;
+        public TurnDisplay _turnDisplay;
 
         public Board(GraphicsDeviceManager graphics, ContentManager content, Color[] boardColours, Color[] pawnColours, Color[] selectColours, int boardSize)
         {
@@ -55,10 +56,13 @@ namespace Hnefatafl
             _tileSizeX = TileSizeX(graphics.GraphicsDevice.Viewport.Bounds);
             _tileSizeY = TileSizeY(graphics.GraphicsDevice.Viewport.Bounds);
 
+            _turnDisplay = new TurnDisplay(new Point(_tileSizeX, _tileSizeY), new Point(_tileSizeX * 2, _tileSizeY * 2), "display");
+
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
             _boardHighlightAtlas.HueShiftTexture(_selectColours[0]);
             _boarder = new TextureDivide(graphics, Content, "Texture/Board/BorderDivide", _tileSizeX, _tileSizeY);
             SelectHighlightColour(null);
+            _turnDisplay.Update(new Color[]{pawnColours[0], pawnColours[1]}, Content, graphics);
         }
 
         public void ReloadContent(GraphicsDeviceManager graphics, UserOptions options)
@@ -72,11 +76,17 @@ namespace Hnefatafl
             _boardHighlightAtlas.ReloadContent(graphics, options._selectColours[0]);
             CreateSelectColours(options._selectColours);
             SelectHighlightColour(null);
+            _turnDisplay.Update(new Color[]{options._pawnAttacker, options._pawnDefender}, Content, graphics);
         }
 
         public void ReceivePawns(List<Piece> pieces)
         {
             _pieces.CreateBoard(pieces);
+        }
+
+        public bool CheckPawns(List<Piece> pieces)
+        {
+            return _pieces.Changed(pieces);
         }
 
         public Pieces GetPieces()
@@ -269,7 +279,7 @@ namespace Hnefatafl
                         _audioManager._move.Play();
 
                         CaptureLogic(move);
-                        
+
                         _selectedPiece = new HPoint(-1, -1);
                         return true;
                     }
@@ -803,6 +813,8 @@ namespace Hnefatafl
             {
                 spriteBatch.Draw(_pawnTexture[(int)_pieces.GetPiece(_selectedPiece.ToString())._pawn._type], new Rectangle(Mouse.GetState().Position, rect.Size), Color.White);
             }
+
+            _turnDisplay.Draw(graphics, spriteBatch);
         }
     }
 }

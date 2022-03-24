@@ -105,6 +105,19 @@ namespace Hnefatafl
             return _pieceBoard.ContainsKey(key);
         }
 
+        public bool Changed(List<Piece> pieces)
+        {
+            foreach (Piece piece in pieces)
+            {
+                if (!_pieceBoard.Contains(piece._loc.ToString()) || _pieceBoard[piece._loc.ToString()] == piece)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         public void CreateBoard(List<Piece> pieces)
         {
             _pieceBoard.Clear();
@@ -116,7 +129,6 @@ namespace Hnefatafl
 
         public void CreateBoard(int boardSize, BoardTypes type)
         {
-            Console.WriteLine("REDID IT ALL");
             _pieceBoard.Clear();
             if (type == BoardTypes.Regular)
             {

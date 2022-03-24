@@ -107,6 +107,22 @@ namespace Hnefatafl
             _ => new Color(0, 0, 0)
         };
 
+        public Color GetDefaultColor(int number) => number switch
+        {
+            0 => new Color(255, 76, 74),
+            1 => new Color(54, 56, 255),
+            2 => new Color(173, 99, 63), 
+            3 => new Color(80, 53, 30), 
+            4 => new Color(175, 0, 0), 
+            5 => new Color(249, 200, 24),
+            6 => new Color(236, 179, 19),
+            7 => new Color(0, 255, 0),
+            8 => new Color(255, 0, 0),
+            9 => new Color(255, 255, 0), 
+            10 => new Color(0, 255, 255),
+            _ => new Color(0, 0, 0)
+        };
+
         public bool SetFromButton(string pickerName, Color newColour)
         {
             switch ((UserOptions.ColourButtons)Enum.Parse(typeof(UserOptions.ColourButtons), pickerName))
@@ -151,12 +167,40 @@ namespace Hnefatafl
 
         public override string ToString()
         {
-            string output = $"Attacker Colour: {_pawnAttacker.ToString()}\nDefender Colour: {_pawnDefender.ToString()}\n";
+            string output = "";
+
+            output += $"Attacker Colour: ";
+            if (GetDefaultColor(0) == _pawnAttacker) output += "Default\n";
+            else output += $"{_pawnAttacker.ToString()}\n";
+            output += "Defender Colour: ";
+            if (GetDefaultColor(1) == _pawnAttacker) output += "Default\n";
+            else output += $"{_pawnDefender.ToString()}\n";
+
+            int i = 2;
+            output += "Board Colours:\n";
+
             foreach (Color colour in _boardColours)
             {
-                output += $"{colour.ToString()}\n";
+                if (GetDefaultColor(i) == colour) output += "Default\n";
+                else output += $"{colour.ToString()}\n";
+                i++;
+            }
+
+            i = 0;
+            output += "Highlight Colours:\n";
+
+            foreach (Color colour in _selectColours)
+            {
+                if (GetDefaultColor(i) == colour) output += "Default\n";
+                else output += $"{colour.ToString()}\n";
+                i++;
             }
             return output;
+        }
+
+        public string CreateFile()
+        {
+            return "<?xml version=\"1.0\"?><UserOptions xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"><_pawnAttacker><B>74</B><G>76</G><R>255</R><A>255</A><PackedValue>4283059455</PackedValue></_pawnAttacker><_pawnDefender><B>255</B><G>56</G><R>54</R><A>255</A><PackedValue>4294916150</PackedValue></_pawnDefender><_boardColours><Color><B>63</B><G>99</G><R>173</R><A>255</A><PackedValue>4282344365</PackedValue></Color><Color><B>30</B><G>53</G><R>80</R><A>255</A><PackedValue>4280169808</PackedValue></Color><Color><B>255</B><G>255</G><R>0</R><A>255</A><PackedValue>4294967040</PackedValue></Color><Color><B>0</B><G>255</G><R>255</R><A>255</A><PackedValue>4278255615</PackedValue></Color><Color><B>0</B><G>0</G><R>175</R><A>255</A><PackedValue>4278190255</PackedValue></Color><Color><B>24</B><G>200</G><R>249</R><A>255</A><PackedValue>4279814393</PackedValue></Color></_boardColours><_selectColours><Color><B>19</B><G>179</G><R>236</R><A>255</A><PackedValue>4279481324</PackedValue></Color><Color><B>0</B><G>255</G><R>0</R><A>255</A><PackedValue>4278255360</PackedValue></Color><Color><B>0</B><G>0</G><R>255</R><A>255</A><PackedValue>4278190335</PackedValue></Color></_selectColours></UserOptions>";
         }
     }
 }

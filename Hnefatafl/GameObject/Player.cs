@@ -32,6 +32,10 @@ namespace Hnefatafl
             set
             {
                 m_currentTurn = value;
+                
+                if (_side == SideType.Attackers ) _board._turnDisplay._defendersTurn = !m_currentTurn;
+                else _board._turnDisplay._defendersTurn = m_currentTurn;
+
                 if (!_board.MovesStillPossible(_side))
                 {
                     SendMessage(WIN.ToString());
@@ -179,7 +183,12 @@ namespace Hnefatafl
                     }
                     else if (msgDiv[0] == FULLPIECES.ToString())
                     {
-                        _board.ReceivePawns(PiecesXmlDeserialise(msg));
+                        List<Piece> deserialisedPieces = PiecesXmlDeserialise(msg);
+                        if (_board.CheckPawns(deserialisedPieces))
+                        {
+                            _board.ReceivePawns(deserialisedPieces);
+                            _currentTurn = !_currentTurn;
+                        }
                         _board.SelectPiece(HPointXmlDeserialise(msg));
                         SendMessage(RESPONSE.ToString());
                         

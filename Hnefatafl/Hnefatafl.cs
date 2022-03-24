@@ -87,10 +87,26 @@ namespace Hnefatafl
             
             _cursor = new Cursor(Content);
 
-            XmlSerializer ser = new XmlSerializer(typeof(UserOptions));
-            using (XmlReader reader = XmlReader.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
+            try
             {
-                _userOptions = (UserOptions)ser.Deserialize(reader);
+                XmlSerializer ser = new XmlSerializer(typeof(UserOptions));
+                using (XmlReader reader = XmlReader.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
+                {
+                    _userOptions = (UserOptions)ser.Deserialize(reader);    
+                }
+            }
+            catch (System.Exception)
+            {
+                using (StreamWriter sw = File.CreateText(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
+                {
+                    sw.Write(_userOptions.CreateFile());
+                    sw.Close();
+                }
+                XmlSerializer ser = new XmlSerializer(typeof(UserOptions));
+                using (XmlReader reader = XmlReader.Create(AppDomain.CurrentDomain.BaseDirectory + "Options.xml"))
+                {
+                    _userOptions = (UserOptions)ser.Deserialize(reader);    
+                }
             }
             _logger.Add($"User Options:\n{_userOptions}");
 

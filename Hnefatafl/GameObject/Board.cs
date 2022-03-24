@@ -84,6 +84,11 @@ namespace Hnefatafl
             _pieces.CreateBoard(pieces);
         }
 
+        public bool CheckPawns(List<Piece> pieces)
+        {
+            return _pieces.Changed(pieces);
+        }
+
         public Pieces GetPieces()
         {
             return _pieces;
@@ -274,8 +279,6 @@ namespace Hnefatafl
                         _audioManager._move.Play();
 
                         CaptureLogic(move);
-                        
-                        _turnDisplay._defendersTurn = !_turnDisplay._defendersTurn;
 
                         _selectedPiece = new HPoint(-1, -1);
                         return true;
@@ -289,8 +292,6 @@ namespace Hnefatafl
                         _audioManager._move.Play();
 
                         CaptureLogic(move);
-
-                        _turnDisplay._defendersTurn = !_turnDisplay._defendersTurn;
                         
                         _selectedPiece = new HPoint(-1, -1);
                         return true;

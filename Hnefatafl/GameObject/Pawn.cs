@@ -127,10 +127,12 @@ namespace Hnefatafl
             }
         }
 
-        public void CreateBoard(int boardSize, BoardTypes type)
+        public void CreateBoard(BoardTypes type)
         {
             _pieceBoard.Clear();
-            if (type == BoardTypes.Regular)
+            int boardSize = (int)type;
+
+            if (type == BoardTypes.Hnefatafl)
             {
                 // _pieceBoard.Add("2,2", new Piece(new Pawn(Attacker), new HPoint(2, 2)));
                 // _pieceBoard.Add("2,3", new Piece(new Pawn(Attacker), new HPoint(2, 3)));
@@ -171,6 +173,80 @@ namespace Hnefatafl
                                 _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Defender), point)); }
                         }
                         else if (y > 2 && y < 8)
+                        {
+                            if (x == 0 || x == boardSize - 1) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                            else if ((x == 1 || x == boardSize - 2) && y == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                        }
+                    }
+                }
+            }
+            else if (type == BoardTypes.Tablut)
+            {
+                HPoint point;
+
+                for (int y = 0; y < boardSize; y++)
+                {
+                    for (int x = 0; x < boardSize; x++)
+                    {
+                        point = new HPoint(x, y);
+
+                        if ((x == 0 || x == boardSize - 1) && (y == 0 || y == boardSize - 1))
+                        {
+                            _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Corner), point)); 
+                        }
+                        else if (x >= 2 && x <= boardSize - 3)
+                        {
+                            if (x == boardSize / 2 && y == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(King), point)); }
+                            else if ((y == 0 || y == boardSize - 1) && (x > 2 && x < boardSize - 3)) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                            else if ((y == 1 || y == boardSize - 2) && x == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                            else if (y == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Defender), point)); }
+                            else if (x == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Defender), point)); }
+                        }
+                        else if (y > 2 && y < boardSize - 3)
+                        {
+                            if (x == 0 || x == boardSize - 1) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                            else if ((x == 1 || x == boardSize - 2) && y == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                        }
+                    }
+                }
+            }
+            else if (type == BoardTypes.Brandubh)
+            {
+                HPoint point;
+
+                for (int y = 0; y < boardSize; y++)
+                {
+                    for (int x = 0; x < boardSize; x++)
+                    {
+                        point = new HPoint(x, y);
+
+                        if ((x == 0 || x == boardSize - 1) && (y == 0 || y == boardSize - 1))
+                        {
+                            _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Corner), point)); 
+                        }
+                        else if (x >= 2 && x <= boardSize - 3)
+                        {
+                            if (x == boardSize / 2 && y == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(King), point)); }
+                            else if ((y == 0 || y == boardSize - 1) && (x > 1 && x < boardSize - 2)) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                            else if ((y == 1 || y == boardSize - 2) && x == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }
+                            else if (y == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Defender), point)); }
+                            else if (x == boardSize / 2) {
+                                _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Defender), point)); }
+                        }
+                        else if (y >= 2 && y <= boardSize - 3)
                         {
                             if (x == 0 || x == boardSize - 1) {
                                 _pieceBoard.Add(point.ToString(), new Piece(new Pawn(Attacker), point)); }

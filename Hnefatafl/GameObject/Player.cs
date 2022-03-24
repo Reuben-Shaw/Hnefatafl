@@ -50,7 +50,7 @@ namespace Hnefatafl
         public double _timeSinceSend;
         public string _messageSent;
 
-        public Player(GraphicsDeviceManager graphics, ContentManager Content,  UserOptions options, int boardSize)
+        public Player(GraphicsDeviceManager graphics, ContentManager Content,  UserOptions options, BoardTypes boardSize)
         {
             _board = new Board(graphics, Content, options._boardColours, new Color[] {options._pawnAttacker, options._pawnDefender, options._pawnDefender}, options._selectColours, boardSize);
             CreateClient();

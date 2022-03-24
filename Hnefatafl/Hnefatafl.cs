@@ -110,7 +110,7 @@ namespace Hnefatafl
             }
             _logger.Add($"User Options:\n{_userOptions}");
 
-            _player = new Player(_graphics, Content, _userOptions, 11);
+            _player = new Player(_graphics, Content, _userOptions, BoardTypes.Hnefatafl);
             _logger.Add("Player Created");
 
             _picker = new ColourPicker(new Point(20, 20), GraphicsDevice.Viewport.Bounds, "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
@@ -599,7 +599,7 @@ namespace Hnefatafl
                 }
                 case "localCoOp":
                 {
-                    _player._board.CreateBoard();
+                    _player._board.CreateBoard(BoardTypes.Brandubh);
                     _player._board._state = Board.BoardState.ActiveGame;
                     _gameState = GameState.InGame;
                     _player._side = SideType.Attackers;
@@ -748,7 +748,7 @@ namespace Hnefatafl
             {
                 case "host":
                 {
-                    _player._board.CreateBoard();
+                    _player._board.CreateBoard(BoardTypes.Hnefatafl);
                     _gameState = GameState.GameSetup;
                     break;
                 }
@@ -785,12 +785,12 @@ namespace Hnefatafl
                     //Console.WriteLine($"Valid IP Address: {IsValidIp(_textbox[0]._text)}\nValid Port: {IsValidPort(_textbox[1]._text)}");
                     if (IsValidIp(_textbox[0]._text) && IsValidPort(_textbox[1]._text)) //Textbox[0] is IP, Textbox[1] is port
                     {
-                        _player._board.CreateBoard();
+                        _player._board.CreateBoard(BoardTypes.Hnefatafl);
                         _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
                     }
                     else if (_textbox[0]._text == "" && _textbox[1]._text == "")
                     {
-                        _player._board.CreateBoard();
+                        _player._board.CreateBoard(BoardTypes.Hnefatafl);
                         _player.EstablishConnection("localhost", Convert.ToInt32("14242"));
                     }
                     break;

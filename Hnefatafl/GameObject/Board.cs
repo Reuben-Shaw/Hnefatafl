@@ -13,7 +13,7 @@ using static Hnefatafl.Media.TextureAtlasLink;
 
 namespace Hnefatafl
 {
-    public enum BoardTypes { Hnefatafl = 11, Tablut = 9, TablutCenter = 9, Brandubh = 7, ArdRi = 7 }
+    public enum BoardTypes { Hnefatafl = 11, Tablut = 9, TablutCentre = 9, Brandubh = 7, ArdRi = 7 }
 
     sealed class Board
     {
@@ -44,15 +44,13 @@ namespace Hnefatafl
         private BoardAudio _audioManager;
         public TurnDisplay _turnDisplay;
 
-        public Board(GraphicsDeviceManager graphics, ContentManager content, Color[] boardColours, Color[] pawnColours, Color[] selectColours, BoardTypes boardSize)
+        public Board(GraphicsDeviceManager graphics, ContentManager content, Color[] boardColours, Color[] pawnColours, Color[] selectColours)
         {
             Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             CreateBoardColours(graphics, boardColours);
             CreatePawns(graphics, pawnColours);
             CreateSelectColours(selectColours);
             _audioManager = new BoardAudio(content);
-            _boardSize = (int)boardSize;
-            Console.WriteLine("Here " + (int)boardSize);
 
             _tileSizeX = TileSizeX(graphics.GraphicsDevice.Viewport.Bounds);
             _tileSizeY = TileSizeY(graphics.GraphicsDevice.Viewport.Bounds);

@@ -1,4 +1,4 @@
-﻿#undef DEBUG
+﻿#define DEBUG
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -29,7 +29,8 @@ namespace Hnefatafl
         private Server _server; 
         private List<Button> _button = new List<Button>();
         private List<TextBox> _textbox = new List<TextBox>();
-        private List<Label> _label  = new List<Label>();
+        private List<Label> _label = new List<Label>();
+        private Dropdown _dropdown;
         private ColourPicker _picker;
         private int m_selectedMenuObject;
         private int _selectedMenuObject
@@ -68,6 +69,7 @@ namespace Hnefatafl
         private Langauge _language = Langauge.English;
 
         private Logger _logger = new Logger();
+
 
         public Hnefatafl()
         {
@@ -110,7 +112,7 @@ namespace Hnefatafl
             }
             _logger.Add($"User Options:\n{_userOptions}");
 
-            _player = new Player(_graphics, Content, _userOptions, BoardTypes.Hnefatafl);
+            _player = new Player(_graphics, Content, _userOptions);
             _logger.Add("Player Created");
 
             _picker = new ColourPicker(new Point(20, 20), GraphicsDevice.Viewport.Bounds, "mainPicker", _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
@@ -300,6 +302,11 @@ namespace Hnefatafl
                 _player._board._turnDisplay.Transition((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
 
+
+            if (_dropdown is not null && new Rectangle(_dropdown._pos, _dropdown._size).Contains(currentMouseState.Position) && currentMouseState.LeftButton == ButtonState.Pressed) _dropdown._status = Selected;
+            if (_dropdown is not null && _dropdown._status == Selected && currentMouseState.LeftButton == ButtonState.Pressed) _dropdown.ClickEvent(currentMouseState.Position);
+
+
             if (_picker._visible) PickerCheck(currentMouseState);
             
             _cursor._pos = currentMouseState.Position;
@@ -354,6 +361,7 @@ namespace Hnefatafl
 
             _button.Clear();
             _textbox.Clear();
+            _dropdown = null;
             _cursor._state = Cursor.CursorState.Pointer;
             _picker._visible = false;
             _selectedMenuObject = -1;
@@ -563,6 +571,16 @@ namespace Hnefatafl
                 buttonSize = new Point(viewPorts.Width / 5, (int)((float)viewPorts.Height / 5.5));
                 _button.Add(new Button(new Point(viewPorts.Width / 2 + viewPorts.Width / 4, viewPorts.Height / 2 + viewPorts.Height / 4), buttonSize, NodeText(xml, buttonName[buttonName.Count - 1]), buttonName[buttonName.Count - 1]));
                 _button[_button.Count - 1].Update(_graphics, Content);
+
+                    
+                _dropdown = new Dropdown(new Point(32, 32), new Point(192, 48), "dropdown");
+                _dropdown.LoadContent(Content, _graphics);
+
+                _dropdown._items.Add("HNEFATAFL");
+                _dropdown._items.Add("TABLUT");
+                _dropdown._items.Add("TABLUT CENTRE");
+                _dropdown._items.Add("BRANDBUH");
+                _dropdown._items.Add("ARD RI");
             }
             _logger.Add($"New State {_gameState.ToString()}");
         }
@@ -599,7 +617,7 @@ namespace Hnefatafl
                 }
                 case "localCoOp":
                 {
-                    _player._board.CreateBoard(BoardTypes.Brandubh);
+                    _player._board.CreateBoard(BoardTypes.Hnefatafl);
                     _player._board._state = Board.BoardState.ActiveGame;
                     _gameState = GameState.InGame;
                     _player._side = SideType.Attackers;
@@ -1279,6 +1297,8 @@ namespace Hnefatafl
             {
                 label.Draw(_spriteBatch, viewPort);
             }
+
+            if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch);
 
             //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
 

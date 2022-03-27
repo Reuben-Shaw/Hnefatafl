@@ -1,4 +1,5 @@
-﻿#define DEBUG
+﻿#undef LargeWindow
+#define DEBUG
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -50,7 +51,7 @@ namespace Hnefatafl
         private TextureDivide _menuBack;
         private UserOptions _userOptions;
 
-        private enum GameState { MainMenu, OptionsMenu, ColourPickerMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
+        private enum GameState { EditMenu, MainMenu, OptionsMenu, ColourPickerMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
         private GameState m_gameState;
         private GameState _gameState
         {
@@ -69,6 +70,7 @@ namespace Hnefatafl
         private Langauge _language = Langauge.English;
 
         private Logger _logger = new Logger();
+        private Editor _editor;
 
 
         public Hnefatafl()
@@ -82,6 +84,8 @@ namespace Hnefatafl
         {
             _logger.Add("Beginning Initialisation");
             
+            _editor = new Editor(_graphics, Content);
+
             _graphics.PreferredBackBufferWidth = 960;
             _graphics.PreferredBackBufferHeight = 540;
             FullScreen();
@@ -126,7 +130,7 @@ namespace Hnefatafl
             base.Initialize();
         }
 
-        [Conditional("DEBUG")]
+        [Conditional("LargeWindow")]
         private void FullScreen()
         {
             _graphics.PreferredBackBufferWidth = 1920;
@@ -295,6 +299,9 @@ namespace Hnefatafl
 
                 if (currentKeyboardState.IsKeyDown(Keys.Tab)) _selectedMenuObject++;
                 if (currentKeyboardState.IsKeyDown(Keys.Enter)) _keyboardSelect = true;
+
+
+                if (currentKeyboardState.IsKeyDown(Keys.R)) _gameState = GameState.EditMenu;
             }
 
             if (_gameState == GameState.InGame)
@@ -302,6 +309,10 @@ namespace Hnefatafl
                 _player._board._turnDisplay.Transition((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
 
+            _editor.AddToTime(gameTime.ElapsedGameTime.TotalSeconds);
+            if (_gameState == GameState.EditMenu) _editor.KeyPress(currentKeyboardState, currentMouseState);
+            if (_editor._readyToReceive) ReceiveEditor();
+            
 
             if (_dropdown is not null && new Rectangle(_dropdown._pos, _dropdown._size).Contains(currentMouseState.Position) && currentMouseState.LeftButton == ButtonState.Pressed) _dropdown._status = Selected;
             if (_dropdown is not null && _dropdown._status == Selected && currentMouseState.LeftButton == ButtonState.Pressed) _dropdown.ClickEvent(currentMouseState.Position);
@@ -314,6 +325,12 @@ namespace Hnefatafl
             previousMouse = currentMouseState;
             previousKeyboard = currentKeyboardState;
             base.Update(gameTime);
+        }
+
+        private void ReceiveEditor()
+        {
+            if (_editor._editorObject == EditorObject.ButtonObj) _button.Add(_editor.ReceiveButton());
+            else if (_editor._editorObject == EditorObject.TextboxObj) _textbox.Add(_editor.ReceiveTextbox());
         }
 
         private void TransferMenuObject()
@@ -1290,7 +1307,7 @@ namespace Hnefatafl
 
             foreach (TextBox textbox in _textbox)
             {
-                textbox.Draw(gameTime, _spriteBatch, viewPort);
+                textbox.Draw(_spriteBatch, viewPort);
             }
 
             foreach (Label label in _label)
@@ -1299,6 +1316,8 @@ namespace Hnefatafl
             }
 
             if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch);
+
+            _editor.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _buttonSelect, _buttonUnselect, viewPort);
 
             //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
 

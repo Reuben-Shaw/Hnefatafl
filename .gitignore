@@ -398,6 +398,6 @@ FodyWeavers.xsd
 *.sln.iml
 
 #My stuff
-*.mgcb
 
-[Cc]ontent/
+[Cc]ontent/[Bb]in
+[Cc]ontent/[Ob]bj

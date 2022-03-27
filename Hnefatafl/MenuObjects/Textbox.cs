@@ -168,7 +168,7 @@ namespace Hnefatafl.MenuObjects
             _text = "";
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, Rectangle viewPort)
         {
             Rectangle rectBody = new Rectangle(new Point(_pos.X + 5, _pos.Y + 5), new Point(_size.X - 10, _size.Y - 10));
             Rectangle rectBack = new Rectangle(_pos, _size);

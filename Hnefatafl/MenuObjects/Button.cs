@@ -27,6 +27,23 @@ namespace Hnefatafl.MenuObjects
 
         private Texture2D _disabledColour { get; set; }
 
+        public Button(Button button)
+        {
+            _pos = button._pos;
+            _size = button._size;
+            _status = button._status;
+            _name = button._name;
+            _text = button._text;
+            _font = button._font;
+            _fontColour = button._fontColour;
+            _selectFontColour = button._selectFontColour;
+            _backColour = button._backColour;
+            _selectBackColour = button._selectBackColour;
+            _textPos = button._textPos;
+            _image = button._image;
+            _disabledColour = button._disabledColour;
+        }
+
         public Button(Point position, Point size, string name)
         {
             _pos = position;
@@ -117,6 +134,11 @@ namespace Hnefatafl.MenuObjects
             {
                 spriteBatch.Draw(_disabledColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
             }
+        }
+
+        public override string ToString()
+        {
+            return ($"Positon: {_pos}\nSize: {_size}\nName: {_name}");
         }
     }
 }

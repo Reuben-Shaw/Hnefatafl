@@ -304,13 +304,17 @@ namespace Hnefatafl
                 if (currentKeyboardState.IsKeyDown(Keys.R)) _gameState = GameState.EditMenu;
             }
 
+            if (previousKeyboard != currentKeyboardState || currentKeyboardState.IsKeyDown(Keys.Up) || currentKeyboardState.IsKeyDown(Keys.Down) || currentKeyboardState.IsKeyDown(Keys.Left) || currentKeyboardState.IsKeyDown(Keys.Right))
+            {
+                if (_gameState == GameState.EditMenu) _editor.KeyPress(currentKeyboardState, currentMouseState, GraphicsDevice.Viewport);
+            }
+
             if (_gameState == GameState.InGame)
             {
                 _player._board._turnDisplay.Transition((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
 
             _editor.AddToTime(gameTime.ElapsedGameTime.TotalSeconds);
-            if (_gameState == GameState.EditMenu) _editor.KeyPress(currentKeyboardState, currentMouseState);
             if (_editor._readyToReceive) ReceiveEditor();
             
 
@@ -329,7 +333,7 @@ namespace Hnefatafl
 
         private void ReceiveEditor()
         {
-            if (_editor._editorObject == EditorObject.ButtonObj) _button.Add(_editor.ReceiveButton());
+            if (_editor._editorObject == EditorObject.ButtonObj) _button.Add(new Button(_editor.ReceiveButton()));
             else if (_editor._editorObject == EditorObject.TextboxObj) _textbox.Add(_editor.ReceiveTextbox());
         }
 
@@ -1317,7 +1321,7 @@ namespace Hnefatafl
 
             if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch);
 
-            _editor.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _buttonSelect, _buttonUnselect, viewPort);
+            if (_gameState == GameState.EditMenu) _editor.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _buttonSelect, _buttonUnselect, viewPort);
 
             //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
 

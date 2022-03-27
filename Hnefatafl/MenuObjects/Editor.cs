@@ -20,6 +20,7 @@ namespace Hnefatafl.MenuObjects
         private double _lastMove = 1;
 
         public bool _readyToReceive = false;
+        private int deltaStart = 1;
 
 
         public Editor(GraphicsDeviceManager graphics, ContentManager Content)
@@ -34,20 +35,20 @@ namespace Hnefatafl.MenuObjects
             _sizeChange = false;
         }
 
-        public void KeyPress(KeyboardState currentKeyboard, MouseState currentMouse)
+        public void KeyPress(KeyboardState currentKeyboard, MouseState currentMouse, Viewport viewport)
         {
-            int delta = 1;
+            int delta = deltaStart;
             Point objChange = new Point(0, 0);
 
-            if (_lastMove > 0.1)
+            if (_lastMove > (deltaStart / 10))
             {
                 if (currentKeyboard.IsKeyDown(Keys.LeftShift) || currentKeyboard.IsKeyDown(Keys.RightShift))
                 {
-                    delta = 10;
+                    delta = deltaStart * 10;
                 }
                 else if (currentKeyboard.IsKeyDown(Keys.LeftControl) || currentKeyboard.IsKeyDown(Keys.RightControl))
                 {
-                    delta = 100;
+                    delta = deltaStart * 100;
                 }
 
                 if (currentKeyboard.IsKeyDown(Keys.Enter))
@@ -69,8 +70,14 @@ namespace Hnefatafl.MenuObjects
                 }
                 else if (currentKeyboard.IsKeyDown(Keys.O))
                 {
-                    _selectedButton = new Button(new Point(0, 0), new Point(0, 0), "");
-                    _selectedTextbox = new TextBox(new Point(0, 0), new Point(0, 0), "");
+                    _selectedButton._pos = new Point(0, 0); _selectedButton._size = new Point(0, 0);
+                    _selectedTextbox._pos = new Point(0, 0); _selectedTextbox._size = new Point(0, 0);
+                    _editorObject = EditorObject.None;
+                }
+                else if (currentKeyboard.IsKeyDown(Keys.P))
+                {
+                    if (deltaStart == 1) deltaStart = 2;
+                    else deltaStart = 1;
                 }
 
                 if (currentKeyboard.IsKeyDown(Keys.Up))
@@ -89,6 +96,12 @@ namespace Hnefatafl.MenuObjects
                 else if (currentKeyboard.IsKeyDown(Keys.Right))
                 {
                     objChange.X += delta;
+                }
+
+                if (currentKeyboard.IsKeyDown(Keys.NumPad5))
+                {
+                    if (_editorObject == EditorObject.ButtonObj) objChange = new Point(((viewport.Width / 2) - (_selectedButton._size.X / 2)) - _selectedButton._pos.X, ((viewport.Height / 2) - (_selectedButton._size.Y / 2)) - _selectedButton._pos.Y);
+                    else if (_editorObject == EditorObject.TextboxObj) objChange = new Point(((viewport.Width / 2) - (_selectedTextbox._size.X / 2)) - _selectedTextbox._pos.X, ((viewport.Height / 2) - (_selectedTextbox._size.Y / 2)) - _selectedTextbox._pos.Y);
                 }
 
                 if (_editorObject == EditorObject.ButtonObj)
@@ -123,6 +136,8 @@ namespace Hnefatafl.MenuObjects
 
         public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, TextureDivide buttonSelect, TextureDivide buttonUnselect, Rectangle viewPort)
         {
+            if (deltaStart != 1) deltaStart = tileSizeX;
+
             _selectedButton.Draw(spriteBatch, tileSizeX, tileSizeY,  buttonSelect, buttonUnselect, viewPort);
             _selectedTextbox.Draw(spriteBatch, viewPort);
         }

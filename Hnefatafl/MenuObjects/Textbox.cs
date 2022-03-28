@@ -50,6 +50,25 @@ namespace Hnefatafl.MenuObjects
         }
         private bool _full = false;
 
+        public TextBox(TextBox textbox)
+        {
+            _pos = textbox._pos;
+            _size = textbox._size;
+            _status = textbox._status;
+            _name = textbox._name;
+            _text = textbox._text;
+            _font = textbox._font;
+            _fontColour = textbox._fontColour;
+            _backColour = textbox._backColour;
+            _textPos = textbox._textPos;
+            _borderColour = textbox._borderColour;
+            _defaultFontColour = textbox._defaultFontColour;
+            _defaultText = textbox._defaultText;
+            _text = textbox._text;
+            _lastPress = textbox._lastPress;
+            _full = textbox._full;
+        }
+
         public TextBox(Point position, Point size, string name)
         {
             _pos = position;

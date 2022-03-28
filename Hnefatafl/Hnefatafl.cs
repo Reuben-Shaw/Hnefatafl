@@ -334,7 +334,7 @@ namespace Hnefatafl
         private void ReceiveEditor()
         {
             if (_editor._editorObject == EditorObject.ButtonObj) _button.Add(new Button(_editor.ReceiveButton()));
-            else if (_editor._editorObject == EditorObject.TextboxObj) _textbox.Add(_editor.ReceiveTextbox());
+            else if (_editor._editorObject == EditorObject.TextboxObj) _textbox.Add(new TextBox(_editor.ReceiveTextbox()));
         }
 
         private void TransferMenuObject()
@@ -1298,6 +1298,8 @@ namespace Hnefatafl
                 _menuBack.Draw(_spriteBatch, 
                 new Rectangle(_player._board.TileSizeX(viewPort) / 2, _player._board.TileSizeY(viewPort) / 2, viewPort.Width - _player._board.TileSizeX(viewPort), viewPort.Height - _player._board.TileSizeY(viewPort)));
             }
+            else if (_gameState == GameState.EditMenu) _editor.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _buttonSelect, _buttonUnselect, _menuBack, viewPort);
+
 
             if (_picker._visible)
             {
@@ -1320,8 +1322,6 @@ namespace Hnefatafl
             }
 
             if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch);
-
-            if (_gameState == GameState.EditMenu) _editor.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _buttonSelect, _buttonUnselect, viewPort);
 
             //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
 

@@ -506,6 +506,15 @@ namespace Hnefatafl
                     _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, NodeText(xml, buttonName[i]), buttonName[i]));
                     _button[i].Update(_graphics, Content);
                 }
+
+                _dropdown = new Dropdown(new Point(478, 64), new Point(224, 48), "dropdown");
+                _dropdown.LoadContent(Content, _graphics);
+
+                _dropdown._items.Add("HNEFATAFL");
+                _dropdown._items.Add("TABLUT");
+                _dropdown._items.Add("TABLUT CENTRE");
+                _dropdown._items.Add("BRANDBUH");
+                _dropdown._items.Add("ARD RI");
             }
             else if (_gameState == GameState.OptionsMenu)
             {
@@ -592,16 +601,6 @@ namespace Hnefatafl
                 buttonSize = new Point(viewPorts.Width / 5, (int)((float)viewPorts.Height / 5.5));
                 _button.Add(new Button(new Point(viewPorts.Width / 2 + viewPorts.Width / 4, viewPorts.Height / 2 + viewPorts.Height / 4), buttonSize, NodeText(xml, buttonName[buttonName.Count - 1]), buttonName[buttonName.Count - 1]));
                 _button[_button.Count - 1].Update(_graphics, Content);
-
-                    
-                _dropdown = new Dropdown(new Point(32, 32), new Point(192, 48), "dropdown");
-                _dropdown.LoadContent(Content, _graphics);
-
-                _dropdown._items.Add("HNEFATAFL");
-                _dropdown._items.Add("TABLUT");
-                _dropdown._items.Add("TABLUT CENTRE");
-                _dropdown._items.Add("BRANDBUH");
-                _dropdown._items.Add("ARD RI");
             }
             _logger.Add($"New State {_gameState.ToString()}");
         }

@@ -25,6 +25,8 @@ namespace Hnefatafl.MenuObjects
             }
         }
         private int _selected;
+        private Texture2D _divideColour;
+        private const int _borderVal = 6;
 
         public Dropdown(Point position, Point size, string name)
         {
@@ -41,7 +43,10 @@ namespace Hnefatafl.MenuObjects
             _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
 
             _backColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _backColour.SetData(new[] { Color.White });
+            _backColour.SetData(new[] { new Color(255, 230, 206) });
+            _divideColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
+            _divideColour.SetData(new[] { new Color(66, 41, 33) });
+
             _fontColour = Color.Black;
         }
 
@@ -90,7 +95,10 @@ namespace Hnefatafl.MenuObjects
 
             spriteBatch.Draw(_backColour, rect, Color.White);
             if (_selected != -1)
-                spriteBatch.DrawString(_font, _items[_selected], new Vector2(rect.X, rect.Y), _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(_font, _items[_selected], new Vector2(rect.X + 8, rect.Y), _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+            
+            spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y - (_borderVal / 2), rect.Width, _borderVal), Color.White);
+            spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y + rect.Height - (_borderVal / 2), rect.Width, _borderVal), Color.White);
 
             if (_status == Selected)
             {
@@ -99,11 +107,18 @@ namespace Hnefatafl.MenuObjects
                 {
                     rect.Y += rect.Height;
                     spriteBatch.Draw(_backColour, rect, Color.White);
-                    spriteBatch.DrawString(_font, _items[i], new Vector2(rect.X, rect.Y), _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                    spriteBatch.DrawString(_font, _items[i], new Vector2(rect.X + 8, rect.Y), _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+
+                    spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y - (_borderVal / 2), rect.Width, _borderVal), Color.White);
 
                     i++;
                 }
+
+                spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y + rect.Height - 2, rect.Width, _borderVal), Color.White);
             }
+
+            spriteBatch.Draw(_divideColour, new Rectangle(_pos.X - (_borderVal / 2), _pos.Y, _borderVal, rect.Y - _pos.Y + _size.Y), Color.White);
+            spriteBatch.Draw(_divideColour, new Rectangle(_pos.X - (_borderVal / 2) + _size.X, _pos.Y, _borderVal, rect.Y - _pos.Y + _size.Y), Color.White);
         }
     }
 }

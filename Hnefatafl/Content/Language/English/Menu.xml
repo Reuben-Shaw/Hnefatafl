@@ -27,6 +27,8 @@
 
   <GameSetup>
     <host>HOST</host>
+	<Hnefatafl>Hnefatafl</Hnefatafl>
+	<Hnefatafl_Description>> 11x11 Board</Hnefatafl_Description>
   </GameSetup>
 
   <InGame>

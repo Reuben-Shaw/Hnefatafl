@@ -25,6 +25,18 @@
 /processorParam:Quality=Best
 /build:Audio/Move.wav
 
+#begin Texture/Board/11x11BaseBoard.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/Board/11x11BaseBoard.png
+
 #begin Texture/Board/BorderDivide.png
 /importer:TextureImporter
 /processor:TextureProcessor

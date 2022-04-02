@@ -312,7 +312,7 @@ namespace Hnefatafl
                 if (_gameState == GameState.EditMenu) _editor.KeyPress(currentKeyboardState, currentMouseState, GraphicsDevice.Viewport);
             }
 
-            if (_gameState == GameState.InGame)
+            if (_gameState == GameState.InGame || _gameState == GameState.GameSetup)
             {
                 _player._board._turnDisplay.Transition((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
@@ -594,12 +594,13 @@ namespace Hnefatafl
                 _tabMenu = new TabMenu(new Point(0, startLoc.Y),
                                        new Point(GraphicsDevice.Viewport.Bounds.Width, GraphicsDevice.Viewport.Bounds.Height),
                                        _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds),
-                                       xml, _gameState, new string[] { "basic", "advanced" }, _graphics, Content);
+                                       xml, _gameState, new string[] { "BASIC", "ADVANCED" }, _graphics, Content);
 
-                _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), Content);
+                _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
 
+                _gameModeDisplay._dropDownString = "Hnefatafl";
 
-                _dropdown = new Dropdown(new Point(420, 104), new Point(224, 48), "dropdown");
+                _dropdown = new Dropdown(new Point(64, (viewPort.Height / 4) - (48 / 2)), new Point(224, 48), "dropdown");
                 _dropdown.LoadContent(Content, _graphics);
 
                 _dropdown._items.Add("HNEFATAFL"); _dropdown._items.Add("TABLUT"); _dropdown._items.Add("TABLUT CENTRE"); _dropdown._items.Add("BRANDBUH"); _dropdown._items.Add("ARD RI");
@@ -849,6 +850,11 @@ namespace Hnefatafl
 
             switch (selected)
             {
+                case "back":
+                {
+                    _gameState = GameState.MultiplayerMenu;
+                    break;
+                }
                 case "host":
                 {
                     if (_server is null)
@@ -1189,7 +1195,7 @@ namespace Hnefatafl
                     }
                 }
 
-                if (_tabMenu is not null) _tabMenu.ButtonCheck(currentState, previousMouse, mouseLoc, _keyboardSelect);
+                if (_tabMenu is not null) text = _tabMenu.ButtonCheck(currentState, previousMouse, mouseLoc, _keyboardSelect);
 
                 foreach (TextBox textbox in _textbox)
                 {

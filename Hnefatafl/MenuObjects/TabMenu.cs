@@ -21,7 +21,7 @@ namespace Hnefatafl.MenuObjects
             _tileSizeX = tileSizeX;
             _tileSizeY = tileSizeY;
 
-            Point buttonSize = new Point((int)(7.5f * tileSizeX), (int)(3.5f * tileSizeY));
+            Point buttonSize = new Point((int)(8f * tileSizeX), (int)(3.5f * tileSizeY));
 
             _pos = new Point(position.X, position.Y + buttonSize.Y - _tileSizeY - (tileSizeY / 2));
             _size = new Point(size.X, size.Y - _pos.Y);
@@ -50,7 +50,7 @@ namespace Hnefatafl.MenuObjects
             {
                 if (keyboardSelect || new Rectangle(button._pos, button._size).Contains(mouseLoc))
                 {
-                    if (button._status != Selected && previousState.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
+                    if (button._status != Selected && previousState.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
                     {
                         button._status = Selected;
                         _button[_indexSelected]._status = Unselected;

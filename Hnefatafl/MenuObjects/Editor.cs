@@ -27,8 +27,7 @@ namespace Hnefatafl.MenuObjects
 
         public Editor(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _selectedButton = new Button(new Point(0, 0), new Point(0, 0), "");
-            _selectedButton.Update(graphics, Content);
+            _selectedButton = new Button(new Point(0, 0), new Point(0, 0), "", graphics, Content);
             _selectedTextbox = new TextBox(new Point(0, 0), new Point(0, 0), "");
             _selectedTextbox.Update(graphics, Content);
             _rect = new Rectangle(0, 0, 0, 0);

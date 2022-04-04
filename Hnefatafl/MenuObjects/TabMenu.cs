@@ -15,6 +15,7 @@ namespace Hnefatafl.MenuObjects
         private TextureDivide _menuBack;
         private int _tileSizeX, _tileSizeY;
         private int _indexSelected = 0;
+        private const int _drawConst = 28;
 
         public TabMenu(Point position, Point size, int tileSizeX, int tileSizeY, XmlElement xml, Hnefatafl.GameState gameState, string[] buttonNames, GraphicsDeviceManager graphics, ContentManager content)
         {
@@ -31,7 +32,7 @@ namespace Hnefatafl.MenuObjects
 
             for (int i = 0; i < buttonNames.Length; i++)
             {
-                _button.Add(new Button(new Point(_pos.X + (buttonSize.X * i) + ((buttonSize.X / 8) * i) + 28, 0), 
+                _button.Add(new Button(new Point(_pos.X + (buttonSize.X * i) + ((buttonSize.X / 8) * i) + _drawConst, 0), 
                             buttonSize, new TextureDivide(graphics, content, "Texture/Menu/TabButton", _tileSizeX, _tileSizeY), Hnefatafl.NodeText(xml, buttonNames[i], gameState), 
                             buttonNames[i], graphics, content));
             }
@@ -48,7 +49,7 @@ namespace Hnefatafl.MenuObjects
 
             foreach (Button button in _button)
             {
-                if (keyboardSelect || new Rectangle(button._pos, button._size).Contains(mouseLoc))
+                if (keyboardSelect || (mouseLoc.Y < 66 && new Rectangle(button._pos, button._size).Contains(mouseLoc)))
                 {
                     if (button._status != Selected && previousState.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
                     {

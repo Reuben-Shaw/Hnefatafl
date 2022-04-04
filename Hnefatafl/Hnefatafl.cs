@@ -36,6 +36,7 @@ namespace Hnefatafl
         public enum MenuState { GameSetupBasic, GameSetupAdvanced };
         private TabMenu _tabMenu;
         private GameModeDisplay _gameModeDisplay;
+        private CheckBox _checkBox;
         private int m_selectedMenuObject;
         private int _selectedMenuObject
         {
@@ -387,6 +388,7 @@ namespace Hnefatafl
             _textbox.Clear();
             _dropdown = null;
             _tabMenu = null;
+            _checkBox = null;
             _cursor._state = Cursor.CursorState.Pointer;
             _picker._visible = false;
             _selectedMenuObject = -1;
@@ -599,6 +601,8 @@ namespace Hnefatafl
                 _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
 
                 _gameModeDisplay._dropDownString = "Hnefatafl";
+
+                _checkBox = new CheckBox(new Point(30, 220), new Point(64, 64), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
 
                 _dropdown = new Dropdown(new Point(64, (viewPort.Height / 4) - (48 / 2)), new Point(224, 48), "dropdown");
                 _dropdown.LoadContent(Content, _graphics);
@@ -1323,6 +1327,7 @@ namespace Hnefatafl
             {
                 _tabMenu.Draw(_spriteBatch, viewPort);
                 _gameModeDisplay.Draw(_spriteBatch, viewPort);
+                _checkBox.Draw(_spriteBatch);
             }
 
             foreach (TextBox textbox in _textbox)

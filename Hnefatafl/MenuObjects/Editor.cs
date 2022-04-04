@@ -148,7 +148,7 @@ namespace Hnefatafl.MenuObjects
             return _selectedButton;
         }
 
-        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, TextureDivide buttonSelect, TextureDivide buttonUnselect, TextureDivide backMenu, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, TextureDivide backMenu, Rectangle viewPort)
         {
             if (deltaStart != 1) deltaStart = tileSizeX;
 
@@ -159,7 +159,7 @@ namespace Hnefatafl.MenuObjects
 
             if (_editorObject == EditorObject.BackMenuObj) backMenu.Draw(spriteBatch, _rect);
 
-            _selectedButton.Draw(spriteBatch, tileSizeX, tileSizeY,  buttonSelect, buttonUnselect, viewPort);
+            _selectedButton.Draw(spriteBatch, tileSizeX, tileSizeY, viewPort);
             _selectedTextbox.Draw(spriteBatch, viewPort);
         }
     }

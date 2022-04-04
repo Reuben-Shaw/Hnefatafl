@@ -27,11 +27,15 @@ namespace Hnefatafl.MenuObjects
 
         private Texture2D _disabledColour { get; set; }
         
+        private TextureDivide _buttonSelect, _buttonUnselect;
+        
         private TextureDivide _tabButtonTexture { get; set; }
+        private ContentManager Content { get; set; }
 
         public Button() {}
         public Button(Button button) //Unfortunately required for the editor, kind of weird but it fixes the bug I was having about assingments not working as expected, so....
         {
+            Content = button.Content;
             _pos = button._pos;
             _size = button._size;
             _status = button._status;
@@ -48,8 +52,10 @@ namespace Hnefatafl.MenuObjects
             _tabButtonTexture = button._tabButtonTexture;
         }
 
-        public Button(Point position, Point size, string name, GraphicsDeviceManager graphics, ContentManager Content)
+        public Button(Point position, Point size, string name, GraphicsDeviceManager graphics, ContentManager content)
         {
+            Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+            _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _pos = position;
             _size = size;
             _status = Unselected;
@@ -58,46 +64,36 @@ namespace Hnefatafl.MenuObjects
             _fontColour = Color.Black;
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
-            SetGraphics(graphics, Content);
+            SetGraphics(graphics, null);
         }
 
-        public Button(Point position, Point size, string text, string name, GraphicsDeviceManager graphics, ContentManager Content)
+        public Button(Point position, Point size, Color[] textColours, Color[] backColours, string text, string name, GraphicsDeviceManager graphics, ContentManager content)
         {
+            Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+            _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _pos = position;
             _size = size;
             _status = Unselected;
             _name = name;
-            if (text is null)
+            if (string.IsNullOrWhiteSpace(text))
                 _text = name;
             else
                 _text = text;
-            _fontColour = Color.Black;
-            _selectFontColour = Color.Blue;
+            _fontColour = textColours[0];
+            _selectFontColour = textColours[1];
             _textPos = new Vector2(-1, -1);
-            SetGraphics(graphics, Content);
+            SetGraphics(graphics, backColours);
         }
 
-        public Button(Point position, Point size, Texture2D image, string name, GraphicsDeviceManager graphics, ContentManager Content)
+        public Button(Point position, Point size, TextureDivide tabButton, string text, string name, GraphicsDeviceManager graphics, ContentManager content)
         {
+            Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+            _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _pos = position;
             _size = size;
             _status = Unselected;
             _name = name;
-            _text = "";
-            _fontColour = Color.Black;
-            _selectFontColour = Color.Blue;
-            _textPos = new Vector2(-1, -1);
-            _image = image;
-            SetGraphics(graphics, Content);
-        }
-
-        public Button(Point position, Point size, TextureDivide tabButton, string text, string name, GraphicsDeviceManager graphics, ContentManager Content)
-        {
-            _pos = position;
-            _size = size;
-            _status = Unselected;
-            _name = name;
-            if (text is null)
+            if (string.IsNullOrWhiteSpace(text))
                 _text = name;
             else
                 _text = text;
@@ -105,12 +101,12 @@ namespace Hnefatafl.MenuObjects
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
             _tabButtonTexture = tabButton;
-            SetGraphics(graphics, Content);
+            SetGraphics(graphics, null);
         }
 
-        public void SetGraphics(GraphicsDeviceManager graphics, ContentManager Content)
+        public void SetGraphics(GraphicsDeviceManager graphics, Color[] backColours)
         {
-            _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
+            Content.Dispose();
             Vector2 fontSize = _font.MeasureString(_text);
             fontSize.X *= 1.5f;
             fontSize.Y *= 1.5f;
@@ -123,22 +119,23 @@ namespace Hnefatafl.MenuObjects
                 _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 1.5f)) + _pos.Y);
             }
             //Console.WriteLine($"{_textPos}, {_size}, {fontSize}");
-            CreateTextures(graphics, Color.DarkGray, Color.Gray);
+
+            _buttonUnselect = new TextureDivide(graphics, Content, "Texture/Menu/ButtonDivideUnselect", 32, 32);
+            _buttonSelect = new TextureDivide(graphics, Content, "Texture/Menu/ButtonDivideSelect", 32, 32);
+            if (backColours == null) 
+            {
+                _buttonUnselect.HueShiftTexture(Color.Gray);
+                _buttonSelect.HueShiftTexture(Color.DarkGray);
+            }
+            else
+            {
+                _buttonUnselect.HueShiftTexture(backColours[0]);
+                _buttonSelect.HueShiftTexture(backColours[1]);
+            }
         }
 
-        private void CreateTextures(GraphicsDeviceManager graphics, Color selectColour, Color regularColour)
-        {
-            _selectBackColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _selectBackColour.SetData(new[] { selectColour });
 
-            _backColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _backColour.SetData(new[] { regularColour });
-
-            _disabledColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
-            _disabledColour.SetData(new[] { new Color(20, 20, 20, 128) });
-        }
-
-        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, TextureDivide displaySelect, TextureDivide displayUnselect, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, Rectangle viewPort)
         {
             Rectangle rect = new Rectangle(_pos, _size);
             
@@ -156,12 +153,12 @@ namespace Hnefatafl.MenuObjects
             {
                 if (_status == Unselected || _status == Disabled)
                 {
-                    displayUnselect.Draw(spriteBatch, rect);
-                    spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
+                    _buttonUnselect.Draw(spriteBatch, rect);
+                    spriteBatch.DrawString(_font, _text, new Vector2(_textPos.X, _textPos.Y - (tileSizeY / 4)), _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
                 }
                 else if (_status == Selected)
                 {
-                    displaySelect.Draw(spriteBatch, rect);
+                    _buttonSelect.Draw(spriteBatch, rect);
                     spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
                 }
             }

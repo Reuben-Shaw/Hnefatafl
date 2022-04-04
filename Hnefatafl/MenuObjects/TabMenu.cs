@@ -72,7 +72,7 @@ namespace Hnefatafl.MenuObjects
             {
                 if (button._status != Selected)
                 {
-                    button.Draw(spriteBatch, _tileSizeX, _tileSizeY, null, null, viewPort);
+                    button.Draw(spriteBatch, _tileSizeX, _tileSizeY, viewPort);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace Hnefatafl.MenuObjects
 
             if (!string.IsNullOrEmpty( selectedButton._name))
             {
-                selectedButton.Draw(spriteBatch, _tileSizeX, _tileSizeY, null, null, viewPort);
+                selectedButton.Draw(spriteBatch, _tileSizeX, _tileSizeY, viewPort);
             }
         }
     }

@@ -12,22 +12,29 @@ namespace Hnefatafl.MenuObjects
     sealed class CheckBox : MenuObject
     {
         private List<string> _options = new List<string>();
+        private List<Vector2> _stringSizes = new List<Vector2>();
         private Texture2D _divideColour;
         private int _selected = 0;
-        private Texture2D _tick, _cross;
+        private Texture2D _tick;//, _cross;
+        private const int _divide = 24;
 
         public CheckBox(Point position, Point size, List<string> strings, GraphicsDeviceManager graphics, ContentManager content)
         {
             _pos = position;
             _size = size;
 
-            _options = strings;
-
-            _tick = content.Load<Texture2D>("Texture/Menu/CheckTick");
-            _cross = content.Load<Texture2D>("Texture/Menu/CheckCross");
-
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _fontColour = Color.Black;
+
+            _options = strings;
+
+            foreach (string item in _options)
+            {
+                _stringSizes.Add(_font.MeasureString(item));
+            }
+
+            _tick = content.Load<Texture2D>("Texture/Menu/CheckTick");
+            //_cross = content.Load<Texture2D>("Texture/Menu/CheckCross");
 
             _backColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _backColour.SetData(new[] { new Color(255, 230, 206) });
@@ -59,12 +66,12 @@ namespace Hnefatafl.MenuObjects
         {
             for (int i = 0; i < _options.Count; i++)
             {
-                spriteBatch.Draw(_backColour, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (8 * i)), _size), Color.White);
+                spriteBatch.Draw(_backColour, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
 
-                if (i == _selected) spriteBatch.Draw(_tick, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (8 * i)), _size), Color.White);
-                else spriteBatch.Draw(_cross, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (8 * i)), _size), Color.White);
+                if (i == _selected) spriteBatch.Draw(_tick, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
+                // else spriteBatch.Draw(_cross, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
 
-                spriteBatch.DrawString(_font, _options[i], new Vector2(_pos.X + _size.X + 8, _pos.Y + (_size.Y * i) + (8 * i)), _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, _options[i], new Vector2(_pos.X + _size.X + _divide, _pos.Y + (_stringSizes[i].Y * i) + (_divide * i) - (_stringSizes[i].Y / 8)), _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
             }
         }
     }

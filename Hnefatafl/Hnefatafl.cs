@@ -28,6 +28,7 @@ namespace Hnefatafl
         private Cursor _cursor;
         private Player _player;
         private Server _server; 
+        private BoardAudio _audioManager;
         private List<Button> _button = new List<Button>();
         private List<TextBox> _textbox = new List<TextBox>();
         private List<Label> _label = new List<Label>();
@@ -85,6 +86,8 @@ namespace Hnefatafl
 
         protected override void Initialize()
         {
+            _audioManager = new BoardAudio(Content);
+
             _logger.Add("Beginning Initialisation");
             
             _editor = new Editor(_graphics, Content);
@@ -1181,11 +1184,13 @@ namespace Hnefatafl
                         if (previousMouse.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
                         {
                             button._status = Selected;
+                            _audioManager._buttonPress.Play();
                         }
                         else if ((_keyboardSelect && button._status == Selected) || (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released))
                         {
                             button._status = Unselected;
                             text = button._name;
+                            _audioManager._buttonUp.Play();
                         }
                     }
                     else if (button._status == Selected)

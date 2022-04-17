@@ -31,10 +31,37 @@ namespace Hnefatafl.Media
             }
         }
 
+        private SoundEffect m_buttonPress;
+        public SoundEffect _buttonPress 
+        { 
+            get
+            {
+                return m_buttonPress;
+            }
+            private set
+            {
+                m_buttonPress = value;
+            }
+        }
+        private SoundEffect m_buttonUp;
+        public SoundEffect _buttonUp 
+        { 
+            get
+            {
+                return m_buttonUp;
+            }
+            private set
+            {
+                m_buttonUp = value;
+            }
+        }
+
         public BoardAudio(ContentManager Content)
         {
             _death = Content.Load<SoundEffect>("Audio/Death");
             _move = Content.Load<SoundEffect>("Audio/Move");
+            _buttonPress = Content.Load<SoundEffect>("Audio/ButtonPress");
+            _buttonUp = Content.Load<SoundEffect>("Audio/ButtonUp");
         }
     }
 }

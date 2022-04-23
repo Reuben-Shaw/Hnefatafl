@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Hnefatafl.Media;
 using static Hnefatafl.MenuObjects.MenuObject.Status;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace Hnefatafl.MenuObjects
 { 
@@ -15,14 +17,18 @@ namespace Hnefatafl.MenuObjects
         List<Texture2D> _maps = new List<Texture2D>();
         private int _mapIndex = 0;
         private const int _borderVal = 4;
-        private string m_dropDownString;
-        public string _dropDownString
+        private string _boardString;
+        private string _boardDescription;
+        private BoardTypes m_dropDownString;
+        public BoardTypes _dropDownString
         {
             get { return m_dropDownString; }
             set 
             { 
                 m_dropDownString = value;
-                _fontSize = _font.MeasureString(m_dropDownString);
+                _boardString = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownString.ToString(), Hnefatafl.GameState.GameSetup);
+                _boardDescription = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownString.ToString() + "_Description", Hnefatafl.GameState.GameSetup);
+                _fontSize = _font.MeasureString(_boardString);
             }
         }
         Vector2 _fontSize;
@@ -53,20 +59,20 @@ namespace Hnefatafl.MenuObjects
             }
         }
 
-        public void Draw(SpriteBatch spriteBatch, Rectangle viewport)
+        public void Draw(SpriteBatch spriteBatch, float fontMod, Rectangle viewport)
         {
             spriteBatch.Draw(_maps[_mapIndex], new Rectangle(_pos, _size), Color.White);
             
-            spriteBatch.DrawString(_font, _dropDownString, new Vector2(_pos.X + (int)(_fontSize.X / 4f), _pos.Y + _size.Y), _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(_font, "> 11x11 Board", new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)(_fontSize.Y + (float)(_borderVal * 2))), _fontColour, 0f, new Vector2(0f, 0f), 1f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(_font, "> Attacker First", new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)(_fontSize.Y * 2)), _fontColour, 0f, new Vector2(0f, 0f), 1f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, _boardString, new Vector2((int)((float)(_size.X / 2f) - ((_fontSize.X * (fontMod * 1.5f)) / 2f)) + _pos.X, _pos.Y + _size.Y), _fontColour, 0f, new Vector2(0f, 0f), fontMod * 1.5f, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, _boardDescription, new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) + (float)(_borderVal * 2))), _fontColour, 0f, new Vector2(0f, 0f), fontMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, "> Attacker First", new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) * 2)), _fontColour, 0f, new Vector2(0f, 0f), fontMod, SpriteEffects.None, 0f);
 
             spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y - _borderVal, _size.X + (_borderVal * 2), _borderVal), Color.White);
             spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y + _size.Y, _size.X + (_borderVal * 2), _borderVal), Color.White);
 
-            spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y - _borderVal, _borderVal, _size.Y + (_borderVal * 2) + (int)(_fontSize.Y * 3)), Color.White);
-            spriteBatch.Draw(_backColour, new Rectangle(_pos.X + _size.X, _pos.Y - _borderVal, _borderVal, _size.Y + (_borderVal * 2) + (int)(_fontSize.Y * 3)), Color.White);
-            spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y + _size.Y + (int)(_fontSize.Y * 3), _size.X + (_borderVal * 2), _borderVal), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y - _borderVal, _borderVal, _size.Y + (_borderVal * 2) + (int)((_fontSize.Y * fontMod) * 3)), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(_pos.X + _size.X, _pos.Y - _borderVal, _borderVal, _size.Y + (_borderVal * 2) + (int)((_fontSize.Y * fontMod) * 3)), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) * 3), _size.X + (_borderVal * 2), _borderVal), Color.White);
 
 
             spriteBatch.Draw(_test, new Rectangle(new Point(0 + (int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);

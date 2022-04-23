@@ -37,6 +37,12 @@
 /processorParam:Quality=Best
 /build:Audio/Move.wav
 
+#begin Language/English/Game.xml
+/copy:Language/English/Game.xml
+
+#begin Language/English/Menu.xml
+/copy:Language/English/Menu.xml
+
 #begin Texture/Board/11x11BaseBoard.png
 /importer:TextureImporter
 /processor:TextureProcessor

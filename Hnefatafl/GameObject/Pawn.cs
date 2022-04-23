@@ -130,7 +130,7 @@ namespace Hnefatafl
         public void CreateBoard(BoardTypes type)
         {
             _pieceBoard.Clear();
-            int boardSize = (int)type;
+            int boardSize = Hnefatafl.ToInt(type);
 
             if (type == BoardTypes.Hnefatafl)
             {

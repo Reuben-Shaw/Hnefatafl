@@ -32,7 +32,7 @@ namespace Hnefatafl.MenuObjects
             }
         }
         Vector2 _fontSize;
-        Texture2D _test;
+        Texture2D _board;
 
         public GameModeDisplay(Point position, Point size, GraphicsDeviceManager graphics, ContentManager content)
         {
@@ -42,7 +42,7 @@ namespace Hnefatafl.MenuObjects
             _backColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _backColour.SetData(new[] { new Color(66, 41, 33) });
 
-            _test = content.Load<Texture2D>("Texture/Board/11x11BaseBoard");
+            _board = content.Load<Texture2D>("Texture/Board/11x11BaseBoard");
 
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _fontColour = Color.Black;
@@ -75,13 +75,13 @@ namespace Hnefatafl.MenuObjects
             spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) * 3), _size.X + (_borderVal * 2), _borderVal), Color.White);
 
 
-            spriteBatch.Draw(_test, new Rectangle(new Point(0 + (int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);
+            spriteBatch.Draw(_board, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);
 
-            spriteBatch.Draw(_backColour, new Rectangle(new Point(0 + (int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y - _borderVal), new Point(_size.X + (_borderVal * 2), _borderVal)), Color.White);
-            spriteBatch.Draw(_backColour, new Rectangle(new Point(0 + (int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y + _size.Y), new Point(_size.X + (_borderVal * 2), _borderVal)), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y - _borderVal), new Point(_size.X + (_borderVal * 2), _borderVal)), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y + _size.Y), new Point(_size.X + (_borderVal * 2), _borderVal)), Color.White);
 
-            spriteBatch.Draw(_backColour, new Rectangle(new Point(0 + (int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y - _borderVal), new Point(_borderVal, _size.Y + _borderVal)), Color.White);
-            spriteBatch.Draw(_backColour, new Rectangle(new Point(0 + (int)(viewport.Width / 2) - (_size.X / 2) + _size.X, _pos.Y - _borderVal), new Point(_borderVal, _size.Y + _borderVal)), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y - _borderVal), new Point(_borderVal, _size.Y + _borderVal)), Color.White);
+            spriteBatch.Draw(_backColour, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2) + _size.X, _pos.Y - _borderVal), new Point(_borderVal, _size.Y + _borderVal)), Color.White);
         }
     }
 }

@@ -401,7 +401,7 @@ namespace Hnefatafl
 
             Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
             Point buttonSize = new Point((int)((float)viewPort.Width / 3), (int)((float)viewPort.Height / 5.5));
-            Point textboxSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 12));
+            Point textboxSize = new Point((int)((viewPort.Width / 30 * 6) + ((viewPort.Width / 30 * 3) / 4)), (int)((float)viewPort.Height / 12));
             Point labelSize = new Point(256, 48);
 
             List<string> buttonName = new List<string>();
@@ -608,10 +608,10 @@ namespace Hnefatafl
                         }
                     }
 
-                    _textbox.Add(new TextBox(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (int)(viewPort.Width / 20 * 1.5f) - textboxSize.X, viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
+                    _textbox.Add(new TextBox(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
                     _textbox[0].Update(_graphics, Content, _mainText);
 
-                    _button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
+                    //_button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
             }
             _logger.Add($"New State {_gameState.ToString()}");
@@ -1324,6 +1324,10 @@ namespace Hnefatafl
                 {
                     _gameModeDisplay.Draw(_spriteBatch, _subText, viewPort);
                     _checkBox.Draw(_spriteBatch, _mainText);
+                }
+                else if (_menuState == MenuState.GameSetupAdvanced)
+                {
+                    _spriteBatch.Draw(Content.Load<Texture2D>("Texture/Board/11x11BaseBoard"), new Rectangle(new Point((int)(GraphicsDevice.Viewport.Width / 2) - (512 / 2) + 128, (_gameModeDisplay._size.Y / 2) + (512 / 4) - 32), new Point(512, 512)), Color.White);
                 }
             }
 

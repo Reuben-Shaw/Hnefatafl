@@ -50,6 +50,25 @@ namespace Hnefatafl.MenuObjects
         }
         private bool _full = false;
 
+        public TextBox(TextBox textbox)
+        {
+            _pos = textbox._pos;
+            _size = textbox._size;
+            _status = textbox._status;
+            _name = textbox._name;
+            _text = textbox._text;
+            _font = textbox._font;
+            _fontColour = textbox._fontColour;
+            _backColour = textbox._backColour;
+            _textPos = textbox._textPos;
+            _borderColour = textbox._borderColour;
+            _defaultFontColour = textbox._defaultFontColour;
+            _defaultText = textbox._defaultText;
+            _text = textbox._text;
+            _lastPress = textbox._lastPress;
+            _full = textbox._full;
+        }
+
         public TextBox(Point position, Point size, string name)
         {
             _pos = position;
@@ -78,12 +97,13 @@ namespace Hnefatafl.MenuObjects
             _lastPress = 0;
         }
 
-        public void Update(GraphicsDeviceManager graphics, ContentManager Content)
+        public void Update(GraphicsDeviceManager graphics, ContentManager Content, float fontMod)
         {
             _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
             Vector2 fontSize = _font.MeasureString("l");
+            fontSize = new Vector2(fontSize.X * fontMod, fontSize.Y * fontMod);
             //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
-            _textPos = new Vector2(12 + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);
+            _textPos = new Vector2((12 * fontMod) + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);
             CreateTextures(graphics, Color.Black, Color.White);
         }
 
@@ -96,7 +116,7 @@ namespace Hnefatafl.MenuObjects
             _backColour.SetData(new[] { backColour });
         }
 
-        public void Add(Keys key)
+        public void Add(Keys key, float fontSize)
         {
             if (!_full)
             {
@@ -126,23 +146,23 @@ namespace Hnefatafl.MenuObjects
                     _status = Unselected;
                 }
 
-                TextboxFull();
+                TextboxFull(fontSize);
             }
         }
 
-        public void Add(string addChar)
+        public void Add(string addChar, float fontSize)
         {
             if (!_full)
             {
                 _text += addChar;
 
-                TextboxFull();
+                TextboxFull(fontSize);
             }
         }
 
-        private void TextboxFull()
+        private void TextboxFull(float fontSize)
         {
-            if (_font.MeasureString(_text + "D").X >= _size.X - 10)
+            if (_font.MeasureString(_text + "W").X * fontSize >= _size.X - 10)
             {
                 RemoveChar(0.2);
                 _full = true;
@@ -168,7 +188,7 @@ namespace Hnefatafl.MenuObjects
             _text = "";
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, float fontSize, Rectangle viewPort)
         {
             Rectangle rectBody = new Rectangle(new Point(_pos.X + 5, _pos.Y + 5), new Point(_size.X - 10, _size.Y - 10));
             Rectangle rectBack = new Rectangle(_pos, _size);
@@ -178,11 +198,11 @@ namespace Hnefatafl.MenuObjects
             spriteBatch.Draw(_backColour, rectBody, Color.White);
             if (string.IsNullOrWhiteSpace(_text))
             {
-                spriteBatch.DrawString(_font, _defaultText, _textPos, _defaultFontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(_font, _defaultText, _textPos, _defaultFontColour, 0, new Vector2(0, 0), fontSize, SpriteEffects.None, 0);
             }
             else
             {
-                spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0, new Vector2(0, 0), fontSize, SpriteEffects.None, 0);
             }
         }
     }

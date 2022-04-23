@@ -5,7 +5,7 @@ using static Hnefatafl.UserOptions.ColourButtons;
 
 namespace Hnefatafl
 {
-    [Serializable] //Must be serilisable in order to transport it across a network
+    [Serializable()] //Must be serilisable in order to transport it across a network
     public struct ServerOptions //Struct as no methods will be needed in here and it will never be invoked like a method
     {
         //Made heavy use of enumeration to make code as readable as possible
@@ -72,7 +72,7 @@ namespace Hnefatafl
         }
     }
 
-    [Serializable]
+    [Serializable()]
     public struct UserOptions
     {
         public enum ColourButtons { pawnA, pawnD, board1, board2, throne, corner, highlightTrail, selectPositive, selectNegative, boardD, boardA }

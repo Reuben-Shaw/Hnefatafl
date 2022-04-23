@@ -13,7 +13,7 @@ using static Hnefatafl.Media.TextureAtlasLink;
 
 namespace Hnefatafl
 {
-    public enum BoardTypes { Regular }
+    public enum BoardTypes { Hnefatafl = 11, Tablut = 9, TablutCentre = 9, Brandubh = 7, ArdRi = 7 }
 
     sealed class Board
     {
@@ -44,19 +44,18 @@ namespace Hnefatafl
         private BoardAudio _audioManager;
         public TurnDisplay _turnDisplay;
 
-        public Board(GraphicsDeviceManager graphics, ContentManager content, Color[] boardColours, Color[] pawnColours, Color[] selectColours, int boardSize)
+        public Board(GraphicsDeviceManager graphics, ContentManager content, Color[] boardColours, Color[] pawnColours, Color[] selectColours)
         {
             Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             CreateBoardColours(graphics, boardColours);
             CreatePawns(graphics, pawnColours);
             CreateSelectColours(selectColours);
             _audioManager = new BoardAudio(content);
-            _boardSize = boardSize;
 
             _tileSizeX = TileSizeX(graphics.GraphicsDevice.Viewport.Bounds);
             _tileSizeY = TileSizeY(graphics.GraphicsDevice.Viewport.Bounds);
 
-            _turnDisplay = new TurnDisplay(new Point(_tileSizeX, _tileSizeY), new Point(_tileSizeX * 2, _tileSizeY * 2), "display");
+            _turnDisplay = new TurnDisplay(new Point((graphics.PreferredBackBufferWidth / 2) - ((_tileSizeX * 3) / 2), _tileSizeY), new Point(_tileSizeX, _tileSizeY), "display");
 
             _boardHighlightAtlas = new AtlasTexture(graphics, Content, "Texture/Board/HighlightTrail");
             _boardHighlightAtlas.HueShiftTexture(_selectColours[0]);
@@ -99,10 +98,11 @@ namespace Hnefatafl
             Console.WriteLine(_pieces.ToString());
         }
 
-        public void CreateBoard()
+        public void CreateBoard(BoardTypes type)
         {
             _serverOp = new ServerOptions(); //Defines the options, currently empty as it will default to automatic options
-            _pieces.CreateBoard(_boardSize, BoardTypes.Regular); //Responsible entirely for the creation of the pieces on the board, Board.cs doesn't contain any logic relating to this at all
+            _boardSize = (int)type;
+            _pieces.CreateBoard(type); //Responsible entirely for the creation of the pieces on the board, Board.cs doesn't contain any logic relating to this at all
             _selectedPiece = new HPoint(-1, -1);
             _state = BoardState.InactiveGame;
         }
@@ -795,8 +795,8 @@ namespace Hnefatafl
             }
 
             Rectangle selectRect = new Rectangle(
-                (viewPort.Width / 2) - ((_tileSizeX* _boardSize) / 2) + ((Mouse.GetState().Position.X - (_tileSizeX * _boardSize) + (int)(_tileSizeX * 1.5)) / _tileSizeX * _tileSizeX), 
-                (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (_tileSizeY * _boardSize) + (_tileSizeY * 8 + (_tileSizeY / 16))) / _tileSizeY * _tileSizeY),
+                (viewPort.Width / 2) - ((_tileSizeX * _boardSize) / 2) + ((Mouse.GetState().Position.X - (_tileSizeX * _boardSize) + (int)(_tileSizeX * 1.5)) / _tileSizeX * _tileSizeX) - (_tileSizeX * (int)((11 - _boardSize) * 1.5)), 
+                (viewPort.Height / 2) - ((_tileSizeY * _boardSize) / 2) + ((Mouse.GetState().Position.Y - (_tileSizeY * _boardSize) + (_tileSizeY * 8 + (_tileSizeY / 16))) / _tileSizeY * _tileSizeY) - (_tileSizeY * (int)((11 - _boardSize) * 1.5)),
                 _tileSizeX, _tileSizeY);
 
             if (currentTurn && _selectedPiece.X != -1)

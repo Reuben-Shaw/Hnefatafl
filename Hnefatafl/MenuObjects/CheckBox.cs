@@ -62,7 +62,7 @@ namespace Hnefatafl.MenuObjects
             // }
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, float fontSize)
         {
             for (int i = 0; i < _options.Count; i++)
             {
@@ -71,7 +71,7 @@ namespace Hnefatafl.MenuObjects
                 if (i == _selected) spriteBatch.Draw(_tick, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
                 // else spriteBatch.Draw(_cross, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
 
-                spriteBatch.DrawString(_font, _options[i], new Vector2(_pos.X + _size.X + _divide, _pos.Y + (_stringSizes[i].Y * i) + (_divide * i) - (_stringSizes[i].Y / 8)), _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, _options[i], new Vector2(_pos.X + _size.X + _divide, _pos.Y + (_stringSizes[i].Y * i) + (_divide * i * fontSize) - (_stringSizes[i].Y / 4)), _fontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
             }
         }
     }

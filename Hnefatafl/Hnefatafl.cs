@@ -89,6 +89,8 @@ namespace Hnefatafl
         private Logger _logger = new Logger();
         private Editor _editor;
 
+        private float _mainText, _subText;
+
 
         public Hnefatafl()
         {
@@ -109,6 +111,9 @@ namespace Hnefatafl
             _graphics.PreferredBackBufferHeight = 540;
             FullScreen();
             _graphics.ApplyChanges();
+
+            _subText = (GraphicsDevice.Viewport.Width / 1920f) * 2f;
+            _mainText = (GraphicsDevice.Viewport.Width / 1920f) * 3f;
             
             _cursor = new Cursor(Content);
 
@@ -297,7 +302,7 @@ namespace Hnefatafl
                                     }
                                     else
                                     {
-                                        textbox.Add(key);
+                                        textbox.Add(key, _mainText);
                                     }
                                 }
                                 else
@@ -517,7 +522,7 @@ namespace Hnefatafl
             {
                 for (int i = 0; i < buttonName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, fontDefault, backDefault, NodeText(xml, buttonName[i], _gameState), buttonName[i], _graphics, Content));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, fontDefault, backDefault, _mainText, NodeText(xml, buttonName[i], _gameState), buttonName[i], _graphics, Content));
                 }
             }
             else if (_gameState == GameState.OptionsMenu)
@@ -525,7 +530,7 @@ namespace Hnefatafl
                 int yMod = 0;
                 for (int i = 0; i < buttonName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * (i - yMod)) + ((buttonSize.Y / 4) * (i - yMod))), buttonSize, fontDefault, backDefault, NodeText(xml, buttonName[i], _gameState), buttonName[i], _graphics, Content));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * (i - yMod)) + ((buttonSize.Y / 4) * (i - yMod))), buttonSize, fontDefault, backDefault, _mainText, NodeText(xml, buttonName[i], _gameState), buttonName[i], _graphics, Content));
                     if (i != 0 && i % 5 == 0)
                     {
                         startLoc = new Point((buttonSize.X / 4) + ((buttonSize.X + (buttonSize.X / 4)) * (i / 4)), buttonSize.Y / 2);
@@ -538,13 +543,13 @@ namespace Hnefatafl
                 _picker._pos = new Point(_player._board.TileSizeX(GraphicsDevice.Viewport.Bounds) * 2, _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds) * 2);
                 for (int i = 0; i < buttonName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, fontDefault, backDefault, NodeText(xml, buttonName[i], _gameState), buttonName[i], _graphics, Content));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, fontDefault, backDefault, _mainText, NodeText(xml, buttonName[i], _gameState), buttonName[i], _graphics, Content));
                 }
 
                 for (int i = 0; i < textboxName.Count; i++)
                 {
                     _textbox.Add(new TextBox(_picker.GetTextboxData(i).Location, _picker.GetTextboxData(i).Size, textboxName[i]));
-                    _textbox[i].Update(_graphics, Content);
+                    _textbox[i].Update(_graphics, Content, _mainText);
                 }
                 _textbox[0]._text = _picker.R.ToString();
                 _textbox[1]._text = _picker.G.ToString();
@@ -555,13 +560,13 @@ namespace Hnefatafl
                 for (int i = 0; i < textboxName.Count; i++)
                 {
                     _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.X * i) / 2)), textboxSize, NodeText(xml, textboxName[i], _gameState), textboxName[i]));
-                    _textbox[i].Update(_graphics, Content);
+                    _textbox[i].Update(_graphics, Content, _mainText);
                 }
 
                 startLoc = new Point(viewPort.Width / 2 - buttonSize.X / 2, _textbox[textboxName.Count - 1]._pos.Y);
                 for (int i = textboxName.Count; i < buttonName.Count + textboxName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, new Color[] { Color.Black, Color.Blue }, new Color[] { new Color(66, 41, 33), new Color(99, 55, 41) }, NodeText(xml, buttonName[i - textboxName.Count], _gameState), buttonName[i - textboxName.Count], _graphics, Content));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, new Color[] { Color.Black, Color.Blue }, new Color[] { new Color(66, 41, 33), new Color(99, 55, 41) }, _mainText, NodeText(xml, buttonName[i - textboxName.Count], _gameState), buttonName[i - textboxName.Count], _graphics, Content));
                 }
             }
             else if (_gameState == GameState.GameSetup)
@@ -572,28 +577,25 @@ namespace Hnefatafl
                 if (fullChange) _tabMenu = new TabMenu(new Point(0, startLoc.Y),
                                 new Point(GraphicsDevice.Viewport.Bounds.Width, GraphicsDevice.Viewport.Bounds.Height),
                                 _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds),
-                                xml, _gameState, new string[] { "BASIC", "ADVANCED" }, _graphics, Content);
+                                xml, _gameState, _mainText, new string[] { "basic", "advanced" }, _graphics, Content);
                 
                 if (_menuState == MenuState.GameSetupBasic)
                 {
-                    buttonSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 6));
-                    startLoc = new Point((buttonSize.X / 8) + 16, 0);
-
-                    _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
+                    _gameModeDisplay = new GameModeDisplay(new Point(viewPort.Width - (int)(viewPort.Width / 3.2f), viewPort.Height / 5), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
 
                     _gameModeDisplay._dropDownString = "Hnefatafl";
 
-                    _checkBox = new CheckBox(new Point(350, 381), new Point(48, 48), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
+                    _checkBox = new CheckBox(new Point((int)(viewPort.Width / 3.2f) + (viewPort.Width / 20), (viewPort.Height / 5) + (_player._board.TileSizeY(viewPort) * 8) + (viewPort.Height / 60)), new Point(viewPort.Width / 20, viewPort.Width / 20), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
 
-                    _dropdown = new Dropdown(new Point(48, (viewPort.Height / 4) - (48 / 2)), new Point(224, 48), "dropdown", 0, new List<string> {"HNEFATAFL", "TABLUT", "TABLUT CENTRE", "BRANDBUH", "ARD RI"}, _graphics, Content);
+                    _dropdown = new Dropdown(new Point(viewPort.Width / 20, (viewPort.Height / 4) - ((viewPort.Width / 20) / 2)), new Point((viewPort.Width / 4), (viewPort.Width / 20)), "dropdown", 0, new List<string> {"HNEFATAFL", "TABLUT", "TABLUT CENTRE", "BRANDBUH", "ARD RI"}, _graphics, Content);
 
-                    _button.Add(new Button(new Point(48, 430), new Point(224, 64), fontDefault, backDefault, "START", buttonName[0], _graphics, Content));
+                    _button.Add(new Button(new Point(viewPort.Width / 20, viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
                 else if (_menuState == MenuState.GameSetupAdvanced)
                 {
 
                     buttonSize = new Point(viewPort.Width / 30 * 3, viewPort.Width / 30 * 3);
-                    startLoc = new Point(48, (viewPort.Height / 4) - (48 / 2));
+                    startLoc = new Point(viewPort.Width / 20, (viewPort.Height / 4) - ((viewPort.Width / 20) / 2));
                     for (int i = 1; i < buttonName.Count; i++)
                     {
                         _button.Add(new Button(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), startLoc.Y), buttonSize, buttonName[i], Content.Load<Texture2D>("Texture/OpButton/" + buttonName[i]), _graphics, Content));
@@ -604,24 +606,21 @@ namespace Hnefatafl
                             pointer++;
                             splitTrack = 0;
                             if (pointer >= 3)
-                                startLoc.X = 646 + 48;
+                                startLoc.X = (viewPort.Width - (buttonSize.X * 3) + (viewPort.Width / 40));
                             else
-                                startLoc.X = 48;
+                                startLoc.X = viewPort.Width / 20;
                             
                             if (pointer != 3)
                                 startLoc.Y += buttonSize.Y + (buttonSize.Y / 2);
                             else
-                                startLoc.Y = (viewPort.Height / 4) - (48 / 2);
+                                startLoc.Y = (viewPort.Height / 4) - ((viewPort.Width / 20) / 2);
                         }
                     }
 
-                    buttonSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 6));
-                    startLoc = new Point(432, 442);
+                    _textbox.Add(new TextBox(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (int)(viewPort.Width / 20 * 1.5f) - textboxSize.X, viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
+                    _textbox[0].Update(_graphics, Content, _mainText);
 
-                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y), textboxSize, "PORT", textboxName[0]));
-                    _textbox[0].Update(_graphics, Content);
-
-                    _button.Add(new Button(new Point(688, 430), new Point(224, 64), fontDefault, backDefault, "START", buttonName[0], _graphics, Content));
+                    _button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
             }
             _logger.Add($"New State {_gameState.ToString()}");
@@ -876,14 +875,18 @@ namespace Hnefatafl
                 case "start":
                 {
                     BoardTypes type = BoardTypes.Hnefatafl;
-                    switch (_dropdown.GetSelected())
+                    if (_dropdown is not null)
                     {
-                        case "HNEFATAFL": type = BoardTypes.Hnefatafl; break;
-                        case "TABLUT": type = BoardTypes.Tablut; break;
-                        case "TABLUT CENTRE": type = BoardTypes.TablutCentre; break;
-                        case "BRANDUBH": type = BoardTypes.Brandubh; break;
-                        case "ARD RI": type = BoardTypes.ArdRi; break;
+                        switch (_dropdown.GetSelected())
+                        {
+                            case "HNEFATAFL": type = BoardTypes.Hnefatafl; break;
+                            case "TABLUT": type = BoardTypes.Tablut; break;
+                            case "TABLUT CENTRE": type = BoardTypes.TablutCentre; break;
+                            case "BRANDUBH": type = BoardTypes.Brandubh; break;
+                            case "ARD RI": type = BoardTypes.ArdRi; break;
+                        }
                     }
+                    
                     _player._board.CreateBoard(type);
                     _server = new Server();
                     _server.StartServer(14242, _player._board._serverOp, type);
@@ -892,12 +895,12 @@ namespace Hnefatafl
                     
                     break;
                 }
-                case "BASIC":
+                case "basic":
                 {
                     _menuState = MenuState.GameSetupBasic;
                     break;
                 }
-                case "ADVANCED":
+                case "advanced":
                 {
                     _menuState = MenuState.GameSetupAdvanced;
                     break;
@@ -1325,11 +1328,11 @@ namespace Hnefatafl
             
             if (_gameState == GameState.GameSetup)
             {
-                _tabMenu.Draw(_spriteBatch, viewPort);
+                _tabMenu.Draw(_spriteBatch, _mainText, viewPort);
                 if (_menuState == MenuState.GameSetupBasic)
                 {
                     _gameModeDisplay.Draw(_spriteBatch, viewPort);
-                    _checkBox.Draw(_spriteBatch);
+                    _checkBox.Draw(_spriteBatch, _mainText);
                 }
             }
 
@@ -1366,12 +1369,12 @@ namespace Hnefatafl
 
             foreach (Button button in _button)
             {
-                button.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), viewPort);
+                button.Draw(_spriteBatch, _mainText, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), viewPort);
             }
 
             foreach (TextBox textbox in _textbox)
             {
-                textbox.Draw(_spriteBatch, viewPort);
+                textbox.Draw(_spriteBatch, _mainText, viewPort);
             }
 
             foreach (Label label in _label)
@@ -1379,7 +1382,7 @@ namespace Hnefatafl
                 label.Draw(_spriteBatch, viewPort);
             }
 
-            if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch);
+            if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch, _subText);
 
             //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
 

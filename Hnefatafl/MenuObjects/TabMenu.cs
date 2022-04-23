@@ -17,7 +17,7 @@ namespace Hnefatafl.MenuObjects
         private int _indexSelected = 0;
         private const int _drawConst = 28;
 
-        public TabMenu(Point position, Point size, int tileSizeX, int tileSizeY, XmlElement xml, Hnefatafl.GameState gameState, string[] buttonNames, GraphicsDeviceManager graphics, ContentManager content)
+        public TabMenu(Point position, Point size, int tileSizeX, int tileSizeY, XmlElement xml, Hnefatafl.GameState gameState, float fontMod, string[] buttonNames, GraphicsDeviceManager graphics, ContentManager content)
         {
             _tileSizeX = tileSizeX;
             _tileSizeY = tileSizeY;
@@ -33,11 +33,11 @@ namespace Hnefatafl.MenuObjects
             for (int i = 0; i < buttonNames.Length; i++)
             {
                 _button.Add(new Button(new Point(_pos.X + (buttonSize.X * i) + ((buttonSize.X / 8) * i) + _drawConst, 0), 
-                            buttonSize, new TextureDivide(graphics, content, "Texture/Menu/TabButton", _tileSizeX, _tileSizeY), Hnefatafl.NodeText(xml, buttonNames[i], gameState), 
+                            buttonSize, new TextureDivide(graphics, content, "Texture/Menu/TabButton", _tileSizeX, _tileSizeY), fontMod, Hnefatafl.NodeText(xml, buttonNames[i], gameState), 
                             buttonNames[i], graphics, content));
             }
             _button.Add(new Button(new Point(_size.X - _pos.X - (64 * 2), 0), 
-                            new Point(96, 128), new TextureDivide(graphics, content, "Texture/Menu/TabButton", _tileSizeX, _tileSizeY), "X", 
+                            new Point(96, 128), new TextureDivide(graphics, content, "Texture/Menu/TabButton", _tileSizeX, _tileSizeY), fontMod, "X", 
                             "back", graphics, content));
                     
             _button[_indexSelected]._status = Selected;
@@ -49,7 +49,7 @@ namespace Hnefatafl.MenuObjects
 
             foreach (Button button in _button)
             {
-                if (keyboardSelect || (mouseLoc.Y < 66 && new Rectangle(button._pos, button._size).Contains(mouseLoc)))
+                if (keyboardSelect || (mouseLoc.Y < _pos.Y && new Rectangle(button._pos, button._size).Contains(mouseLoc)))
                 {
                     if (button._status != Selected && previousState.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
                     {
@@ -64,7 +64,7 @@ namespace Hnefatafl.MenuObjects
             return "";
         }
 
-        public void Draw(SpriteBatch spriteBatch, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, float fontSize, Rectangle viewPort)
         {
             Button selectedButton = new Button();
 
@@ -72,7 +72,7 @@ namespace Hnefatafl.MenuObjects
             {
                 if (button._status != Selected)
                 {
-                    button.Draw(spriteBatch, _tileSizeX, _tileSizeY, viewPort);
+                    button.Draw(spriteBatch, fontSize, _tileSizeX, _tileSizeY, viewPort);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace Hnefatafl.MenuObjects
 
             if (!string.IsNullOrEmpty( selectedButton._name))
             {
-                selectedButton.Draw(spriteBatch, _tileSizeX, _tileSizeY, viewPort);
+                selectedButton.Draw(spriteBatch, fontSize, _tileSizeX, _tileSizeY, viewPort);
             }
         }
     }

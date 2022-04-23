@@ -27,8 +27,10 @@
 
   <GameSetup>
     <host>HOST</host>
-	<Hnefatafl>Hnefatafl</Hnefatafl>
-	<Hnefatafl_Description>> 11x11 Board</Hnefatafl_Description>
+    <basic>BASIC</basic>
+    <advanced>ADVANCED</advanced>
+    <Hnefatafl>Hnefatafl</Hnefatafl>
+    <Hnefatafl_Description>> 11x11 Board</Hnefatafl_Description>
   </GameSetup>
 
   <InGame>

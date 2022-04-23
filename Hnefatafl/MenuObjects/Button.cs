@@ -50,7 +50,7 @@ namespace Hnefatafl.MenuObjects
             _tabButtonTexture = button._tabButtonTexture;
         }
 
-        public Button(Point position, Point size, string name, GraphicsDeviceManager graphics, ContentManager content)
+        public Button(Point position, Point size, float fontMod, string name, GraphicsDeviceManager graphics, ContentManager content)
         {
             Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
@@ -62,7 +62,7 @@ namespace Hnefatafl.MenuObjects
             _fontColour = Color.Black;
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
-            SetGraphics(graphics, null);
+            SetGraphics(graphics, fontMod, null);
         }
 
         public Button(Point position, Point size, string name, Texture2D image, GraphicsDeviceManager graphics, ContentManager content)
@@ -76,10 +76,10 @@ namespace Hnefatafl.MenuObjects
             _fontColour = Color.Black;
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
-            SetGraphics(graphics, null);
+            SetGraphics(graphics, 1f, null);
         }
 
-        public Button(Point position, Point size, Color[] textColours, Color[] backColours, string text, string name, GraphicsDeviceManager graphics, ContentManager content)
+        public Button(Point position, Point size, Color[] textColours, Color[] backColours, float fontMod, string text, string name, GraphicsDeviceManager graphics, ContentManager content)
         {
             Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
@@ -94,10 +94,10 @@ namespace Hnefatafl.MenuObjects
             _fontColour = textColours[0];
             _selectFontColour = textColours[1];
             _textPos = new Vector2(-1, -1);
-            SetGraphics(graphics, backColours);
+            SetGraphics(graphics, fontMod, backColours);
         }
 
-        public Button(Point position, Point size, TextureDivide tabButton, string text, string name, GraphicsDeviceManager graphics, ContentManager content)
+        public Button(Point position, Point size, TextureDivide tabButton, float fontMod, string text, string name, GraphicsDeviceManager graphics, ContentManager content)
         {
             Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
@@ -113,17 +113,17 @@ namespace Hnefatafl.MenuObjects
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
             _tabButtonTexture = tabButton;
-            SetGraphics(graphics, null);
+            SetGraphics(graphics, fontMod, null);
         }
 
-        public void SetGraphics(GraphicsDeviceManager graphics, Color[] backColours)
+        public void SetGraphics(GraphicsDeviceManager graphics, float fontMod, Color[] backColours)
         {
             if (_image is null)
             {    
                 Content.Dispose();
                 Vector2 fontSize = _font.MeasureString(_text);
-                fontSize.X *= 1.5f;
-                fontSize.Y *= 1.5f;
+                fontSize.X *= fontMod;
+                fontSize.Y *= fontMod;
                 if (_tabButtonTexture is null)
                 {
                     _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 2f)) + _pos.Y);
@@ -149,7 +149,7 @@ namespace Hnefatafl.MenuObjects
         }
 
 
-        public void Draw(SpriteBatch spriteBatch, int tileSizeX, int tileSizeY, Rectangle viewPort)
+        public void Draw(SpriteBatch spriteBatch, float fontSize, int tileSizeX, int tileSizeY, Rectangle viewPort)
         {
             Rectangle rect = new Rectangle(_pos, _size);
             
@@ -161,19 +161,19 @@ namespace Hnefatafl.MenuObjects
             else if (_tabButtonTexture is not null)
             {
                 _tabButtonTexture.Draw(spriteBatch, rect);
-                spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, _text, _textPos, _fontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
             }
             else
             {
                 if (_status == Unselected || _status == Disabled)
                 {
                     _buttonUnselect.Draw(spriteBatch, rect);
-                    spriteBatch.DrawString(_font, _text, new Vector2(_textPos.X, _textPos.Y - (tileSizeY / 4)), _fontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, _text, new Vector2(_textPos.X, _textPos.Y - (tileSizeY / 4)), _fontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
                 }
                 else if (_status == Selected)
                 {
                     _buttonSelect.Draw(spriteBatch, rect);
-                    spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0f, new Vector2(0f, 0f), 1.5f, SpriteEffects.None, 0f);
+                    spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
                 }
             }
 

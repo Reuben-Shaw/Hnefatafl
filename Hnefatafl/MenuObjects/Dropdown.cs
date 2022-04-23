@@ -90,13 +90,13 @@ namespace Hnefatafl.MenuObjects
             }
         }
 
-        public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch)
+        public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, float fontSize)
         {
             Rectangle rect = new Rectangle(_pos, _size);
 
             spriteBatch.Draw(_backColour, rect, Color.White);
             if (_selected != -1)
-                spriteBatch.DrawString(_font, _items[_selected], new Vector2(rect.X + 8, rect.Y), _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                spriteBatch.DrawString(_font, _items[_selected], new Vector2(rect.X + 8, rect.Y), _fontColour, 0, new Vector2(0, 0), fontSize, SpriteEffects.None, 0);
             
             spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y - (_borderVal / 2), rect.Width, _borderVal), Color.White);
             spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y + rect.Height - (_borderVal / 2), rect.Width, _borderVal), Color.White);
@@ -108,7 +108,7 @@ namespace Hnefatafl.MenuObjects
                 {
                     rect.Y += rect.Height;
                     spriteBatch.Draw(_backColour, rect, Color.White);
-                    spriteBatch.DrawString(_font, _items[i], new Vector2(rect.X + 8, rect.Y), _fontColour, 0, new Vector2(0, 0), new Vector2(1f, 1f), SpriteEffects.None, 0);
+                    spriteBatch.DrawString(_font, _items[i], new Vector2(rect.X + 8, rect.Y), _fontColour, 0, new Vector2(0, 0), fontSize, SpriteEffects.None, 0);
 
                     spriteBatch.Draw(_divideColour, new Rectangle(rect.X, rect.Y - (_borderVal / 2), rect.Width, _borderVal), Color.White);
 

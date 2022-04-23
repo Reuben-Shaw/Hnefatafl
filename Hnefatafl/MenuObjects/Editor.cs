@@ -27,9 +27,9 @@ namespace Hnefatafl.MenuObjects
 
         public Editor(GraphicsDeviceManager graphics, ContentManager Content)
         {
-            _selectedButton = new Button(new Point(0, 0), new Point(0, 0), "", graphics, Content);
+            _selectedButton = new Button(new Point(0, 0), new Point(0, 0), 1.5f, "", graphics, Content);
             _selectedTextbox = new TextBox(new Point(0, 0), new Point(0, 0), "");
-            _selectedTextbox.Update(graphics, Content);
+            _selectedTextbox.Update(graphics, Content, 1f);
             _rect = new Rectangle(0, 0, 0, 0);
 
             _editorObject = EditorObject.None;
@@ -159,8 +159,8 @@ namespace Hnefatafl.MenuObjects
 
             if (_editorObject == EditorObject.BackMenuObj) backMenu.Draw(spriteBatch, _rect);
 
-            _selectedButton.Draw(spriteBatch, tileSizeX, tileSizeY, viewPort);
-            _selectedTextbox.Draw(spriteBatch, viewPort);
+            _selectedButton.Draw(spriteBatch, 1.5f, tileSizeX, tileSizeY, viewPort);
+            _selectedTextbox.Draw(spriteBatch, 1f, viewPort);
         }
     }
 }

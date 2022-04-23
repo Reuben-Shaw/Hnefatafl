@@ -478,15 +478,15 @@ namespace Hnefatafl
                 case GameState.GameSetup:
                 {
                     buttonName.Add("start");
-                    buttonName.Add("playerTurnAttacker");
-                    buttonName.Add("playerTurnDefender");
+                    // buttonName.Add("playerTurnAttacker");
+                    // buttonName.Add("playerTurnDefender");
                     buttonName.Add("throneDisabled");
                     buttonName.Add("throneKing");
                     buttonName.Add("throneDefenderKing");
                     buttonName.Add("kingArmed");
                     buttonName.Add("kingUnarmed");
-                    buttonName.Add("sandwichDisabled");
-                    buttonName.Add("sandwichEnabled");
+                    // buttonName.Add("sandwichDisabled");
+                    // buttonName.Add("sandwichEnabled");
                     buttonName.Add("captureDisabled");
                     buttonName.Add("captureCorner");
                     buttonName.Add("captureCornerThrone");
@@ -495,8 +495,6 @@ namespace Hnefatafl
                     buttonName.Add("winCorner");
                     buttonName.Add("winSide");
                     textboxName.Add("port");
-                    buttonSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 6));
-                    startLoc = new Point((buttonSize.X / 8) + 16, 0);
                     break;
                 }
                 case GameState.InGame:
@@ -568,7 +566,7 @@ namespace Hnefatafl
             }
             else if (_gameState == GameState.GameSetup)
             {
-                int[] splitList = new int[] {2, 3, 2, 2, 3, 2, 2};
+                int[] splitList = new int[] {3, 2, 3, 2, 2};
                 int splitTrack = 0, pointer = 0;
 
                 if (fullChange) _tabMenu = new TabMenu(new Point(0, startLoc.Y),
@@ -578,6 +576,9 @@ namespace Hnefatafl
                 
                 if (_menuState == MenuState.GameSetupBasic)
                 {
+                    buttonSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 6));
+                    startLoc = new Point((buttonSize.X / 8) + 16, 0);
+
                     _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
 
                     _gameModeDisplay._dropDownString = "Hnefatafl";
@@ -591,29 +592,36 @@ namespace Hnefatafl
                 else if (_menuState == MenuState.GameSetupAdvanced)
                 {
 
-                    buttonSize = new Point(viewPort.Width / 30 * 2, viewPort.Width / 30 * 2);
-                    startLoc = new Point(viewPort.Width / 16, viewPort.Height / 8);
+                    buttonSize = new Point(viewPort.Width / 30 * 3, viewPort.Width / 30 * 3);
+                    startLoc = new Point(48, (viewPort.Height / 4) - (48 / 2));
                     for (int i = 1; i < buttonName.Count; i++)
                     {
-                        splitTrack++;
-
                         _button.Add(new Button(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), startLoc.Y), buttonSize, buttonName[i], Content.Load<Texture2D>("Texture/OpButton/" + buttonName[i]), _graphics, Content));
                         
+                        splitTrack++;
                         if (splitTrack == splitList[pointer])
                         {
                             pointer++;
                             splitTrack = 0;
                             if (pointer >= 3)
-                                startLoc.X = (buttonSize.X * 4) + ((buttonSize.X / 4) * 4) + viewPort.Width / 16;
+                                startLoc.X = 646 + 48;
                             else
-                                startLoc.X = viewPort.Width / 16;
+                                startLoc.X = 48;
                             
                             if (pointer != 3)
                                 startLoc.Y += buttonSize.Y + (buttonSize.Y / 2);
                             else
-                                startLoc.Y = viewPort.Height / 8;
+                                startLoc.Y = (viewPort.Height / 4) - (48 / 2);
                         }
                     }
+
+                    buttonSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 6));
+                    startLoc = new Point(432, 442);
+
+                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y), textboxSize, "PORT", textboxName[0]));
+                    _textbox[0].Update(_graphics, Content);
+
+                    _button.Add(new Button(new Point(688, 430), new Point(224, 64), fontDefault, backDefault, "START", buttonName[0], _graphics, Content));
                 }
             }
             _logger.Add($"New State {_gameState.ToString()}");
@@ -867,23 +875,21 @@ namespace Hnefatafl
                 }
                 case "start":
                 {
-                    if (_server is null)
+                    BoardTypes type = BoardTypes.Hnefatafl;
+                    switch (_dropdown.GetSelected())
                     {
-                        BoardTypes type = BoardTypes.Hnefatafl;
-                        switch (_dropdown.GetSelected())
-                        {
-                            case "HNEFATAFL": type = BoardTypes.Hnefatafl; break;
-                            case "TABLUT": type = BoardTypes.Tablut; break;
-                            case "TABLUT CENTRE": type = BoardTypes.TablutCentre; break;
-                            case "BRANDUBH": type = BoardTypes.Brandubh; break;
-                            case "ARD RI": type = BoardTypes.ArdRi; break;
-                        }
-                        _player._board.CreateBoard(type);
-                        _server = new Server();
-                        _server.StartServer(14242, _player._board._serverOp, type);
-                        _player.EstablishConnection("localhost", 14242);
-                        _gameState = GameState.InGame;
+                        case "HNEFATAFL": type = BoardTypes.Hnefatafl; break;
+                        case "TABLUT": type = BoardTypes.Tablut; break;
+                        case "TABLUT CENTRE": type = BoardTypes.TablutCentre; break;
+                        case "BRANDUBH": type = BoardTypes.Brandubh; break;
+                        case "ARD RI": type = BoardTypes.ArdRi; break;
                     }
+                    _player._board.CreateBoard(type);
+                    _server = new Server();
+                    _server.StartServer(14242, _player._board._serverOp, type);
+                    _player.EstablishConnection("localhost", 14242);
+                    _gameState = GameState.InGame;
+                    
                     break;
                 }
                 case "BASIC":

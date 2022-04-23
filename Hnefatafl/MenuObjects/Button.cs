@@ -9,7 +9,6 @@ namespace Hnefatafl.MenuObjects
 {
     sealed class Button : MenuObject
     {
-        private Texture2D _selectBackColour { get; set; }
         private Color _selectFontColour { get; set; }
         private Texture2D _image { get; set; }
 
@@ -45,7 +44,6 @@ namespace Hnefatafl.MenuObjects
             _fontColour = button._fontColour;
             _selectFontColour = button._selectFontColour;
             _backColour = button._backColour;
-            _selectBackColour = button._selectBackColour;
             _textPos = button._textPos;
             _image = button._image;
             _disabledColour = button._disabledColour;
@@ -61,6 +59,20 @@ namespace Hnefatafl.MenuObjects
             _status = Unselected;
             _name = name;
             _text = name;
+            _fontColour = Color.Black;
+            _selectFontColour = Color.Blue;
+            _textPos = new Vector2(-1, -1);
+            SetGraphics(graphics, null);
+        }
+
+        public Button(Point position, Point size, string name, Texture2D image, GraphicsDeviceManager graphics, ContentManager content)
+        {
+            Content = new ContentManager(content.ServiceProvider, content.RootDirectory);
+            _pos = position;
+            _size = size;
+            _status = Unselected;
+            _name = name;
+            _image = image;
             _fontColour = Color.Black;
             _selectFontColour = Color.Blue;
             _textPos = new Vector2(-1, -1);
@@ -106,20 +118,22 @@ namespace Hnefatafl.MenuObjects
 
         public void SetGraphics(GraphicsDeviceManager graphics, Color[] backColours)
         {
-            Content.Dispose();
-            Vector2 fontSize = _font.MeasureString(_text);
-            fontSize.X *= 1.5f;
-            fontSize.Y *= 1.5f;
-            if (_tabButtonTexture is null)
-            {
-                _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 2f)) + _pos.Y);
+            if (_image is null)
+            {    
+                Content.Dispose();
+                Vector2 fontSize = _font.MeasureString(_text);
+                fontSize.X *= 1.5f;
+                fontSize.Y *= 1.5f;
+                if (_tabButtonTexture is null)
+                {
+                    _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 2f)) + _pos.Y);
+                }
+                else
+                {
+                    _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 1.5f)) + _pos.Y);
+                }
+                //Console.WriteLine($"{_textPos}, {_size}, {fontSize}");
             }
-            else
-            {
-                _textPos = new Vector2((int)((float)(_size.X / 2f) - (fontSize.X / 2f)) + _pos.X, (int)((float)(_size.Y / 2f) - (fontSize.Y / 1.5f)) + _pos.Y);
-            }
-            //Console.WriteLine($"{_textPos}, {_size}, {fontSize}");
-
             _buttonUnselect = new TextureDivide(graphics, Content, "Texture/Menu/ButtonDivideUnselect", 32, 32);
             _buttonSelect = new TextureDivide(graphics, Content, "Texture/Menu/ButtonDivideSelect", 32, 32);
             if (backColours == null) 
@@ -141,7 +155,7 @@ namespace Hnefatafl.MenuObjects
             
             if (_image is not null)
             {
-                spriteBatch.Draw(_selectBackColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
+                //spriteBatch.Draw(_selectBackColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
                 spriteBatch.Draw(_image, rect, Color.White);
             }
             else if (_tabButtonTexture is not null)

@@ -166,7 +166,8 @@ namespace Hnefatafl
                     }
                     else if (msgDiv[0] == GAMEOPTIONS.ToString())
                     {
-                        _board._serverOp = OptionsXmlDeserialise(msg);
+                        _board.CreateBoard((BoardTypes)Enum.Parse(typeof(BoardTypes), msgDiv[2]));
+                        _board._serverOp = OptionsXmlDeserialise(msgDiv[1]);
                         
                         if (_side is null && _board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
                         {
@@ -205,8 +206,7 @@ namespace Hnefatafl
         private ServerOptions OptionsXmlDeserialise(string xml)
         {
             XmlSerializer serializer = new XmlSerializer(typeof(ServerOptions));
-
-            using (TextReader reader = new StringReader(xml.Split(',')[1]))
+            using (TextReader reader = new StringReader(xml))
             {
                 return (ServerOptions) serializer.Deserialize(reader);
             }

@@ -21,24 +21,25 @@ namespace Hnefatafl.MenuObjects
             set
             {
                 m_items = value;
-                m_items.Sort();
+                //m_items.Sort();
             }
         }
         private int _selected;
         private Texture2D _divideColour;
         private const int _borderVal = 6;
 
-        public Dropdown(Point position, Point size, string name)
+        public Dropdown(Point position, Point size, string name, int selected, List<string> indexes, GraphicsDeviceManager graphics, ContentManager Content)
         {
             _pos = position;
             _size = size;
             _name = name;
             _status = Unselected;
-            _selected = -1;
-            _items = new List<string>();
+            _selected = selected;
+            _items = indexes;
+            LoadContent(graphics, Content);
         }
 
-        public void LoadContent(ContentManager Content, GraphicsDeviceManager graphics)
+        public void LoadContent(GraphicsDeviceManager graphics, ContentManager Content)
         {
             _font = Content.Load<SpriteFont>("Texture/Font/PixelFont");
 

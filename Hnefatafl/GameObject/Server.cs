@@ -16,10 +16,13 @@ namespace Hnefatafl
         private NetServer _server;
         private List<NetPeer> _clients;
         ServerOptions _serverOp;
+        BoardTypes _boardType;
 
-        public void StartServer(int port, ServerOptions serverOp)
+        public void StartServer(int port, ServerOptions serverOp, BoardTypes boardType)
         {
             _serverOp = serverOp;
+            _boardType = boardType;
+
             NetPeerConfiguration config = new NetPeerConfiguration("Hnefatafl") { Port = port };
             config.EnableMessageType(NetIncomingMessageType.DiscoveryRequest);
             _server = new NetServer(config);
@@ -88,7 +91,7 @@ namespace Hnefatafl
                             string serialMsg = OptionXmlSerialise(_serverOp);
 
                             NetOutgoingMessage outMsg = _server.CreateMessage();
-                            outMsg.Write(Player.InstructType.GAMEOPTIONS.ToString() + "," + serialMsg);
+                            outMsg.Write($"{Player.InstructType.GAMEOPTIONS.ToString()},{serialMsg},{_boardType}");
                             _server.SendMessage(outMsg, _server.Connections, NetDeliveryMethod.ReliableOrdered, 0);
 
                             Console.WriteLine("{0} has connected.", message.SenderConnection.Peer.Configuration.LocalAddress);

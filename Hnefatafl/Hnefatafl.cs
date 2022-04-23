@@ -35,6 +35,19 @@ namespace Hnefatafl
         private Dropdown _dropdown;
         private ColourPicker _picker;
         public enum MenuState { GameSetupBasic, GameSetupAdvanced };
+        private MenuState m_menuState;
+        private MenuState _menuState
+        {
+            get
+            {
+                return m_menuState;
+            }
+            set
+            {
+                m_menuState = value;
+                TransferState(false);
+            }
+        }
         private TabMenu _tabMenu;
         private GameModeDisplay _gameModeDisplay;
         private CheckBox _checkBox;
@@ -66,7 +79,7 @@ namespace Hnefatafl
             set
             {
                 m_gameState = value;
-                TransferState();
+                TransferState(true);
             }
         }
 
@@ -377,14 +390,14 @@ namespace Hnefatafl
 
         private Color[] fontDefault = new Color[] { new Color(240, 160, 0), new Color(165, 110, 0) };
         private Color[] backDefault = new Color[] { new Color(66, 41, 33), new Color(99, 55, 41) };
-        private void TransferState()
+        private void TransferState(bool fullChange)
         {
             _logger.Add("Transfering State");
             
             _button.Clear();
             _textbox.Clear();
             _dropdown = null;
-            _tabMenu = null;
+            if (fullChange) _tabMenu = null;            
             _checkBox = null;
             _cursor._state = Cursor.CursorState.Pointer;
             _picker._visible = false;
@@ -464,27 +477,24 @@ namespace Hnefatafl
                 }
                 case GameState.GameSetup:
                 {
-                    // buttonName.Add("playerTurnAttacker");
-                    // buttonName.Add("playerTurnDefender");
-                    // buttonName.Add("throneDisabled");
-                    // buttonName.Add("throneKing");
-                    // buttonName.Add("throneDefenderKing");
-                    // buttonName.Add("kingArmed");
-                    // buttonName.Add("kingUnarmed");
-                    // buttonName.Add("sandwichDisabled");
-                    // buttonName.Add("sandwichEnabled");
-                    // buttonName.Add("captureDisabled");
-                    // buttonName.Add("captureCorner");
-                    // buttonName.Add("captureCornerThrone");
-                    // buttonName.Add("kingCaptureJustThree");
-                    // buttonName.Add("kingCaptureAllDefendersThree");
-                    // buttonName.Add("winCorner");
-                    // buttonName.Add("winSide");
-                    // buttonName.Add("host");
-                    // textboxName.Add("port");
-                    // buttonSize = new Point(viewPorts.Width / 30 * 2, viewPorts.Width / 30 * 2);
-                    // startLoc = new Point(viewPorts.Width / 16, viewPorts.Height / 8);
                     buttonName.Add("start");
+                    buttonName.Add("playerTurnAttacker");
+                    buttonName.Add("playerTurnDefender");
+                    buttonName.Add("throneDisabled");
+                    buttonName.Add("throneKing");
+                    buttonName.Add("throneDefenderKing");
+                    buttonName.Add("kingArmed");
+                    buttonName.Add("kingUnarmed");
+                    buttonName.Add("sandwichDisabled");
+                    buttonName.Add("sandwichEnabled");
+                    buttonName.Add("captureDisabled");
+                    buttonName.Add("captureCorner");
+                    buttonName.Add("captureCornerThrone");
+                    buttonName.Add("kingCaptureJustThree");
+                    buttonName.Add("kingCaptureAllDefendersThree");
+                    buttonName.Add("winCorner");
+                    buttonName.Add("winSide");
+                    textboxName.Add("port");
                     buttonSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 6));
                     startLoc = new Point((buttonSize.X / 8) + 16, 0);
                     break;
@@ -561,51 +571,50 @@ namespace Hnefatafl
                 int[] splitList = new int[] {2, 3, 2, 2, 3, 2, 2};
                 int splitTrack = 0, pointer = 0;
 
-                for (int i = 0; i < buttonName.Count; i++)
+                if (fullChange) _tabMenu = new TabMenu(new Point(0, startLoc.Y),
+                                new Point(GraphicsDevice.Viewport.Bounds.Width, GraphicsDevice.Viewport.Bounds.Height),
+                                _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds),
+                                xml, _gameState, new string[] { "BASIC", "ADVANCED" }, _graphics, Content);
+                
+                if (_menuState == MenuState.GameSetupBasic)
                 {
-                    // splitTrack++;
+                    _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
 
-                    // _button.Add(new Button(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), startLoc.Y), buttonSize, Content.Load<Texture2D>("Texture/OpButton/" + buttonName[i]), buttonName[i]));
-                    // _button[i].Update(_graphics, Content);
-                    
-                    // if (splitTrack == splitList[pointer])
-                    // {
-                    //     pointer++;
-                    //     splitTrack = 0;
-                    //     if (pointer >= 3)
-                    //         startLoc.X = (buttonSize.X * 4) + ((buttonSize.X / 4) * 4) + viewPorts.Width / 16;
-                    //     else
-                    //         startLoc.X = viewPorts.Width / 16;
-                        
-                    //     if (pointer != 3)
-                    //         startLoc.Y += buttonSize.Y + (buttonSize.Y / 2);
-                    //     else
-                    //         startLoc.Y = viewPorts.Height / 8;
-                    // }
-                   
-                    //_button.Add(new Button(new Point(startLoc.X + (buttonSize.X * i) + ((buttonSize.X / 8) * i), startLoc.Y), buttonSize, _menuBack, NodeText(xml, buttonName[i]), buttonName[i], _graphics, Content));
+                    _gameModeDisplay._dropDownString = "Hnefatafl";
+
+                    _checkBox = new CheckBox(new Point(350, 381), new Point(48, 48), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
+
+                    _dropdown = new Dropdown(new Point(48, (viewPort.Height / 4) - (48 / 2)), new Point(224, 48), "dropdown", 0, new List<string> {"HNEFATAFL", "TABLUT", "TABLUT CENTRE", "BRANDBUH", "ARD RI"}, _graphics, Content);
+
+                    _button.Add(new Button(new Point(48, 430), new Point(224, 64), fontDefault, backDefault, "START", buttonName[0], _graphics, Content));
                 }
+                else if (_menuState == MenuState.GameSetupAdvanced)
+                {
 
-                // buttonSize = new Point(viewPorts.Width / 5, (int)((float)viewPorts.Height / 5.5));
-                // _button.Add(new Button(new Point(viewPorts.Width / 2 + viewPorts.Width / 4, viewPorts.Height / 2 + viewPorts.Height / 4), buttonSize, NodeText(xml, buttonName[buttonName.Count - 1]), buttonName[buttonName.Count - 1]));
-                // _button[_button.Count - 1].Update(_graphics, Content);
-                _tabMenu = new TabMenu(new Point(0, startLoc.Y),
-                                       new Point(GraphicsDevice.Viewport.Bounds.Width, GraphicsDevice.Viewport.Bounds.Height),
-                                       _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds),
-                                       xml, _gameState, new string[] { "BASIC", "ADVANCED" }, _graphics, Content);
+                    buttonSize = new Point(viewPort.Width / 30 * 2, viewPort.Width / 30 * 2);
+                    startLoc = new Point(viewPort.Width / 16, viewPort.Height / 8);
+                    for (int i = 1; i < buttonName.Count; i++)
+                    {
+                        splitTrack++;
 
-                _gameModeDisplay = new GameModeDisplay(new Point(660, 100), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
-
-                _gameModeDisplay._dropDownString = "Hnefatafl";
-
-                _checkBox = new CheckBox(new Point(350, 381), new Point(48, 48), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
-
-                _dropdown = new Dropdown(new Point(48, (viewPort.Height / 4) - (48 / 2)), new Point(224, 48), "dropdown");
-                _dropdown.LoadContent(Content, _graphics);
-
-                _dropdown._items.Add("HNEFATAFL"); _dropdown._items.Add("TABLUT"); _dropdown._items.Add("TABLUT CENTRE"); _dropdown._items.Add("BRANDBUH"); _dropdown._items.Add("ARD RI");
-            
-                _button.Add(new Button(new Point(48, 430), new Point(224, 64), fontDefault, backDefault, "START", buttonName[0], _graphics, Content));
+                        _button.Add(new Button(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), startLoc.Y), buttonSize, buttonName[i], Content.Load<Texture2D>("Texture/OpButton/" + buttonName[i]), _graphics, Content));
+                        
+                        if (splitTrack == splitList[pointer])
+                        {
+                            pointer++;
+                            splitTrack = 0;
+                            if (pointer >= 3)
+                                startLoc.X = (buttonSize.X * 4) + ((buttonSize.X / 4) * 4) + viewPort.Width / 16;
+                            else
+                                startLoc.X = viewPort.Width / 16;
+                            
+                            if (pointer != 3)
+                                startLoc.Y += buttonSize.Y + (buttonSize.Y / 2);
+                            else
+                                startLoc.Y = viewPort.Height / 8;
+                        }
+                    }
+                }
             }
             _logger.Add($"New State {_gameState.ToString()}");
         }
@@ -793,6 +802,7 @@ namespace Hnefatafl
                 {
                     _player._board.CreateBoard(BoardTypes.Hnefatafl);
                     _gameState = GameState.GameSetup;
+                    _menuState = MenuState.GameSetupBasic;
                     break;
                 }
                 case "connect":
@@ -828,12 +838,10 @@ namespace Hnefatafl
                     //Console.WriteLine($"Valid IP Address: {IsValidIp(_textbox[0]._text)}\nValid Port: {IsValidPort(_textbox[1]._text)}");
                     if (IsValidIp(_textbox[0]._text) && IsValidPort(_textbox[1]._text)) //Textbox[0] is IP, Textbox[1] is port
                     {
-                        _player._board.CreateBoard(BoardTypes.Hnefatafl);
                         _player.EstablishConnection(_textbox[0]._text, Convert.ToInt32(_textbox[1]._text));
                     }
                     else if (_textbox[0]._text == "" && _textbox[1]._text == "")
                     {
-                        _player._board.CreateBoard(BoardTypes.Hnefatafl);
                         _player.EstablishConnection("localhost", Convert.ToInt32("14242"));
                     }
                     break;
@@ -849,7 +857,7 @@ namespace Hnefatafl
         private void GameSetup(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
             string selected = ButtonCheck(currentState, mouseLoc);
-
+            
             switch (selected)
             {
                 case "back":
@@ -857,14 +865,35 @@ namespace Hnefatafl
                     _gameState = GameState.MultiplayerMenu;
                     break;
                 }
-                case "host":
+                case "start":
                 {
                     if (_server is null)
                     {
+                        BoardTypes type = BoardTypes.Hnefatafl;
+                        switch (_dropdown.GetSelected())
+                        {
+                            case "HNEFATAFL": type = BoardTypes.Hnefatafl; break;
+                            case "TABLUT": type = BoardTypes.Tablut; break;
+                            case "TABLUT CENTRE": type = BoardTypes.TablutCentre; break;
+                            case "BRANDUBH": type = BoardTypes.Brandubh; break;
+                            case "ARD RI": type = BoardTypes.ArdRi; break;
+                        }
+                        _player._board.CreateBoard(type);
                         _server = new Server();
-                        _server.StartServer(14242, _player._board._serverOp);
+                        _server.StartServer(14242, _player._board._serverOp, type);
                         _player.EstablishConnection("localhost", 14242);
+                        _gameState = GameState.InGame;
                     }
+                    break;
+                }
+                case "BASIC":
+                {
+                    _menuState = MenuState.GameSetupBasic;
+                    break;
+                }
+                case "ADVANCED":
+                {
+                    _menuState = MenuState.GameSetupAdvanced;
                     break;
                 }
                 case "playerTurnAttacker":
@@ -1199,7 +1228,7 @@ namespace Hnefatafl
                     }
                 }
 
-                if (_tabMenu is not null) text = _tabMenu.ButtonCheck(currentState, previousMouse, mouseLoc, _keyboardSelect);
+                if (_tabMenu is not null) { string tabText = _tabMenu.ButtonCheck(currentState, previousMouse, mouseLoc, _keyboardSelect); if (!string.IsNullOrEmpty(tabText)) { text = tabText; }}
 
                 foreach (TextBox textbox in _textbox)
                 {
@@ -1281,7 +1310,7 @@ namespace Hnefatafl
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.LightGray);
+            GraphicsDevice.Clear(new Color(110, 81, 57));
             
             _spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.PointClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
 
@@ -1291,8 +1320,11 @@ namespace Hnefatafl
             if (_gameState == GameState.GameSetup)
             {
                 _tabMenu.Draw(_spriteBatch, viewPort);
-                _gameModeDisplay.Draw(_spriteBatch, viewPort);
-                _checkBox.Draw(_spriteBatch);
+                if (_menuState == MenuState.GameSetupBasic)
+                {
+                    _gameModeDisplay.Draw(_spriteBatch, viewPort);
+                    _checkBox.Draw(_spriteBatch);
+                }
             }
 
             if (_gameState == GameState.InGame || _gameState == GameState.EscMenu)

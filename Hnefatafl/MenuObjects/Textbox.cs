@@ -104,7 +104,7 @@ namespace Hnefatafl.MenuObjects
             fontSize = new Vector2(fontSize.X * fontMod, fontSize.Y * fontMod);
             //fontSize = new Vector2(fontSize.X / 2, fontSize.Y / 2);
             _textPos = new Vector2((12 * fontMod) + _pos.X, (int)((_size.Y - fontSize.Y) / 2) + _pos.Y);
-            CreateTextures(graphics, Color.Black, Color.White);
+            CreateTextures(graphics, new Color(66, 41, 33), new Color(255, 230, 206));
         }
 
         private void CreateTextures(GraphicsDeviceManager graphics, Color borderColour, Color backColour)

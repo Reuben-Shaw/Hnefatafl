@@ -68,7 +68,7 @@ namespace Hnefatafl
         private TextureDivide _menuBack;
         private UserOptions _userOptions;
 
-        public enum GameState { EditMenu, MainMenu, OptionsMenu, ColourPickerMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
+        public enum GameState { MainMenu, OptionsMenu, ColourPickerMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
         private GameState m_gameState;
         private GameState _gameState
         {
@@ -84,10 +84,9 @@ namespace Hnefatafl
         }
 
         private enum Langauge { English }
-        private Langauge _language = Langauge.English;
+        private static Langauge _language = Langauge.English;
 
         private Logger _logger = new Logger();
-        private Editor _editor;
 
         private float _mainText, _subText;
 
@@ -104,8 +103,6 @@ namespace Hnefatafl
             _audioManager = new BoardAudio(Content);
 
             _logger.Add("Beginning Initialisation");
-            
-            _editor = new Editor(_graphics, Content);
 
             _graphics.PreferredBackBufferWidth = 960;
             _graphics.PreferredBackBufferHeight = 540;
@@ -316,14 +313,6 @@ namespace Hnefatafl
 
                 if (currentKeyboardState.IsKeyDown(Keys.Tab)) _selectedMenuObject++;
                 if (currentKeyboardState.IsKeyDown(Keys.Enter)) _keyboardSelect = true;
-
-
-                if (currentKeyboardState.IsKeyDown(Keys.R)) _gameState = GameState.EditMenu;
-            }
-
-            if (previousKeyboard != currentKeyboardState || currentKeyboardState.IsKeyDown(Keys.Up) || currentKeyboardState.IsKeyDown(Keys.Down) || currentKeyboardState.IsKeyDown(Keys.Left) || currentKeyboardState.IsKeyDown(Keys.Right))
-            {
-                if (_gameState == GameState.EditMenu) _editor.KeyPress(currentKeyboardState, currentMouseState, GraphicsDevice.Viewport);
             }
 
             if (_gameState == GameState.InGame || _gameState == GameState.GameSetup)
@@ -331,13 +320,22 @@ namespace Hnefatafl
                 _player._board._turnDisplay.Transition((float)gameTime.ElapsedGameTime.TotalSeconds);
             }
 
-            _editor.AddToTime(gameTime.ElapsedGameTime.TotalSeconds);
-            if (_editor._readyToReceive) ReceiveEditor();
-            
-
             if (_dropdown is not null && new Rectangle(_dropdown._pos, _dropdown._size).Contains(currentMouseState.Position) && currentMouseState.LeftButton == ButtonState.Pressed) _dropdown._status = Selected;
-            if (_dropdown is not null && _dropdown._status == Selected && currentMouseState.LeftButton == ButtonState.Pressed) _dropdown.ClickEvent(currentMouseState.Position);
-
+            if (_dropdown is not null && _dropdown._status == Selected && currentMouseState.LeftButton == ButtonState.Pressed) 
+            {
+                if (_gameModeDisplay is not null & _dropdown.ClickEvent(currentMouseState.Position))
+                {
+                    switch (_dropdown.GetSelected())
+                    {
+                        case "HNEFATAFL": _gameModeDisplay._dropDownType = BoardTypes.Hnefatafl; break;
+                        case "TAWLBWRDD": _gameModeDisplay._dropDownType = BoardTypes.Tawlbwrdd; break;
+                        case "TABLUT": _gameModeDisplay._dropDownType = BoardTypes.Tablut; break;
+                        case "BRANDUBH": _gameModeDisplay._dropDownType = BoardTypes.Brandubh; break;
+                        case "ARD RI": _gameModeDisplay._dropDownType = BoardTypes.ArdRi; break;
+                    }
+                    _gameModeDisplay.ChangeBoard(Content);
+                }
+            }
 
             if (_picker._visible) PickerCheck(currentMouseState);
             
@@ -346,12 +344,6 @@ namespace Hnefatafl
             previousMouse = currentMouseState;
             previousKeyboard = currentKeyboardState;
             base.Update(gameTime);
-        }
-
-        private void ReceiveEditor()
-        {
-            if (_editor._editorObject == EditorObject.ButtonObj) _button.Add(new Button(_editor.ReceiveButton()));
-            else if (_editor._editorObject == EditorObject.TextboxObj) _textbox.Add(new TextBox(_editor.ReceiveTextbox()));
         }
 
         private void TransferMenuObject()
@@ -401,16 +393,14 @@ namespace Hnefatafl
             
             _button.Clear();
             _textbox.Clear();
-            _dropdown = null;
-            if (fullChange) _tabMenu = null;            
-            _checkBox = null;
+            if (fullChange) { _dropdown = null; _tabMenu = null; _checkBox = null;  }
             _cursor._state = Cursor.CursorState.Pointer;
             _picker._visible = false;
             _selectedMenuObject = -1;
 
             Rectangle viewPort = GraphicsDevice.Viewport.Bounds;
             Point buttonSize = new Point((int)((float)viewPort.Width / 3), (int)((float)viewPort.Height / 5.5));
-            Point textboxSize = new Point((int)((float)viewPort.Width / 4), (int)((float)viewPort.Height / 12));
+            Point textboxSize = new Point((int)((viewPort.Width / 30 * 6) + ((viewPort.Width / 30 * 3) / 4)), (int)((float)viewPort.Height / 12));
             Point labelSize = new Point(256, 48);
 
             List<string> buttonName = new List<string>();
@@ -476,6 +466,7 @@ namespace Hnefatafl
                     textboxName.Add("port");
                     buttonName.Add("connect");
                     buttonName.Add("back");
+                    textboxSize = new Point((int)((viewPort.Width / 15 * 6) + ((viewPort.Width / 30 * 3) / 4)), (int)((float)viewPort.Height / 12));
                     buttonSize = new Point(viewPort.Width / 5, (int)((float)viewPort.Height / 8));
                     startLoc = new Point(viewPort.Width / 2 - textboxSize.X / 2, textboxSize.Y * 2);
                     break;
@@ -516,7 +507,7 @@ namespace Hnefatafl
                 }
             }
             
-            XmlElement xml = MenuXmlLoad();
+            XmlElement xml = MenuXmlLoad("Menu");
 
             if (_gameState == GameState.MainMenu || _gameState == GameState.MultiplayerMenu || _gameState == GameState.InGame)
             {
@@ -581,14 +572,18 @@ namespace Hnefatafl
                 
                 if (_menuState == MenuState.GameSetupBasic)
                 {
-                    _gameModeDisplay = new GameModeDisplay(new Point(viewPort.Width - (int)(viewPort.Width / 3.2f), viewPort.Height / 5), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
+                    if (fullChange) 
+                    {
+                        _gameModeDisplay = new GameModeDisplay(new Point(viewPort.Width - (int)(viewPort.Width / 3.2f), viewPort.Height / 5), new Point(_player._board.TileSizeY(viewPort) * 8, _player._board.TileSizeY(viewPort) * 8), _graphics, Content);
 
-                    _gameModeDisplay._dropDownString = "Hnefatafl";
+                        _gameModeDisplay._dropDownType = BoardTypes.Hnefatafl;
 
-                    _checkBox = new CheckBox(new Point((int)(viewPort.Width / 3.2f) + (viewPort.Width / 20), (viewPort.Height / 5) + (_player._board.TileSizeY(viewPort) * 8) + (viewPort.Height / 60)), new Point(viewPort.Width / 20, viewPort.Width / 20), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
+                        _checkBox = new CheckBox(new Point((int)(viewPort.Width / 3.2f) + (viewPort.Width / 20), (viewPort.Height / 5) + (_player._board.TileSizeY(viewPort) * 8) + (viewPort.Height / 60)), new Point(viewPort.Width / 20, viewPort.Width / 20), new List<string>() { "Attacker", "Defender" }, _graphics, Content);
 
-                    _dropdown = new Dropdown(new Point(viewPort.Width / 20, (viewPort.Height / 4) - ((viewPort.Width / 20) / 2)), new Point((viewPort.Width / 4), (viewPort.Width / 20)), "dropdown", 0, new List<string> {"HNEFATAFL", "TABLUT", "TABLUT CENTRE", "BRANDBUH", "ARD RI"}, _graphics, Content);
+                        _dropdown = new Dropdown(new Point(viewPort.Width / 20, (viewPort.Height / 4) - ((viewPort.Width / 20) / 2)), new Point((viewPort.Width / 4), (viewPort.Width / 20)), "dropdown", 0, new List<string> {"HNEFATAFL", "TAWLBWRDD", "TABLUT", "BRANDUBH", "ARD RI"}, _graphics, Content);
+                    }
 
+                    
                     _button.Add(new Button(new Point(viewPort.Width / 20, viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
                 else if (_menuState == MenuState.GameSetupAdvanced)
@@ -617,10 +612,10 @@ namespace Hnefatafl
                         }
                     }
 
-                    _textbox.Add(new TextBox(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (int)(viewPort.Width / 20 * 1.5f) - textboxSize.X, viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
+                    _textbox.Add(new TextBox(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
                     _textbox[0].Update(_graphics, Content, _mainText);
 
-                    _button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
+                    //_button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
             }
             _logger.Add($"New State {_gameState.ToString()}");
@@ -638,10 +633,10 @@ namespace Hnefatafl
             }
         }
 
-        private XmlElement MenuXmlLoad()
+        public static XmlElement MenuXmlLoad(string file)
         {
             XmlDocument doc = new XmlDocument();
-            doc.Load(AppDomain.CurrentDomain.BaseDirectory + "Content/Language/" + _language.ToString() + "/Menu.xml");
+            doc.Load(AppDomain.CurrentDomain.BaseDirectory + "Content/Language/" + _language.ToString() + "/" + file + ".xml");
             return doc.DocumentElement;
         }
 
@@ -880,14 +875,27 @@ namespace Hnefatafl
                         switch (_dropdown.GetSelected())
                         {
                             case "HNEFATAFL": type = BoardTypes.Hnefatafl; break;
+                            case "TAWLBWRDD": type = BoardTypes.Tawlbwrdd; break;
                             case "TABLUT": type = BoardTypes.Tablut; break;
-                            case "TABLUT CENTRE": type = BoardTypes.TablutCentre; break;
                             case "BRANDUBH": type = BoardTypes.Brandubh; break;
                             case "ARD RI": type = BoardTypes.ArdRi; break;
                         }
                     }
                     
+                    ServerOptions tempHold = _player._board._serverOp;
                     _player._board.CreateBoard(type);
+                    _player._board._serverOp = tempHold;
+
+                    if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
+                    {
+                        _player._side = SideType.Attackers;
+                    }
+                    else
+                    {
+                        _player._currentTurn = false;
+                        _player._side = SideType.Defenders;
+                    }
+
                     _server = new Server();
                     _server.StartServer(14242, _player._board._serverOp, type);
                     _player.EstablishConnection("localhost", 14242);
@@ -905,30 +913,33 @@ namespace Hnefatafl
                     _menuState = MenuState.GameSetupAdvanced;
                     break;
                 }
-                case "playerTurnAttacker":
-                {
-                    _player._board._serverOp._playerTurn = PlayerTurn.Attacker;
-                    _button[3]._status = Disabled;
-                    break;
-                }
-                case "playerTurnDefender":
-                {
-                    _player._board._serverOp._playerTurn = PlayerTurn.Defender;
-                    break;
-                }
+                // case "playerTurnAttacker":
+                // {
+                //     _player._board._serverOp._playerTurn = PlayerTurn.Attacker;
+                //     _button[3]._status = Disabled;
+                //     break;
+                // }
+                // case "playerTurnDefender":
+                // {
+                //     _player._board._serverOp._playerTurn = PlayerTurn.Defender;
+                //     break;
+                // }
                 case "throneDisabled":
                 {
                     _player._board._serverOp._throneOp = ThroneOp.Disabled;
+                    _gameModeDisplay._visibleArr[0] = false;
                     break;
                 }
                 case "throneKing":
                 {
                     _player._board._serverOp._throneOp = ThroneOp.King;
+                    _gameModeDisplay._visibleArr[0] = true;
                     break;
                 }
                 case "throneDefenderKing":
                 {
                     _player._board._serverOp._throneOp = ThroneOp.DefenderKing;
+                    _gameModeDisplay._visibleArr[0] = true;
                     break;
                 }
                 case "kingArmed":
@@ -941,29 +952,32 @@ namespace Hnefatafl
                     _player._board._serverOp._kingOp = KingOp.Unarmed;
                     break;
                 }
-                case "sandwichDisabled":
-                {
-                    _player._board._serverOp._sandwichMovementOp = SandwichMovementOp.Disabled;
-                    break;
-                }
-                case "sandwichEnabled":
-                {
-                    _player._board._serverOp._sandwichMovementOp = SandwichMovementOp.Enabled;
-                    break;
-                }
+                // case "sandwichDisabled":
+                // {
+                //     _player._board._serverOp._sandwichMovementOp = SandwichMovementOp.Disabled;
+                //     break;
+                // }
+                // case "sandwichEnabled":
+                // {
+                //     _player._board._serverOp._sandwichMovementOp = SandwichMovementOp.Enabled;
+                //     break;
+                // }
                 case "captureDisabled":
                 {
                     _player._board._serverOp._captureOp = CaptureOp.Disabled;
+                    if (_player._board._serverOp._winOp == WinOp.Side) _gameModeDisplay._visibleArr[1] = false;
                     break;
                 }
                 case "captureCorner":
                 {
                     _player._board._serverOp._captureOp = CaptureOp.Corner;
+                    _gameModeDisplay._visibleArr[1] = true;
                     break;
                 }
                 case "captureCornerThrone":
                 {
                     _player._board._serverOp._captureOp = CaptureOp.CornerThrone;
+                    _gameModeDisplay._visibleArr[1] = true;
                     break;
                 }
                 case "kingCaptureJustThree":
@@ -979,11 +993,13 @@ namespace Hnefatafl
                 case "winCorner":
                 {
                     _player._board._serverOp._winOp = WinOp.Corner;
+                    _gameModeDisplay._visibleArr[1] = true;
                     break;
                 }
                 case "winSide":
                 {
                     _player._board._serverOp._winOp = WinOp.Side;
+                    if (_player._board._serverOp._captureOp == CaptureOp.Disabled) _gameModeDisplay._visibleArr[1] = false;
                     break;
                 }
             }
@@ -1331,8 +1347,12 @@ namespace Hnefatafl
                 _tabMenu.Draw(_spriteBatch, _mainText, viewPort);
                 if (_menuState == MenuState.GameSetupBasic)
                 {
-                    _gameModeDisplay.Draw(_spriteBatch, viewPort);
+                    _gameModeDisplay.Draw(_spriteBatch, _subText, viewPort);
                     _checkBox.Draw(_spriteBatch, _mainText);
+                }
+                else if (_menuState == MenuState.GameSetupAdvanced)
+                {
+                    _spriteBatch.Draw(Content.Load<Texture2D>("Texture/BoardDisplay/11_Base"), new Rectangle(new Point((int)(GraphicsDevice.Viewport.Width / 2) - (512 / 2) + 128, (_gameModeDisplay._size.Y / 2) + (512 / 4) - 32), new Point(512, 512)), Color.White);
                 }
             }
 
@@ -1360,7 +1380,6 @@ namespace Hnefatafl
                 _menuBack.Draw(_spriteBatch, 
                 new Rectangle(_player._board.TileSizeX(viewPort) / 2, _player._board.TileSizeY(viewPort) / 2, viewPort.Width - _player._board.TileSizeX(viewPort), viewPort.Height - _player._board.TileSizeY(viewPort)));
             }
-            else if (_gameState == GameState.EditMenu) _editor.Draw(_spriteBatch, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), _menuBack, viewPort);
 
             if (_picker._visible)
             {
@@ -1382,7 +1401,7 @@ namespace Hnefatafl
                 label.Draw(_spriteBatch, viewPort);
             }
 
-            if (_dropdown is not null) _dropdown.Draw(_graphics, _spriteBatch, _subText);
+            if (_dropdown is not null && _menuState != Hnefatafl.MenuState.GameSetupAdvanced) _dropdown.Draw(_graphics, _spriteBatch, _subText);
 
             //_spriteBatch.Draw(_boardHighlightAtlas.GetTexture(DivideLink.UpLeft), new Rectangle(10, 10, 32, 32), Color.White);
 
@@ -1391,5 +1410,15 @@ namespace Hnefatafl
             _spriteBatch.End();
             base.Draw(gameTime);
         }
+
+        public static int ToInt(BoardTypes value) => value switch
+        {
+            BoardTypes.Hnefatafl => 11,
+            BoardTypes.Tawlbwrdd => 11,
+            BoardTypes.Tablut => 9,
+            BoardTypes.Brandubh => 7,
+            BoardTypes.ArdRi => 7,
+            _ => 11
+        };
     }
 }

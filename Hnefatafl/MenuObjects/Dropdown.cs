@@ -56,7 +56,7 @@ namespace Hnefatafl.MenuObjects
             return _items[_selected];
         }
 
-        public void ClickEvent(Point mouse)
+        public bool ClickEvent(Point mouse)
         {
             if (_items.Count > 0)
             {
@@ -78,6 +78,7 @@ namespace Hnefatafl.MenuObjects
 
                         i++;
                     }
+                    return true;
                 }
                 else
                 {
@@ -88,6 +89,7 @@ namespace Hnefatafl.MenuObjects
             {
                 _status = Unselected;
             }
+            return false;
         }
 
         public void Draw(GraphicsDeviceManager graphics, SpriteBatch spriteBatch, float fontSize)

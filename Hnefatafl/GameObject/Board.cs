@@ -13,7 +13,7 @@ using static Hnefatafl.Media.TextureAtlasLink;
 
 namespace Hnefatafl
 {
-    public enum BoardTypes { Hnefatafl = 11, Tablut = 9, TablutCentre = 9, Brandubh = 7, ArdRi = 7 }
+    public enum BoardTypes { Hnefatafl, Tawlbwrdd, Tablut, Brandubh, ArdRi }
 
     sealed class Board
     {
@@ -31,7 +31,7 @@ namespace Hnefatafl
         private Pieces _pieces = new Pieces();
         //Generates the Piece object which contains a hashtable of all pieces, prevents need for mostly empty 2D array and better than dictionary for this method
         public int _boardSize;
-        //9 or 11 depending on the users options
+        //7, 9 or 11 depending on the users options
         private int _tileSizeX;
         private int _tileSizeY;
 
@@ -101,7 +101,7 @@ namespace Hnefatafl
         public void CreateBoard(BoardTypes type)
         {
             _serverOp = new ServerOptions(); //Defines the options, currently empty as it will default to automatic options
-            _boardSize = (int)type;
+            _boardSize = Hnefatafl.ToInt(type);
             _pieces.CreateBoard(type); //Responsible entirely for the creation of the pieces on the board, Board.cs doesn't contain any logic relating to this at all
             _selectedPiece = new HPoint(-1, -1);
             _state = BoardState.InactiveGame;

@@ -33,7 +33,7 @@ namespace Hnefatafl
             {
                 m_currentTurn = value;
                 
-                if (_side == SideType.Attackers ) _board._turnDisplay._defendersTurn = !m_currentTurn;
+                if (_side == SideType.Attackers) _board._turnDisplay._defendersTurn = !m_currentTurn;
                 else _board._turnDisplay._defendersTurn = m_currentTurn;
 
                 if (!_board.MovesStillPossible(_side))

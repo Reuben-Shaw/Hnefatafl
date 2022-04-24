@@ -171,13 +171,13 @@ namespace Hnefatafl
                         
                         if (_side is null && _board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
                         {
-                            _currentTurn = true;
                             _side = SideType.Attackers;
+                            _currentTurn = true;
                         }
                         else if (_side is null)
                         {
-                            _currentTurn = false;
                             _side = SideType.Defenders;
+                            _currentTurn = false;
                         }
 
                         Console.WriteLine("Completed deserialisation of options");

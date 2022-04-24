@@ -337,6 +337,8 @@ namespace Hnefatafl
                 }
             }
 
+            if (_checkBox is not null) _checkBox.ButtonCheck(currentMouseState, previousMouse, mouseLoc);
+
             if (_picker._visible) PickerCheck(currentMouseState);
             
             _cursor._pos = currentMouseState.Position;
@@ -455,7 +457,6 @@ namespace Hnefatafl
                 {
                     buttonName.Add("host");
                     buttonName.Add("connect");
-                    buttonName.Add("shutdown");
                     buttonName.Add("back");
                     startLoc = new Point(viewPort.Width / 2 - buttonSize.X / 2, buttonSize.Y / 2);
                     break;
@@ -491,6 +492,7 @@ namespace Hnefatafl
                     buttonName.Add("winCorner");
                     buttonName.Add("winSide");
                     textboxName.Add("port");
+                    if (fullChange) portHold = 13419;
                     break;
                 }
                 case GameState.InGame:
@@ -550,14 +552,14 @@ namespace Hnefatafl
             {
                 for (int i = 0; i < textboxName.Count; i++)
                 {
-                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.X * i) / 2)), textboxSize, NodeText(xml, textboxName[i], _gameState), textboxName[i]));
+                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.Y * i) * 3)), textboxSize, NodeText(xml, textboxName[i], _gameState), textboxName[i]));
                     _textbox[i].Update(_graphics, Content, _mainText);
                 }
 
                 startLoc = new Point(viewPort.Width / 2 - buttonSize.X / 2, _textbox[textboxName.Count - 1]._pos.Y);
                 for (int i = textboxName.Count; i < buttonName.Count + textboxName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, new Color[] { Color.Black, Color.Blue }, new Color[] { new Color(66, 41, 33), new Color(99, 55, 41) }, _mainText, NodeText(xml, buttonName[i - textboxName.Count], _gameState), buttonName[i - textboxName.Count], _graphics, Content));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, fontDefault, backDefault, _mainText, NodeText(xml, buttonName[i - textboxName.Count], _gameState), buttonName[i - textboxName.Count], _graphics, Content));
                 }
             }
             else if (_gameState == GameState.GameSetup)
@@ -614,6 +616,8 @@ namespace Hnefatafl
 
                     _textbox.Add(new TextBox(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
                     _textbox[0].Update(_graphics, Content, _mainText);
+
+                    _textbox[0]._text = portHold.ToString();
 
                     //_button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
@@ -812,15 +816,6 @@ namespace Hnefatafl
                     _gameState = GameState.ServerMenu;
                     break;
                 }
-                case "shutdown":
-                {
-                    if (_server is not null)
-                    {
-                        _server.StopServer();
-                    }
-                    
-                    break;
-                }
                 case "back":
                 {   
                     _gameState = GameState.MainMenu;
@@ -844,7 +839,7 @@ namespace Hnefatafl
                     }
                     else if (_textbox[0]._text == "" && _textbox[1]._text == "")
                     {
-                        _player.EstablishConnection("localhost", Convert.ToInt32("14242"));
+                        _player.EstablishConnection("localhost", 13419);
                     }
                     break;
                 }
@@ -856,6 +851,7 @@ namespace Hnefatafl
             }
         }
 
+        int portHold;
         private void GameSetup(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
             string selected = ButtonCheck(currentState, mouseLoc);
@@ -885,26 +881,35 @@ namespace Hnefatafl
                     ServerOptions tempHold = _player._board._serverOp;
                     _player._board.CreateBoard(type);
                     _player._board._serverOp = tempHold;
+                    
+                    if (_checkBox._selected == 0) _player._board._serverOp._playerTurn = PlayerTurn.Attacker;
+                    else _player._board._serverOp._playerTurn = PlayerTurn.Defender;
 
                     if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
                     {
                         _player._side = SideType.Attackers;
+                        _player._currentTurn = true;
                     }
                     else
                     {
-                        _player._currentTurn = false;
                         _player._side = SideType.Defenders;
+                        _player._currentTurn = false;
                     }
 
                     _server = new Server();
-                    _server.StartServer(14242, _player._board._serverOp, type);
-                    _player.EstablishConnection("localhost", 14242);
+                    _server.StartServer(portHold, _player._board._serverOp, type);
+                    _player.EstablishConnection("localhost", portHold);
+
+                    if (portHold == 13419) _logger.Add($"New server created with default port Korone");
+                    else _logger.Add($"New server created with custom port {portHold}");
+
                     _gameState = GameState.InGame;
                     
                     break;
                 }
                 case "basic":
                 {
+                    if (_menuState == MenuState.GameSetupAdvanced && IsValidPort(_textbox[0]._text)) portHold = Convert.ToInt32(_textbox[0]._text);
                     _menuState = MenuState.GameSetupBasic;
                     break;
                 }
@@ -1352,7 +1357,7 @@ namespace Hnefatafl
                 }
                 else if (_menuState == MenuState.GameSetupAdvanced)
                 {
-                    _spriteBatch.Draw(Content.Load<Texture2D>("Texture/BoardDisplay/11_Base"), new Rectangle(new Point((int)(GraphicsDevice.Viewport.Width / 2) - (512 / 2) + 128, (_gameModeDisplay._size.Y / 2) + (512 / 4) - 32), new Point(512, 512)), Color.White);
+                    //_spriteBatch.Draw(Content.Load<Texture2D>("Texture/BoardDisplay/11_Base"), new Rectangle(new Point((int)(GraphicsDevice.Viewport.Width / 2) - (512 / 2) + 128, (_gameModeDisplay._size.Y / 2) + (512 / 4) - 32), new Point(512, 512)), Color.White);
                 }
             }
 

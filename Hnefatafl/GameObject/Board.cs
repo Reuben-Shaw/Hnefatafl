@@ -13,7 +13,7 @@ using static Hnefatafl.Media.TextureAtlasLink;
 
 namespace Hnefatafl
 {
-    public enum BoardTypes { Hnefatafl, Tablut, TablutCentre, Brandubh, ArdRi }
+    public enum BoardTypes { Hnefatafl, Tawlbwrdd, Tablut, Brandubh, ArdRi }
 
     sealed class Board
     {

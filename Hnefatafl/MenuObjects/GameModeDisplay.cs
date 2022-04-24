@@ -19,20 +19,21 @@ namespace Hnefatafl.MenuObjects
         private const int _borderVal = 4;
         private string _boardString;
         private string _boardDescription;
-        private BoardTypes m_dropDownString;
-        public BoardTypes _dropDownString
+        private BoardTypes m_dropDownType;
+        public BoardTypes _dropDownType
         {
-            get { return m_dropDownString; }
+            get { return m_dropDownType; }
             set 
             { 
-                m_dropDownString = value;
-                _boardString = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownString.ToString(), Hnefatafl.GameState.GameSetup);
-                _boardDescription = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownString.ToString() + "_Description", Hnefatafl.GameState.GameSetup);
+                m_dropDownType = value;
+                _boardString = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownType.ToString(), Hnefatafl.GameState.GameSetup);
+                _boardDescription = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownType.ToString() + "_Description", Hnefatafl.GameState.GameSetup);
                 _fontSize = _font.MeasureString(_boardString);
             }
         }
-        Vector2 _fontSize;
-        Texture2D _board;
+        private Vector2 _fontSize;
+        private Texture2D _board, _throne, _corners, _pieces;
+        public bool[] _visibleArr = new bool[] { true, true };
 
         public GameModeDisplay(Point position, Point size, GraphicsDeviceManager graphics, ContentManager content)
         {
@@ -42,11 +43,23 @@ namespace Hnefatafl.MenuObjects
             _backColour = new Texture2D(graphics.GraphicsDevice, 1, 1);
             _backColour.SetData(new[] { new Color(66, 41, 33) });
 
-            _board = content.Load<Texture2D>("Texture/Board/11x11BaseBoard");
+            _board = content.Load<Texture2D>("Texture/BoardDisplay/11_Base");
+            _throne = content.Load<Texture2D>("Texture/BoardDisplay/11_Throne");
+            _corners = content.Load<Texture2D>("Texture/BoardDisplay/11_Corners");
+            _pieces = content.Load<Texture2D>("Texture/BoardDisplay/Pieces_Hnefatafl");
 
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _fontColour = Color.Black;
             _maps.Add(content.Load<Texture2D>("Texture/Map/Scandinavia"));
+        }
+
+        public void ChangeBoard(ContentManager content)
+        {
+            int boardInt = Hnefatafl.ToInt(_dropDownType);
+            _board = content.Load<Texture2D>($"Texture/BoardDisplay/{boardInt}_Base");
+            _throne = content.Load<Texture2D>($"Texture/BoardDisplay/{boardInt}_Throne");
+            _corners = content.Load<Texture2D>($"Texture/BoardDisplay/{boardInt}_Corners");
+            _pieces = content.Load<Texture2D>($"Texture/BoardDisplay/Pieces_{_dropDownType.ToString()}");
         }
 
         public void ChangeMap(Maps map)
@@ -76,6 +89,10 @@ namespace Hnefatafl.MenuObjects
 
 
             spriteBatch.Draw(_board, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);
+            if (_visibleArr[0]) spriteBatch.Draw(_throne, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);
+            if (_visibleArr[1]) spriteBatch.Draw(_corners, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);
+            spriteBatch.Draw(_pieces, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2), _pos.Y), _size), Color.White);
+
 
             spriteBatch.Draw(_backColour, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y - _borderVal), new Point(_size.X + (_borderVal * 2), _borderVal)), Color.White);
             spriteBatch.Draw(_backColour, new Rectangle(new Point((int)(viewport.Width / 2) - (_size.X / 2) - _borderVal, _pos.Y + _size.Y), new Point(_size.X + (_borderVal * 2), _borderVal)), Color.White);

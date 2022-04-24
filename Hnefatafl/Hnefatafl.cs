@@ -492,6 +492,7 @@ namespace Hnefatafl
                     buttonName.Add("winCorner");
                     buttonName.Add("winSide");
                     textboxName.Add("port");
+                    if (fullChange) portHold = 13419;
                     break;
                 }
                 case GameState.InGame:
@@ -615,6 +616,8 @@ namespace Hnefatafl
 
                     _textbox.Add(new TextBox(new Point(startLoc.X + ((buttonSize.X * splitTrack) + ((buttonSize.X / 4) * splitTrack)), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15) + (textboxSize.Y / 4)), textboxSize, "PORT", textboxName[0]));
                     _textbox[0].Update(_graphics, Content, _mainText);
+
+                    _textbox[0]._text = portHold.ToString();
 
                     //_button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
@@ -836,7 +839,7 @@ namespace Hnefatafl
                     }
                     else if (_textbox[0]._text == "" && _textbox[1]._text == "")
                     {
-                        _player.EstablishConnection("localhost", Convert.ToInt32("14242"));
+                        _player.EstablishConnection("localhost", 13419);
                     }
                     break;
                 }
@@ -848,6 +851,7 @@ namespace Hnefatafl
             }
         }
 
+        int portHold;
         private void GameSetup(GameTime gameTime, MouseState currentState, Point mouseLoc)
         {
             string selected = ButtonCheck(currentState, mouseLoc);
@@ -893,14 +897,19 @@ namespace Hnefatafl
                     }
 
                     _server = new Server();
-                    _server.StartServer(14242, _player._board._serverOp, type);
-                    _player.EstablishConnection("localhost", 14242);
+                    _server.StartServer(portHold, _player._board._serverOp, type);
+                    _player.EstablishConnection("localhost", portHold);
+
+                    if (portHold == 13419) _logger.Add($"New server created with default port Korone");
+                    else _logger.Add($"New server created with custom port {portHold}");
+
                     _gameState = GameState.InGame;
                     
                     break;
                 }
                 case "basic":
                 {
+                    if (_menuState == MenuState.GameSetupAdvanced && IsValidPort(_textbox[0]._text)) portHold = Convert.ToInt32(_textbox[0]._text);
                     _menuState = MenuState.GameSetupBasic;
                     break;
                 }

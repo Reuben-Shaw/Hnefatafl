@@ -11,7 +11,6 @@ using System.Xml.Serialization;
 
 namespace Hnefatafl.MenuObjects
 { 
-    enum Maps { Scandinavia, Ireland, Scotland }
     sealed class GameModeDisplay : MenuObject
     {
         List<Texture2D> _maps = new List<Texture2D>();
@@ -50,7 +49,12 @@ namespace Hnefatafl.MenuObjects
 
             _font = content.Load<SpriteFont>("Texture/Font/PixelFont");
             _fontColour = Color.Black;
+
             _maps.Add(content.Load<Texture2D>("Texture/Map/Scandinavia"));
+            _maps.Add(content.Load<Texture2D>("Texture/Map/Sapmi"));
+            _maps.Add(content.Load<Texture2D>("Texture/Map/Ireland"));
+            _maps.Add(content.Load<Texture2D>("Texture/Map/Scotland"));
+            _maps.Add(content.Load<Texture2D>("Texture/Map/Wales"));
         }
 
         public void ChangeBoard(ContentManager content)
@@ -60,17 +64,19 @@ namespace Hnefatafl.MenuObjects
             _throne = content.Load<Texture2D>($"Texture/BoardDisplay/{boardInt}_Throne");
             _corners = content.Load<Texture2D>($"Texture/BoardDisplay/{boardInt}_Corners");
             _pieces = content.Load<Texture2D>($"Texture/BoardDisplay/Pieces_{_dropDownType.ToString()}");
+
+            _mapIndex = ChangeMap(_dropDownType);
         }
 
-        public void ChangeMap(Maps map)
+        public int ChangeMap(BoardTypes type) => type switch
         {
-            switch (map)
-            {
-                case (Maps.Scandinavia): _mapIndex = 0; break;
-                case (Maps.Ireland): _mapIndex = 1; break;
-                case (Maps.Scotland): _mapIndex = 2; break;
-            }
-        }
+            BoardTypes.Hnefatafl => 0,
+            BoardTypes.Tawlbwrdd => 4,
+            BoardTypes.Tablut => 1,
+            BoardTypes.Brandubh => 2,
+            BoardTypes.ArdRi => 3,
+            _ => 0
+        };
 
         public void Draw(SpriteBatch spriteBatch, float fontMod, Rectangle viewport)
         {

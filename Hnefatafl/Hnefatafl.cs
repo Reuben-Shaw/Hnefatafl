@@ -466,6 +466,7 @@ namespace Hnefatafl
                     textboxName.Add("port");
                     buttonName.Add("connect");
                     buttonName.Add("back");
+                    textboxSize = new Point((int)((viewPort.Width / 15 * 6) + ((viewPort.Width / 30 * 3) / 4)), (int)((float)viewPort.Height / 12));
                     buttonSize = new Point(viewPort.Width / 5, (int)((float)viewPort.Height / 8));
                     startLoc = new Point(viewPort.Width / 2 - textboxSize.X / 2, textboxSize.Y * 2);
                     break;
@@ -884,6 +885,16 @@ namespace Hnefatafl
                     ServerOptions tempHold = _player._board._serverOp;
                     _player._board.CreateBoard(type);
                     _player._board._serverOp = tempHold;
+
+                    if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
+                    {
+                        _player._side = SideType.Attackers;
+                    }
+                    else
+                    {
+                        _player._currentTurn = false;
+                        _player._side = SideType.Defenders;
+                    }
 
                     _server = new Server();
                     _server.StartServer(14242, _player._board._serverOp, type);

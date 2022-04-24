@@ -17,7 +17,7 @@ namespace Hnefatafl.MenuObjects
         private int _mapIndex = 0;
         private const int _borderVal = 4;
         private string _boardString;
-        private string _boardDescription;
+        private string[] _boardDescription = new string[2];
         private BoardTypes m_dropDownType;
         public BoardTypes _dropDownType
         {
@@ -26,7 +26,8 @@ namespace Hnefatafl.MenuObjects
             { 
                 m_dropDownType = value;
                 _boardString = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownType.ToString(), Hnefatafl.GameState.GameSetup);
-                _boardDescription = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownType.ToString() + "_Description", Hnefatafl.GameState.GameSetup);
+                _boardDescription[0] = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownType.ToString() + "_Description", Hnefatafl.GameState.GameSetup);
+                _boardDescription[1] = Hnefatafl.NodeText(Hnefatafl.MenuXmlLoad("Menu"), m_dropDownType.ToString() + "_Description2", Hnefatafl.GameState.GameSetup);
                 _fontSize = _font.MeasureString(_boardString);
             }
         }
@@ -83,8 +84,8 @@ namespace Hnefatafl.MenuObjects
             spriteBatch.Draw(_maps[_mapIndex], new Rectangle(_pos, _size), Color.White);
             
             spriteBatch.DrawString(_font, _boardString, new Vector2((int)((float)(_size.X / 2f) - ((_fontSize.X * (fontMod * 1.5f)) / 2f)) + _pos.X, _pos.Y + _size.Y), _fontColour, 0f, new Vector2(0f, 0f), fontMod * 1.5f, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(_font, _boardDescription, new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) + (float)(_borderVal * 2))), _fontColour, 0f, new Vector2(0f, 0f), fontMod, SpriteEffects.None, 0f);
-            spriteBatch.DrawString(_font, "> Attacker First", new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) * 2)), _fontColour, 0f, new Vector2(0f, 0f), fontMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, _boardDescription[0], new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) + (float)(_borderVal * 2))), _fontColour, 0f, new Vector2(0f, 0f), fontMod, SpriteEffects.None, 0f);
+            spriteBatch.DrawString(_font, _boardDescription[1], new Vector2(_pos.X + _borderVal, _pos.Y + _size.Y + (int)((_fontSize.Y * fontMod) * 2)), _fontColour, 0f, new Vector2(0f, 0f), fontMod, SpriteEffects.None, 0f);
 
             spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y - _borderVal, _size.X + (_borderVal * 2), _borderVal), Color.White);
             spriteBatch.Draw(_backColour, new Rectangle(_pos.X - _borderVal, _pos.Y + _size.Y, _size.X + (_borderVal * 2), _borderVal), Color.White);

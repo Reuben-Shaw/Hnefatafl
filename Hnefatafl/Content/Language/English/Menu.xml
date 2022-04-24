@@ -30,15 +30,20 @@
     <basic>BASIC</basic>
     <advanced>ADVANCED</advanced>
     <Hnefatafl>Hnefatafl</Hnefatafl>
-    <Hnefatafl_Description>> 11x11 Board</Hnefatafl_Description>
+    <Hnefatafl_Description>> Scandinavia</Hnefatafl_Description>
+    <Hnefatafl_Description2>> 11x11 Board</Hnefatafl_Description2>
     <Tawlbwrdd>Tawlbwrdd</Tawlbwrdd>
-    <Tawlbwrdd_Description>> 11x11 Board</Tawlbwrdd_Description>
+    <Tawlbwrdd_Description>> Cymru (Wales)</Tawlbwrdd_Description>
+    <Tawlbwrdd_Description2>> 11x11 Board</Tawlbwrdd_Description2>
     <Tablut>Tablut</Tablut>
-    <Tablut_Description>> 9x9 Board</Tablut_Description>
+    <Tablut_Description>> Sapmi</Tablut_Description>
+    <Tablut_Description2>> 9x9 Board</Tablut_Description2>
     <Brandubh>Brandubh</Brandubh>
-    <Brandubh_Description>> 7x7 Board</Brandubh_Description>
+    <Brandubh_Description>> Eire (Ireland)</Brandubh_Description>
+    <Brandubh_Description2>> 7x7 Board</Brandubh_Description2>
     <ArdRi>Ard Ri</ArdRi>
-    <ArdRi_Description>> 7x7 Board</ArdRi_Description>
+    <ArdRi_Description>> Alba (Scotland)</ArdRi_Description>
+    <ArdRi_Description2>> 7x7 Board</ArdRi_Description2>
   </GameSetup>
 
   <InGame>

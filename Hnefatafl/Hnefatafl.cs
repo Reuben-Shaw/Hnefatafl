@@ -337,6 +337,8 @@ namespace Hnefatafl
                 }
             }
 
+            if (_checkBox is not null) _checkBox.ButtonCheck(currentMouseState, previousMouse, mouseLoc);
+
             if (_picker._visible) PickerCheck(currentMouseState);
             
             _cursor._pos = currentMouseState.Position;
@@ -455,7 +457,6 @@ namespace Hnefatafl
                 {
                     buttonName.Add("host");
                     buttonName.Add("connect");
-                    buttonName.Add("shutdown");
                     buttonName.Add("back");
                     startLoc = new Point(viewPort.Width / 2 - buttonSize.X / 2, buttonSize.Y / 2);
                     break;
@@ -550,14 +551,14 @@ namespace Hnefatafl
             {
                 for (int i = 0; i < textboxName.Count; i++)
                 {
-                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.X * i) / 2)), textboxSize, NodeText(xml, textboxName[i], _gameState), textboxName[i]));
+                    _textbox.Add(new TextBox(new Point(startLoc.X, startLoc.Y + ((textboxSize.Y * i) * 3)), textboxSize, NodeText(xml, textboxName[i], _gameState), textboxName[i]));
                     _textbox[i].Update(_graphics, Content, _mainText);
                 }
 
                 startLoc = new Point(viewPort.Width / 2 - buttonSize.X / 2, _textbox[textboxName.Count - 1]._pos.Y);
                 for (int i = textboxName.Count; i < buttonName.Count + textboxName.Count; i++)
                 {
-                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, new Color[] { Color.Black, Color.Blue }, new Color[] { new Color(66, 41, 33), new Color(99, 55, 41) }, _mainText, NodeText(xml, buttonName[i - textboxName.Count], _gameState), buttonName[i - textboxName.Count], _graphics, Content));
+                    _button.Add(new Button(new Point(startLoc.X, startLoc.Y + (buttonSize.Y * i) + ((buttonSize.Y / 4) * i)), buttonSize, fontDefault, backDefault, _mainText, NodeText(xml, buttonName[i - textboxName.Count], _gameState), buttonName[i - textboxName.Count], _graphics, Content));
                 }
             }
             else if (_gameState == GameState.GameSetup)
@@ -812,15 +813,6 @@ namespace Hnefatafl
                     _gameState = GameState.ServerMenu;
                     break;
                 }
-                case "shutdown":
-                {
-                    if (_server is not null)
-                    {
-                        _server.StopServer();
-                    }
-                    
-                    break;
-                }
                 case "back":
                 {   
                     _gameState = GameState.MainMenu;
@@ -885,15 +877,19 @@ namespace Hnefatafl
                     ServerOptions tempHold = _player._board._serverOp;
                     _player._board.CreateBoard(type);
                     _player._board._serverOp = tempHold;
+                    
+                    if (_checkBox._selected == 0) _player._board._serverOp._playerTurn = PlayerTurn.Attacker;
+                    else _player._board._serverOp._playerTurn = PlayerTurn.Defender;
 
                     if (_player._board._serverOp._playerTurn == ServerOptions.PlayerTurn.Attacker)
                     {
                         _player._side = SideType.Attackers;
+                        _player._currentTurn = true;
                     }
                     else
                     {
-                        _player._currentTurn = false;
                         _player._side = SideType.Defenders;
+                        _player._currentTurn = false;
                     }
 
                     _server = new Server();
@@ -1352,7 +1348,7 @@ namespace Hnefatafl
                 }
                 else if (_menuState == MenuState.GameSetupAdvanced)
                 {
-                    _spriteBatch.Draw(Content.Load<Texture2D>("Texture/BoardDisplay/11_Base"), new Rectangle(new Point((int)(GraphicsDevice.Viewport.Width / 2) - (512 / 2) + 128, (_gameModeDisplay._size.Y / 2) + (512 / 4) - 32), new Point(512, 512)), Color.White);
+                    //_spriteBatch.Draw(Content.Load<Texture2D>("Texture/BoardDisplay/11_Base"), new Rectangle(new Point((int)(GraphicsDevice.Viewport.Width / 2) - (512 / 2) + 128, (_gameModeDisplay._size.Y / 2) + (512 / 4) - 32), new Point(512, 512)), Color.White);
                 }
             }
 

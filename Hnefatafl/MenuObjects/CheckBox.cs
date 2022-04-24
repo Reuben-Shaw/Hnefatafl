@@ -14,7 +14,7 @@ namespace Hnefatafl.MenuObjects
         private List<string> _options = new List<string>();
         private List<Vector2> _stringSizes = new List<Vector2>();
         private Texture2D _divideColour;
-        private int _selected = 0;
+        public int _selected = 0;
         private Texture2D _tick;//, _cross;
         private const int _divide = 24;
 
@@ -42,24 +42,18 @@ namespace Hnefatafl.MenuObjects
             _divideColour.SetData(new[] { new Color(66, 41, 33) });
         }
 
-        public void ButtonCheck(MouseState currentState, MouseState previousState, Point mouseLoc, bool keyboardSelect)
+        public void ButtonCheck(MouseState currentState, MouseState previousState, Point mouseLoc)
         {
-            // int i = 0;
-
-            // foreach (Button button in _button)
-            // {
-            //     if (keyboardSelect || (mouseLoc.Y < 66 && new Rectangle(button._pos, button._size).Contains(mouseLoc)))
-            //     {
-            //         if (button._status != Selected && previousState.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
-            //         {
-            //             button._status = Selected;
-            //             _button[_indexSelected]._status = Unselected;
-            //             _indexSelected = i;
-            //             return button._name;
-            //         }
-            //     }
-            //     i++;
-            // }
+            for (int i = 0; i < _options.Count; i++)
+            {
+                if (new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size).Contains(mouseLoc))
+                {
+                    if (previousState.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released)
+                    {
+                        _selected = i;
+                    }
+                }
+            }
         }
 
         public void Draw(SpriteBatch spriteBatch, float fontSize)

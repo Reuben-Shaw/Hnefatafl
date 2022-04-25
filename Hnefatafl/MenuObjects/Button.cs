@@ -10,7 +10,7 @@ namespace Hnefatafl.MenuObjects
     sealed class Button : MenuObject
     {
         private Color _selectFontColour { get; set; }
-        private Texture2D _image { get; set; }
+        public Texture2D _image { get; set; }
 
         public override Status _status
         {
@@ -23,9 +23,6 @@ namespace Hnefatafl.MenuObjects
                 m_status = value;
             }
         }
-
-        private Texture2D _disabledColour { get; set; }
-        
         private TextureDivide _buttonSelect, _buttonUnselect;
         
         private TextureDivide _tabButtonTexture { get; set; }
@@ -46,7 +43,6 @@ namespace Hnefatafl.MenuObjects
             _backColour = button._backColour;
             _textPos = button._textPos;
             _image = button._image;
-            _disabledColour = button._disabledColour;
             _tabButtonTexture = button._tabButtonTexture;
         }
 
@@ -175,11 +171,6 @@ namespace Hnefatafl.MenuObjects
                     _buttonSelect.Draw(spriteBatch, rect);
                     spriteBatch.DrawString(_font, _text, _textPos, _selectFontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
                 }
-            }
-
-            if (_status == Disabled)
-            {
-                spriteBatch.Draw(_disabledColour, new Rectangle(_pos.X - 4, _pos.Y - 4, _size.X + 8, _size.Y + 8), Color.White);
             }
         }
 

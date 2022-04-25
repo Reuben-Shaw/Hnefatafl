@@ -60,12 +60,13 @@ namespace Hnefatafl.MenuObjects
         {
             for (int i = 0; i < _options.Count; i++)
             {
-                spriteBatch.Draw(_backColour, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
+                spriteBatch.Draw(_divideColour, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
+                spriteBatch.Draw(_backColour, new Rectangle(_pos.X + 4, _pos.Y + (_size.Y * i) + (_divide * i) + 4, _size.X - 8, _size.Y - 8), Color.White);
 
                 if (i == _selected) spriteBatch.Draw(_tick, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
                 // else spriteBatch.Draw(_cross, new Rectangle(new Point(_pos.X, _pos.Y + (_size.Y * i) + (_divide * i)), _size), Color.White);
 
-                spriteBatch.DrawString(_font, _options[i], new Vector2(_pos.X + _size.X + _divide, _pos.Y + (_stringSizes[i].Y * i) + (_divide * i * fontSize) - (_stringSizes[i].Y / 4)), _fontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(_font, _options[i], new Vector2(_pos.X + _size.X + _divide, (_pos.Y + (_size.Y * i) + (_divide * i)) - ((_size.Y - (_stringSizes[i].Y * fontSize)) / 2) - (_size.Y - ((_size.Y / 7) * 4))), _fontColour, 0f, new Vector2(0f, 0f), fontSize, SpriteEffects.None, 0f);
             }
         }
     }

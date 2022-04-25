@@ -66,6 +66,7 @@ namespace Hnefatafl
         }
         private bool _keyboardSelect = false;
         private TextureDivide _menuBack;
+        private Texture2D _disabledButton, _activeButton;
         private UserOptions _userOptions;
 
         public enum GameState { MainMenu, OptionsMenu, ColourPickerMenu, MultiplayerMenu, ServerMenu, GameSetup, InGame, EscMenu };
@@ -167,6 +168,9 @@ namespace Hnefatafl
             _picker.LoadContent(_graphics, Content, _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds));
 
             _menuBack = new TextureDivide(_graphics, Content, "Texture/Menu/BackMenuDivide", _player._board.TileSizeX(GraphicsDevice.Viewport.Bounds), _player._board.TileSizeY(GraphicsDevice.Viewport.Bounds));
+
+            _disabledButton = Content.Load<Texture2D>("Texture/OpButton/Disabled");
+            _activeButton = Content.Load<Texture2D>("Texture/OpButton/Selection");
 
             _logger.Add("Successful LoadContent");
             Console.WriteLine("Successful LoadContent");
@@ -933,28 +937,36 @@ namespace Hnefatafl
                 {
                     _player._board._serverOp._throneOp = ThroneOp.Disabled;
                     _gameModeDisplay._visibleArr[0] = false;
+                    _button[0]._status = Active; _button[1]._status = Unselected; _button[2]._status = Unselected;
+
+                    if (_button[7]._status == Active) _button[6]._status = Active;
+                    _button[7]._status = Disabled; //captureCornerThrone
                     break;
                 }
                 case "throneKing":
                 {
                     _player._board._serverOp._throneOp = ThroneOp.King;
                     _gameModeDisplay._visibleArr[0] = true;
+                    _button[0]._status = Unselected; _button[1]._status = Active; _button[2]._status = Unselected;
                     break;
                 }
                 case "throneDefenderKing":
                 {
                     _player._board._serverOp._throneOp = ThroneOp.DefenderKing;
                     _gameModeDisplay._visibleArr[0] = true;
+                    _button[0]._status = Unselected; _button[1]._status = Unselected; _button[2]._status = Active;
                     break;
                 }
                 case "kingArmed":
                 {
                     _player._board._serverOp._kingOp = KingOp.Armed;
+                    _button[3]._status = Active; _button[4]._status = Unselected;
                     break;
                 }
                 case "kingUnarmed":
                 {
                     _player._board._serverOp._kingOp = KingOp.Unarmed;
+                    _button[3]._status = Unselected; _button[4]._status = Active;
                     break;
                 }
                 // case "sandwichDisabled":
@@ -971,40 +983,50 @@ namespace Hnefatafl
                 {
                     _player._board._serverOp._captureOp = CaptureOp.Disabled;
                     if (_player._board._serverOp._winOp == WinOp.Side) _gameModeDisplay._visibleArr[1] = false;
+                    _button[5]._status = Active; _button[6]._status = Unselected; if (_button[7]._status != Disabled) _button[7]._status = Unselected;
                     break;
                 }
                 case "captureCorner":
                 {
                     _player._board._serverOp._captureOp = CaptureOp.Corner;
                     _gameModeDisplay._visibleArr[1] = true;
+                    _button[5]._status = Unselected; _button[6]._status = Active; if (_button[7]._status != Disabled) _button[7]._status = Unselected;
                     break;
                 }
                 case "captureCornerThrone":
                 {
                     _player._board._serverOp._captureOp = CaptureOp.CornerThrone;
                     _gameModeDisplay._visibleArr[1] = true;
+                    if (_button[7]._status != Disabled) { _button[7]._status = Active; _button[5]._status = Unselected; _button[6]._status = Unselected; }
                     break;
                 }
                 case "kingCaptureJustThree":
                 {
                     _player._board._serverOp._kingCaptureOp = KingCaptureOp.JustThree;
+                    if (_button[8]._status != Disabled) { _button[8]._status = Active; _button[9]._status = Unselected; }
                     break;
                 }
                 case "kingCaptureAllDefendersThree":
                 {
                     _player._board._serverOp._kingCaptureOp = KingCaptureOp.AllDefendersThree;
+                    _button[9]._status = Active; if (_button[8]._status != Disabled) _button[7]._status = Unselected;
                     break;
                 }
                 case "winCorner":
                 {
                     _player._board._serverOp._winOp = WinOp.Corner;
                     _gameModeDisplay._visibleArr[1] = true;
+                    _button[10]._status = Active; _button[11]._status = Unselected;
                     break;
                 }
                 case "winSide":
                 {
                     _player._board._serverOp._winOp = WinOp.Side;
                     if (_player._board._serverOp._captureOp == CaptureOp.Disabled) _gameModeDisplay._visibleArr[1] = false;
+                    _button[10]._status = Unselected; _button[11]._status = Active;
+
+                    if (_button[8]._status == Active) _button[9]._status = Active;
+                    _button[8]._status = Disabled;
                     break;
                 }
             }
@@ -1394,6 +1416,8 @@ namespace Hnefatafl
             foreach (Button button in _button)
             {
                 button.Draw(_spriteBatch, _mainText, _player._board.TileSizeX(viewPort), _player._board.TileSizeY(viewPort), viewPort);
+                if (button._status == Disabled) _spriteBatch.Draw(_disabledButton, new Rectangle(button._pos, button._size), Color.White);
+                if (button._status == Active) _spriteBatch.Draw(_activeButton, new Rectangle(button._pos, button._size), Color.White);
             }
 
             foreach (TextBox textbox in _textbox)

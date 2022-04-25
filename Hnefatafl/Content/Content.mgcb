@@ -79,18 +79,6 @@
 /processorParam:TextureFormat=Color
 /build:Texture/BoardDisplay/11_Base.png
 
-#begin Texture/BoardDisplay/11_Base.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/BoardDisplay/11_Base.png
-
 #begin Texture/BoardDisplay/11_Corners.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -102,30 +90,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/BoardDisplay/11_Corners.png
-
-#begin Texture/BoardDisplay/11_Corners.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/BoardDisplay/11_Corners.png
-
-#begin Texture/BoardDisplay/11_Throne.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/BoardDisplay/11_Throne.png
 
 #begin Texture/BoardDisplay/11_Throne.png
 /importer:TextureImporter
@@ -247,18 +211,6 @@
 /processorParam:TextureFormat=Color
 /build:Texture/BoardDisplay/Pieces_Hnefatafl.png
 
-#begin Texture/BoardDisplay/Pieces_Hnefatafl.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/BoardDisplay/Pieces_Hnefatafl.png
-
 #begin Texture/BoardDisplay/Pieces_Tablut.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -332,18 +284,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/Map/Sapmi.png
-
-#begin Texture/Map/Scandinavia.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Texture/Map/Scandinavia.png
 
 #begin Texture/Map/Scandinavia.png
 /importer:TextureImporter
@@ -597,6 +537,18 @@
 /processorParam:TextureFormat=Color
 /build:Texture/OpButton/captureDisabled.png
 
+#begin Texture/OpButton/Disabled.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/OpButton/Disabled.png
+
 #begin Texture/OpButton/kingArmed.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -692,6 +644,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Texture/OpButton/sandwichEnabled.png
+
+#begin Texture/OpButton/Selection.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Texture/OpButton/Selection.png
 
 #begin Texture/OpButton/throneDefenderKing.png
 /importer:TextureImporter

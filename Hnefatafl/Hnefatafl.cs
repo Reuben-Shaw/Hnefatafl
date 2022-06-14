@@ -623,6 +623,8 @@ namespace Hnefatafl
 
                     _textbox[0]._text = portHold.ToString();
 
+                    _button[1]._status = Active; _button[3]._status = Active; _button[7]._status = Active; _button[9]._status = Active; _button[10]._status = Active;
+
                     //_button.Add(new Button(new Point(viewPort.Width - (int)((viewPort.Width / 15) * 3.5f) - (viewPort.Width / 20), viewPort.Height - (viewPort.Width / 20) - (viewPort.Width / 15)), new Point((int)((viewPort.Width / 15) * 3.5f), (viewPort.Width / 15)), fontDefault, backDefault, _mainText, "START", buttonName[0], _graphics, Content));
                 }
             }
@@ -948,6 +950,7 @@ namespace Hnefatafl
                     _player._board._serverOp._throneOp = ThroneOp.King;
                     _gameModeDisplay._visibleArr[0] = true;
                     _button[0]._status = Unselected; _button[1]._status = Active; _button[2]._status = Unselected;
+                    if (_button[7]._status == Disabled) _button[7]._status = Unselected;
                     break;
                 }
                 case "throneDefenderKing":
@@ -955,6 +958,7 @@ namespace Hnefatafl
                     _player._board._serverOp._throneOp = ThroneOp.DefenderKing;
                     _gameModeDisplay._visibleArr[0] = true;
                     _button[0]._status = Unselected; _button[1]._status = Unselected; _button[2]._status = Active;
+                    if (_button[7]._status == Disabled) _button[7]._status = Unselected;
                     break;
                 }
                 case "kingArmed":
@@ -997,19 +1001,19 @@ namespace Hnefatafl
                 {
                     _player._board._serverOp._captureOp = CaptureOp.CornerThrone;
                     _gameModeDisplay._visibleArr[1] = true;
-                    if (_button[7]._status != Disabled) { _button[7]._status = Active; _button[5]._status = Unselected; _button[6]._status = Unselected; }
+                    _button[7]._status = Active; _button[5]._status = Unselected; _button[6]._status = Unselected; 
                     break;
                 }
                 case "kingCaptureJustThree":
                 {
                     _player._board._serverOp._kingCaptureOp = KingCaptureOp.JustThree;
-                    if (_button[8]._status != Disabled) { _button[8]._status = Active; _button[9]._status = Unselected; }
+                    _button[8]._status = Active; _button[9]._status = Unselected;
                     break;
                 }
                 case "kingCaptureAllDefendersThree":
                 {
                     _player._board._serverOp._kingCaptureOp = KingCaptureOp.AllDefendersThree;
-                    _button[9]._status = Active; if (_button[8]._status != Disabled) _button[7]._status = Unselected;
+                    _button[9]._status = Active; if (_button[8]._status != Disabled) _button[8]._status = Unselected;
                     break;
                 }
                 case "winCorner":
@@ -1017,6 +1021,7 @@ namespace Hnefatafl
                     _player._board._serverOp._winOp = WinOp.Corner;
                     _gameModeDisplay._visibleArr[1] = true;
                     _button[10]._status = Active; _button[11]._status = Unselected;
+                    _button[8]._status = Unselected;
                     break;
                 }
                 case "winSide":
@@ -1025,8 +1030,7 @@ namespace Hnefatafl
                     if (_player._board._serverOp._captureOp == CaptureOp.Disabled) _gameModeDisplay._visibleArr[1] = false;
                     _button[10]._status = Unselected; _button[11]._status = Active;
 
-                    if (_button[8]._status == Active) _button[9]._status = Active;
-                    _button[8]._status = Disabled;
+                    _button[9]._status = Active; _button[8]._status = Disabled;
                     break;
                 }
             }
@@ -1262,12 +1266,12 @@ namespace Hnefatafl
                 {
                     if (_keyboardSelect || new Rectangle(button._pos, button._size).Contains(mouseLoc))
                     {
-                        if (previousMouse.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
+                        if (button._status != Disabled && previousMouse.LeftButton == ButtonState.Released && currentState.LeftButton == ButtonState.Pressed)
                         {
                             button._status = Selected;
                             _audioManager._buttonPress.Play();
                         }
-                        else if ((_keyboardSelect && button._status == Selected) || (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released))
+                        else if (button._status != Disabled && (_keyboardSelect && button._status == Selected) || (button._status == Selected && previousMouse.LeftButton == ButtonState.Pressed && currentState.LeftButton == ButtonState.Released))
                         {
                             button._status = Unselected;
                             text = button._name;
